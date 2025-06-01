@@ -1,1 +1,130 @@
-<p>register works!</p>
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Create your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Or
+        <a routerLink="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
+          sign in to your existing account
+        </a>
+      </p>
+    </div>
+
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+      <div class="space-y-4">
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">
+            Email Address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            formControlName="email"
+            class="mt-1 appearance-none relative block w-full px-3 py-2 border rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            [class.border-red-300]="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+            [class.border-gray-300]="!registrationForm.get('email')?.invalid || !registrationForm.get('email')?.touched"
+            placeholder="Enter your email"
+          />
+          <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
+               class="mt-1 text-sm text-red-600">
+            <span *ngIf="registrationForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="registrationForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <!-- Matric Number Field -->
+        <div>
+          <label for="matricNumber" class="block text-sm font-medium text-gray-700">
+            Matric Number
+          </label>
+          <input
+            id="matricNumber"
+            name="matricNumber"
+            type="text"
+            formControlName="matricNumber"
+            class="mt-1 appearance-none relative block w-full px-3 py-2 border rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            [class.border-red-300]="registrationForm.get('matricNumber')?.invalid && registrationForm.get('matricNumber')?.touched"
+            [class.border-gray-300]="!registrationForm.get('matricNumber')?.invalid || !registrationForm.get('matricNumber')?.touched"
+            placeholder="Enter your matric number"
+          />
+          <div *ngIf="registrationForm.get('matricNumber')?.invalid && registrationForm.get('matricNumber')?.touched"
+               class="mt-1 text-sm text-red-600">
+            <span *ngIf="registrationForm.get('matricNumber')?.errors?.['required']">Matric number is required</span>
+            <span *ngIf="registrationForm.get('matricNumber')?.errors?.['pattern']">Matric number must be alphanumeric</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            formControlName="password"
+            class="mt-1 appearance-none relative block w-full px-3 py-2 border rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            [class.border-red-300]="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+            [class.border-gray-300]="!registrationForm.get('password')?.invalid || !registrationForm.get('password')?.touched"
+            placeholder="Enter your password"
+          />
+          <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched"
+               class="mt-1 text-sm text-red-600">
+            <span *ngIf="registrationForm.get('password')?.errors?.['required']">Password is required</span>
+            <span *ngIf="registrationForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password Field -->
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+            Confirm Password
+          </label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            class="mt-1 appearance-none relative block w-full px-3 py-2 border rounded-md placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+            [class.border-red-300]="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+            [class.border-gray-300]="!registrationForm.get('confirmPassword')?.invalid || !registrationForm.get('confirmPassword')?.touched"
+            placeholder="Confirm your password"
+          />
+          <div *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched"
+               class="mt-1 text-sm text-red-600">
+            <span *ngIf="registrationForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+          </div>
+          <div *ngIf="registrationForm.errors?.['passwordMismatch'] && registrationForm.get('confirmPassword')?.touched"
+               class="mt-1 text-sm text-red-600">
+            Passwords do not match
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          [disabled]="registrationForm.invalid"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
+        >
+          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+            </svg>
+          </span>
+          Register
+        </button>
+      </div>
+
+      <div *ngIf="submitted && registrationForm.valid"
+           class="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+        <p class="text-green-800 text-sm">Registration successful! Redirecting...</p>
+      </div>
+    </form>
+  </div>
+</div>

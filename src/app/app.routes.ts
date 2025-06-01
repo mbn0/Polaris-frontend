@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { RegisterComponent } from './register/register.component';
 import { StudentDashboardComponent } from './student-dashboard/student-dashboard.component';
+import { LoginComponent } from './login/login.component';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./login/login.component').then(c => c.LoginComponent),
+    component: LoginComponent,
     title: 'Login - Sign In'
   },
   {

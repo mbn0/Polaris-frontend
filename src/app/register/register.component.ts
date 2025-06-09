@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { AuthService, RegisterRequest } from '../auth.service';
 
 @Component({
   selector: 'app-registration',
@@ -14,12 +15,27 @@ import { Router, RouterLink } from '@angular/router';
 export class RegisterComponent {
   registrationForm: FormGroup;
   submitted = false;
+  isLoading = false;
+  errorMessage = '';
+  successMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.registrationForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       matricNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/)
+        ]
+      ],
+
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
@@ -36,17 +52,35 @@ export class RegisterComponent {
 
   onSubmit() {
     this.submitted = true;
+    this.errorMessage = '';
+    this.successMessage = '';
 
     if (this.registrationForm.valid) {
-      console.log('Registration data:', this.registrationForm.value);
-      // Handle successful registration here
-      // You can call your registration service here
+      this.isLoading = true;
 
-      // Simulate successful registration and redirect
-      setTimeout(() => {
-        alert('Registration successful! Redirecting to login...');
-        this.router.navigate(['/login']);
-      }, 1000);
+      const registerData: RegisterRequest = {
+        email: this.registrationForm.value.email,
+        password: this.registrationForm.value.password,
+        matricNo: this.registrationForm.value.matricNumber
+      };
+
+      this.authService.register(registerData).subscribe({
+        next: (response) => {
+          console.log('Registration successful:', response);
+          this.isLoading = false;
+          this.successMessage = 'Registration successful! Redirecting to dashboard...';
+
+          // Redirect to dashboard after successful registration
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
+        },
+        error: (error) => {
+          console.error('Registration failed:', error);
+          this.isLoading = false;
+          this.errorMessage = error.message || 'Registration failed. Please try again.';
+        }
+      });
     } else {
       console.log('Form is invalid');
       this.markFormGroupTouched();
@@ -60,3 +94,4 @@ export class RegisterComponent {
     });
   }
 }
+

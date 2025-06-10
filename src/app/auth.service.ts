@@ -19,7 +19,7 @@ export interface RegisterResponse {
 }
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -36,6 +36,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<RegisterResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private isBrowser: boolean;
+  private loggedIn = new BehaviorSubject<boolean>(false);
 
   constructor(
     private http: HttpClient,
@@ -78,6 +79,7 @@ export class AuthService {
           if (this.isBrowser) {
             localStorage.setItem('currentUser', JSON.stringify(response));
             localStorage.setItem('token', response.token);
+            this.loggedIn.next(true);
           }
           this.currentUserSubject.next(response);
         }),
@@ -92,8 +94,13 @@ export class AuthService {
     if (this.isBrowser) {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('token');
+      this.loggedIn.next(false);
     }
     this.currentUserSubject.next(null);
+  }
+
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
   }
 
   /**
@@ -106,8 +113,8 @@ export class AuthService {
   /**
    * Check if user is logged in
    */
-  isLoggedIn(): boolean {
-    return !!this.currentUserValue && !!this.getToken();
+  get isLoggedIn(): Observable<boolean> {
+    return this.loggedIn.asObservable();
   }
 
   /**

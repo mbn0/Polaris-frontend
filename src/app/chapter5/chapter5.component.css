@@ -1,0 +1,117 @@
+/* Custom styles for Chapter 3 component */
+
+/* Animation for Feistel network */
+@keyframes feistelStep {
+  0% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+}
+
+.feistel-animation .step {
+  animation: feistelStep 2s infinite;
+}
+
+.feistel-animation .step:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.feistel-animation .step:nth-child(3) {
+  animation-delay: 1s;
+}
+
+/* S-Box visualization */
+.s-box-cell {
+  transition: all 0.2s ease;
+}
+
+.s-box-cell:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+  transform: scale(1.05);
+}
+
+.s-box-active {
+  background-color: rgba(79, 70, 229, 0.2);
+  border-color: rgba(79, 70, 229, 0.5);
+}
+
+/* XOR operation visualization */
+.xor-bit {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1.5rem;
+  text-align: center;
+  margin: 0 0.1rem;
+  border-radius: 0.25rem;
+  font-family: monospace;
+  transition: all 0.2s ease;
+}
+
+.xor-bit-0 {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.xor-bit-1 {
+  background-color: #4f46e5;
+  color: white;
+}
+
+/* Mode comparison visualization */
+.pixel-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 1px;
+}
+
+.pixel {
+  width: 1rem;
+  height: 1rem;
+  transition: all 0.2s ease;
+}
+
+.pixel-black {
+  background-color: #000;
+}
+
+.pixel-white {
+  background-color: #fff;
+}
+
+/* Interactive elements */
+.interactive-control {
+  transition: all 0.2s ease;
+}
+
+.interactive-control:hover {
+  transform: translateY(-2px);
+}
+
+/* Code block styling */
+.code-block {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: #1a1a1a;
+  color: #00ff00;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .text-3xl {
+    font-size
+

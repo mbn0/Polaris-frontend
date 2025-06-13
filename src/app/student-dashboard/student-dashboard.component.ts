@@ -33,14 +33,22 @@ export class StudentDashboardComponent implements OnInit {
     },
     {
       id: 2,
-      title: 'Traditional Symmetric-Key Ciphers',
-      description: 'Classical encryption methods and their analysis',
+      title: 'Mathematical Foundations of Cryptography',
+      description: 'Mathematical concepts essential for cryptography',
       icon: '🗝️',
       isAvailable: true,
       estimatedTime: '3 hours'
     },
     {
-      id: 3,
+    id: 3,
+    title: 'Traditonal Symmetric-key Ciphers',
+    description: 'Overview of classical symmetric encryption techniques',
+    icon: '🔑',
+    isAvailable: true,
+    estimatedTime: '3 hours'
+    },
+    {
+      id: 5,
       title: 'Introduction to Modern Symmetric-key Ciphers',
       description: 'Evolution from classical to modern symmetric encryption',
       icon: '🔄',
@@ -48,7 +56,15 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 4,
+      id: 6,
+      title: 'DES',
+      description: 'Data Encryption Standard and its significance',
+      icon: '🔐',
+      isAvailable: true,
+      estimatedTime: '3 hours'
+    },
+    {
+      id: 7,
       title: 'Advanced Encryption Standard (AES)',
       description: 'In-depth study of the AES algorithm',
       icon: '🛡️',
@@ -56,7 +72,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '4 hours'
     },
     {
-      id: 5,
+      id: 8,
       title: 'Encipherment Using Modern Symmetric Key Cryptography',
       description: 'Practical applications of symmetric encryption',
       icon: '🔒',
@@ -64,7 +80,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 6,
+      id: 9,
       title: 'Mathematics of Asymmetric-Key Cryptography',
       description: 'Mathematical foundations for public-key cryptography',
       icon: '📊',
@@ -72,7 +88,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '4 hours'
     },
     {
-      id: 7,
+      id: 10,
       title: 'Asymmetric-Key Cryptography',
       description: 'Public-key cryptographic systems and algorithms',
       icon: '🔑',
@@ -80,7 +96,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '4 hours'
     },
     {
-      id: 8,
+      id: 11,
       title: 'Message Integrity and Message Authentication',
       description: 'Ensuring data integrity and authenticity',
       icon: '✅',
@@ -88,7 +104,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 9,
+      id: 12,
       title: 'Cryptographic Hash Function',
       description: 'Hash functions and their cryptographic properties',
       icon: '#️⃣',
@@ -96,7 +112,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 10,
+      id: 13,
       title: 'Digital Signature',
       description: 'Digital signature schemes and applications',
       icon: '✍️',
@@ -104,7 +120,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 11,
+      id: 14,
       title: 'Entity Authentication',
       description: 'Authentication protocols and mechanisms',
       icon: '🆔',
@@ -112,7 +128,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 12,
+      id: 15,
       title: 'Key Management',
       description: 'Key distribution and management protocols',
       icon: '🗃️',
@@ -120,7 +136,7 @@ export class StudentDashboardComponent implements OnInit {
       estimatedTime: '3 hours'
     },
     {
-      id: 13,
+      id: 16,
       title: 'Introduction to Homomorphic Cryptography',
       description: 'Advanced topic: Computing on encrypted data',
       icon: '🧮',

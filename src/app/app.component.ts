@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'student-portal';
 
   isLoggedIn = false;
   currentUser: any = null;

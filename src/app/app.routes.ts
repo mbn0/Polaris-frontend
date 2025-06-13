@@ -4,6 +4,8 @@ import { StudentDashboardComponent } from './student-dashboard/student-dashboard
 import { LoginComponent } from './login/login.component';
 import { Chapter1Component } from './chapter1/chapter1.component';
 import { Chapter3Component } from './chapter3/chapter3.component';
+import { Chapter5Component } from './chapter5/chapter5.component';
+import { Chapter10Component } from './chapter10/chapter10.component';
 
 export const routes: Routes = [
   {
@@ -39,7 +41,18 @@ export const routes: Routes = [
   {
     path: 'Chapter3',
     component: Chapter3Component,
-    title: 'Chapter 3 - Introduction to Modern Symmetric-key Ciphers'
+    title: 'Chapter 3 - Traditional Symmetric-key Ciphers'
+
+  },
+  {
+    path: 'Chapter5',
+    component: Chapter5Component,
+    title: 'Chapter 5 - Introduction to Modern Symmetric-key Ciphers'
+  },
+  {
+    path: 'Chapter10',
+    component: Chapter10Component,
+    title: ' Assymetric-key Cryptography'
   },
   {
     path: '**',

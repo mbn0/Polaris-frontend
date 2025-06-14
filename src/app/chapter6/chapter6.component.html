@@ -233,7 +233,7 @@
                 <span class="text-green-600 mr-2">•</span>
                 <span>XOR the expanded data with the round key Kᵢ</span>
               </li>
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-green-600 mr-2">•</span>
                 <span>Simple, efficient, and reversible: (E(R)⊕K)⊕K = E(R)</span>
               </li>
@@ -292,8 +292,8 @@
               </div>
 
               <div class="text-sm text-gray-600">
-                <p><strong>Row calculation:</strong> {{ sBoxInput[0] || '?' }}{{ sBoxInput[5] || '?' }} (binary) = {{ sBoxInput.length >= 6 ? parseInt(sBoxInput[0] + sBoxInput[5], 2) : '?' }} (decimal)</p>
-                <p><strong>Column calculation:</strong> {{ sBoxInput.substring(1, 5) || '????' }} (binary) = {{ sBoxInput.length >= 5 ? parseInt(sBoxInput.substring(1, 5), 2) : '?' }} (decimal)</p>
+                <p><strong>Row calculation:</strong> {{ sBoxInput[0] || '?' }}{{ sBoxInput[5] || '?' }} (binary) = {{ sBoxInput.length >= 6 ? getRowFromSBoxInput() : '?' }} (decimal)</p>
+                <p><strong>Column calculation:</strong> {{ sBoxInput.substring(1, 5) || '????' }} (binary) = {{ sBoxInput.length >= 5 ? getColFromSBoxInput() : '?' }} (decimal)</p>
               </div>
             </div>
           </div>
@@ -331,11 +331,11 @@
               <span class="text-blue-600 mr-2">•</span>
               <span><strong>Left shifts:</strong> Each half is circularly shifted by 1 or 2 bits according to the rotation schedule</span>
             </li>
-            <li class="flex(items-start)">
+            <li class="flex items-start">
               <span class="text-blue-600 mr-2">•</span>
               <span><strong>Permuted Choice 2 (PC-2):</strong> Combine halves and select 48 bits → round key Kᵢ</span>
             </li>
-            <li class="flex(items-start)">
+            <li class="flex items-start">
               <span class="text-blue-600 mr-2">•</span>
               <span><strong>Repeat:</strong> For all 16 rounds, ensuring each subkey differs and maximizes avalanche</span>
             </li>
@@ -409,15 +409,15 @@
           <div class="bg-blue-50 rounded-lg p-6">
             <h3 class="text-xl font-semibold text-gray-900 mb-3">Design Criteria</h3>
             <ul class="space-y-3 text-gray-700">
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-blue-600 mr-2">•</span>
                 <span><strong>S-Box Design:</strong> Chosen to resist differential and linear cryptanalysis</span>
               </li>
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-blue-600 mr-2">•</span>
                 <span><strong>Round Count:</strong> 16 rounds balance security vs. performance</span>
               </li>
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-blue-600 mr-2">•</span>
                 <span><strong>Avalanche Effect:</strong> Small input changes cause large output changes</span>
               </li>
@@ -427,15 +427,15 @@
           <div class="bg-red-50 rounded-lg p-6">
             <h3 class="text-xl font-semibold text-gray-900 mb-3">Weaknesses</h3>
             <ul class="space-y-3 text-gray-700">
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-red-600 mr-2">•</span>
                 <span><strong>Key Size:</strong> 56 bits is too small; brute forcing took under a week by 1998</span>
               </li>
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-red-600 mr-2">•</span>
                 <span><strong>Meet-in-the-Middle:</strong> Attacks against double DES cut complexity to ~2¹¹²</span>
               </li>
-              <li class="flex(items-start)">
+              <li class="flex items-start">
                 <span class="text-red-600 mr-2">•</span>
                 <span><strong>Block Size:</strong> 64-bit blocks vulnerable to birthday attacks</span>
               </li>
@@ -474,8 +474,8 @@
                 <div>
                   <h5 class="text-sm font-medium text-gray-700 mb-2">Backward Decryption</h5>
                   <div class="space-y-1 text-xs font-mono">
-                    <div *ngFor="let val of intermediateValues.slice(3)">
-                      <span [class.bg-yellow-200]="val.includes('A1B2C3D4')">{{ val }}</span>
+                    <div *ngFor="let val of intermediateValues.slice(3)" [class.bg-yellow-200]="val.includes('A1B2C3D4')">
+                      {{ val }}
                     </div>
                   </div>
                 </div>
@@ -590,7 +590,7 @@
             </p>
             <div class="bg-white p-4 rounded border">
               <h4 class="font-semibold text-gray-900 mb-2">Python Template</h4>
-              <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-x-auto" ngNonBindable>
+              <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-x-auto">
 def feistel_round(left, right, round_key):
     """Perform one round of Feistel encryption"""
     # F function: simple XOR for demonstration
@@ -618,10 +618,10 @@ plaintext = 0x12345678
 keys = [0x1111, 0x2222, 0x3333, 0x4444]
 ciphertext = feistel_encrypt(plaintext, keys)
 decrypted = feistel_decrypt(ciphertext, keys)
-print(f"Original: {plaintext:08x}")
-print(f"Encrypted: {ciphertext:08x}")
-print(f"Decrypted: {decrypted:08x}")
-print(f"Match: {plaintext == decrypted}")
+print(f"Original: &#123;plaintext:08x&#125;")
+print(f"Encrypted: &#123;ciphertext:08x&#125;")
+print(f"Decrypted: &#123;decrypted:08x&#125;")
+print(f"Match: &#123;plaintext == decrypted&#125;")
               </pre>
             </div>
           </div>
@@ -694,7 +694,7 @@ print(f"Match: {plaintext == decrypted}")
 
         <div class="flex space-x-2">
           <button
-            *ngFor="let section of [].constructor(totalSections); let i = index"
+            *ngFor="let section of getSectionArray(); let i = index"
             (click)="goToSection(i + 1)"
             class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
             [class.bg-purple-600]="currentSection === i + 1"

@@ -138,7 +138,8 @@ export class Chapter6Component implements OnInit {
 
   xorStrings(str1: string, str2: string): string {
     let result = '';
-    for (let i = 0; i < Math.min(str1.length, str2.length); i++) {
+    const minLength = Math.min(str1.length, str2.length);
+    for (let i = 0; i < minLength; i++) {
       result += str1[i] === str2[i] ? '0' : '1';
     }
     return result;
@@ -146,7 +147,7 @@ export class Chapter6Component implements OnInit {
 
   applySBoxes(input: string): string {
     // Simplified S-box application
-    return input.substring(0, 8); // Simplified for demo
+    return input.substring(0, Math.min(8, input.length)); // Simplified for demo
   }
 
   permuteResult(input: string): string {
@@ -158,6 +159,12 @@ export class Chapter6Component implements OnInit {
   calculateSBoxOutput() {
     if (this.sBoxInput.length !== 6) {
       this.sBoxOutput = 'Input must be 6 bits';
+      return;
+    }
+
+    // Validate input contains only 0s and 1s
+    if (!/^[01]+$/.test(this.sBoxInput)) {
+      this.sBoxOutput = 'Input must contain only 0s and 1s';
       return;
     }
 
@@ -174,7 +181,9 @@ export class Chapter6Component implements OnInit {
 
   // Key schedule demonstration
   nextKeyScheduleStep() {
-    this.currentKeyScheduleStep = (this.currentKeyScheduleStep + 1) % this.keyScheduleSteps.length;
+    if (this.keyScheduleSteps.length > 0) {
+      this.currentKeyScheduleStep = (this.currentKeyScheduleStep + 1) % this.keyScheduleSteps.length;
+    }
   }
 
   resetKeySchedule() {
@@ -208,7 +217,9 @@ export class Chapter6Component implements OnInit {
   }
 
   goToSection(section: number) {
-    this.currentSection = section;
+    if (section >= 1 && section <= this.totalSections) {
+      this.currentSection = section;
+    }
   }
 
   backToDashboard() {
@@ -225,5 +236,28 @@ export class Chapter6Component implements OnInit {
 
   toggleSBoxDemo() {
     this.showSBoxDemo = !this.showSBoxDemo;
+  }
+
+  getSectionArray(): number[] {
+    return Array.from({ length: this.totalSections }, (_, i) => i + 1);
+  }
+
+  // Additional helper methods for validation
+  validateBinaryInput(input: string, expectedLength: number): boolean {
+    return input.length === expectedLength && /^[01]+$/.test(input);
+  }
+
+  getRowFromSBoxInput(): number {
+    if (this.sBoxInput.length >= 6) {
+      return parseInt(this.sBoxInput[0] + this.sBoxInput[5], 2);
+    }
+    return 0;
+  }
+
+  getColFromSBoxInput(): number {
+    if (this.sBoxInput.length >= 5) {
+      return parseInt(this.sBoxInput.substring(1, 5), 2);
+    }
+    return 0;
   }
 }

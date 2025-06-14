@@ -66,6 +66,9 @@ export class Chapter10Component implements OnInit {
   elgamalC2 = 0
   elgamalDecrypted = 0
 
+  // Random number for something
+ ran =Math.random().toString(36).substring(7)
+
   // Security level comparison
   securityLevels: SecurityLevel[] = [
     { level: 112, symmetric: 112, rsa: 2048, ecc: 224 },

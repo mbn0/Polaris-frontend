@@ -50,6 +50,27 @@ export const routes: Routes = [
     title: 'Chapter 5 - Introduction to Modern Symmetric-key Ciphers'
   },
   {
+    path: 'Chapter6',
+    loadComponent: () => import('./chapter6/chapter6.component').then(m => m.Chapter6Component),
+    title: 'Chapter 6 - Data Encryption Standard (DES)'
+  },
+  {
+    path: 'Chapter7',
+    loadComponent: () => import('./chapter7/chapter7.component').then(m => m.Chapter7Component),
+    title: 'Chapter 7 - Advanced Encryption Standard (AES)'
+  },
+  {
+    path: 'Chapter8',
+    loadComponent: () => import('./chapter8/chapter8.component').then(m => m.Chapter8Component),
+    title: 'Chapter 8 - Encipherment Using Modern Symmetric Key Cryptography'
+
+  },
+  {
+    path: 'Chapter9',
+    loadComponent: () => import('./chapter9/chapter9.component').then(m => m.Chapter9Component),
+    title: 'Chapter 9 - Mathematics of Asymmetric-Key Cryptography'
+  },
+  {
     path: 'Chapter10',
     component: Chapter10Component,
     title: ' Assymetric-key Cryptography'

@@ -839,7 +839,7 @@
               <div class="space-y-2 text-sm">
                 <div ngNonBindable>Same plaintext: "{{ oaepPlaintext }}"</div>
                 <div>Seed 1: {{ oaepPadded }}</div>
-                <div>Seed 2: {{ oaepPlaintext }}_PAD_{{ (oaepRandomSeed + 1000).toString() }}_{{ Math.random().toString(36).substring(7) }}</div>
+                <div>Seed 2: {{ oaepPlaintext }}_PAD_{{ (oaepRandomSeed + 1000).toString() }}_{{ ran }}</div>
                 <div class="text-gray-600 mt-2">Notice how different seeds produce different padded outputs</div>
               </div>
             </div>

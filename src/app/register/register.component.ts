@@ -61,18 +61,23 @@ export class RegisterComponent {
       const registerData: RegisterRequest = {
         email: this.registrationForm.value.email,
         password: this.registrationForm.value.password,
-        matricNo: this.registrationForm.value.matricNumber
+        matricNo: this.registrationForm.value.matricNumber,
+        fullName: this.registrationForm.value.fullName
       };
 
       this.authService.register(registerData).subscribe({
         next: (response) => {
           console.log('Registration successful:', response);
           this.isLoading = false;
-          this.successMessage = 'Registration successful! Redirecting to dashboard...';
+          this.successMessage = 'Registration successful! Redirecting...';
 
-          // Redirect to dashboard after successful registration
+          // Redirect based on user role
           setTimeout(() => {
-            this.router.navigate(['/login']);
+            if (response.roles?.includes('Admin')) {
+              this.router.navigate(['/admin']);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
           }, 2000);
         },
         error: (error) => {

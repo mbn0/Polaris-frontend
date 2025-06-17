@@ -34,12 +34,17 @@ export class LoginComponent {
       this.isLoading = true;
 
       this.authService.login({
-        username: this.loginForm.value.email,
+        email: this.loginForm.value.email,
         password: this.loginForm.value.password
       }).subscribe({
         next: (response) => {
           this.isLoading = false;
-          this.router.navigate(['/dashboard']);
+          // Redirect based on user role
+          if (response.roles?.includes('Admin')) {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         },
         error: (error) => {
           this.isLoading = false;

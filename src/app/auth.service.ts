@@ -1,162 +1,120 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, PLATFORM_ID, Inject } from "@angular/core"
+import { HttpClient, HttpErrorResponse } from "@angular/common/http"
+import { BehaviorSubject, Observable, throwError } from "rxjs"
+import { map, catchError } from "rxjs/operators"
+import { Router } from "@angular/router"
+import { environment } from "../environments/environment"
+import { isPlatformBrowser } from "@angular/common"
+
+export interface LoginRequest {
+  email: string
+  password: string
+}
 
 export interface RegisterRequest {
-  email: string;
-  password: string;
-  matricNo: string;
+  email: string
+  password: string
+  fullName: string
+  matricNo?: string
 }
 
 export interface RegisterResponse {
-  fullName: string;
-  email: string;
-  password: string;
-  matricNo: string;
-  token: string;
-}
-
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface ApiError {
-  message: string;
-  errors?: { [key: string]: string[] };
+  id: string
+  email: string
+  fullName: string
+  roles: string[]
+  token: string
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
-  private readonly API_BASE_URL = 'http://localhost:5240/api/Auth';
-  private currentUserSubject = new BehaviorSubject<RegisterResponse | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-  private isBrowser: boolean;
-  private loggedIn = new BehaviorSubject<boolean>(false);
+  private currentUserSubject: BehaviorSubject<RegisterResponse | null>
+  public currentUser: Observable<RegisterResponse | null>
+  private apiUrl = environment.apiUrl + "/api/auth"
 
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) platformId: Object
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-    // Check if user is already logged in on service initialization
-    if (this.isBrowser) {
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        this.currentUserSubject.next(JSON.parse(storedUser));
-      }
-    }
+    const storedUser = isPlatformBrowser(this.platformId) ? localStorage.getItem("currentUser") : null
+    this.currentUserSubject = new BehaviorSubject<RegisterResponse | null>(storedUser ? JSON.parse(storedUser) : null)
+    this.currentUser = this.currentUserSubject.asObservable()
   }
 
-  /**
-   * Register a new user
-   */
-  register(registerData: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.API_BASE_URL}/register`, registerData)
-      .pipe(
-        tap(response => {
-          if (this.isBrowser) {
-            localStorage.setItem('currentUser', JSON.stringify(response));
-            localStorage.setItem('token', response.token);
-          }
-          this.currentUserSubject.next(response);
-        }),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Login user
-   */
-  login(loginData: LoginRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.API_BASE_URL}/login`, loginData)
-      .pipe(
-        tap(response => {
-          if (this.isBrowser) {
-            localStorage.setItem('currentUser', JSON.stringify(response));
-            localStorage.setItem('token', response.token);
-            this.loggedIn.next(true);
-          }
-          this.currentUserSubject.next(response);
-        }),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Logout user
-   */
-  logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('token');
-      this.loggedIn.next(false);
-    }
-    this.currentUserSubject.next(null);
-  }
-
-  private hasToken(): boolean {
-    return !!localStorage.getItem('token');
-  }
-
-  /**
-   * Get current user value
-   */
-  get currentUserValue(): RegisterResponse | null {
-    return this.currentUserSubject.value;
-  }
-
-  /**
-   * Check if user is logged in
-   */
-  get isLoggedIn(): Observable<boolean> {
-    return this.loggedIn.asObservable();
-  }
-
-  /**
-   * Get stored token
-   */
-  getToken(): string | null {
-    return this.isBrowser ? localStorage.getItem('token') : null;
-  }
-
-  /**
-   * Handle HTTP errors
-   */
   private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'An unknown error occurred';
-
+    let errorMessage = "An error occurred"
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
-      errorMessage = `Error: ${error.error.message}`;
+      errorMessage = `Error: ${error.error.message}`
     } else {
-      // Server-side error
-      if (error.status === 400 && error.error) {
-        // Handle validation errors
-        if (error.error.errors) {
-          const validationErrors = Object.values(error.error.errors).flat();
-          errorMessage = validationErrors.join(', ');
-        } else if (error.error.message) {
-          errorMessage = error.error.message;
-        } else if (typeof error.error === 'string') {
-          errorMessage = error.error;
-        }
-      } else if (error.status === 401) {
-        errorMessage = 'Invalid credentials';
-      } else if (error.status === 409) {
-        errorMessage = 'User already exists';
-      } else if (error.status === 500) {
-        errorMessage = 'Server error. Please try again later.';
-      } else {
-        errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-      }
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`
     }
+    return throwError(() => new Error(errorMessage))
+  }
 
-    console.error('Auth Service Error:', error);
-    return throwError(() => new Error(errorMessage));
+  public get currentUserValue(): RegisterResponse | null {
+    return this.currentUserSubject.value
+  }
+
+  login(credentials: LoginRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      map((user) => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem("currentUser", JSON.stringify(user))
+        }
+        this.currentUserSubject.next(user)
+        return user
+      }),
+      catchError(this.handleError)
+    )
+  }
+
+  register(userData: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, userData).pipe(
+      map((user) => {
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.setItem("currentUser", JSON.stringify(user))
+        }
+        this.currentUserSubject.next(user)
+        return user
+      }),
+      catchError(this.handleError)
+    )
+  }
+
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem("currentUser")
+    }
+    this.currentUserSubject.next(null)
+    this.router.navigate(["/login"])
+  }
+
+  getCurrentUser(): RegisterResponse | null {
+    return this.currentUserValue
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.currentUserValue
+  }
+
+  hasRole(role: string): boolean {
+    const user = this.currentUserValue
+    return user ? user.roles.includes(role) : false
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole("Admin")
+  }
+
+  isInstructor(): boolean {
+    return this.hasRole("Instructor")
+  }
+
+  isStudent(): boolean {
+    return this.hasRole("Student")
   }
 }
+

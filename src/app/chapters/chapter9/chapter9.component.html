@@ -1,0 +1,1016 @@
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+  <!-- Header -->
+  <header class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <button
+            (click)="backToDashboard()"
+            class="mr-4 p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">🔢 Chapter 9: Mathematics of Asymmetric Cryptography</h1>
+            <p class="text-sm text-gray-600">Number Theory Foundations for Public-Key Systems</p>
+          </div>
+        </div>
+        <div class="text-sm text-gray-600">
+          Section {{ currentSection }} of {{ totalSections }}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-2">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-emerald-600 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="(currentSection / totalSections) * 100"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+
+      <!-- Section 1: Prime Numbers -->
+      <div *ngIf="currentSection === 1" class="p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Prime Numbers: The Atoms of Arithmetic</h2>
+
+        <div class="bg-emerald-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Primes are the "atoms" of integer arithmetic: every integer factors uniquely into a product of primes. Their special properties underpin the security of RSA, Diffie–Hellman, and many other public-key schemes.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Definitions</h3>
+            <dl class="space-y-4">
+              <div>
+                <dt class="font-semibold text-emerald-800">Prime Number</dt>
+                <dd class="text-gray-600 mt-1">A positive integer greater than 1 whose only divisors are 1 and itself</dd>
+              </div>
+              <div>
+                <dt class="font-semibold text-emerald-800">Composite Number</dt>
+                <dd class="text-gray-600 mt-1">An integer greater than 1 that is not prime; it has at least one divisor other than 1 and itself</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Key Property</h3>
+            <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+              <h4 class="font-semibold text-blue-800">Infinitude of Primes</h4>
+              <p class="text-gray-600 mt-1">There are infinitely many primes, as first proven by Euclid around 300 BC</p>
+            </div>
+
+            <div class="mt-4 bg-white p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">First 20 Primes</h4>
+              <div class="grid grid-cols-5 gap-2 text-center">
+                <div *ngFor="let prime of [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71]"
+                     class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-sm font-mono">
+                  {{ prime }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 rounded-lg p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Why Primes Matter in Cryptography</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">RSA Security</h4>
+              <p class="text-sm text-gray-600 mt-1">Based on difficulty of factoring large semiprimes (n = p × q)</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">Discrete Logarithms</h4>
+              <p class="text-sm text-gray-600 mt-1">Prime moduli ensure large cyclic groups for Diffie-Hellman</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">Key Generation</h4>
+              <p class="text-sm text-gray-600 mt-1">Random prime generation is fundamental to most public-key systems</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Testing for Primeness -->
+      <div *ngIf="currentSection === 2" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Naïve Trial Division</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            To test whether n is prime, check divisibility by all primes p ≤ √n. If none divide n, it's prime; otherwise composite.
+          </p>
+          <div class="bg-white p-4 rounded border font-mono text-center">
+            Test all p ≤ √n where p is prime
+          </div>
+        </div>
+
+        <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">
+                <strong>Limitation:</strong> This O(√n) method fails for cryptographic sizes (1024+ bits). In practice, probabilistic tests (e.g. Miller–Rabin) enable fast, high-confidence primality checking.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Primality Tester</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Number to Test</label>
+                <input
+                  type="number"
+                  [(ngModel)]="primeTestNumber"
+                  (ngModelChange)="onPrimeTestChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  min="2"
+                  max="10000"
+                >
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <button
+                  *ngFor="let num of primeTestNumbers"
+                  (click)="testSpecificNumber(num)"
+                  class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded text-sm hover:bg-emerald-200 transition-colors"
+                >
+                  {{ num }}
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="primalityResult" class="space-y-4">
+              <div class="bg-gray-50 p-4 rounded">
+                <h4 class="font-semibold text-gray-900 mb-2">Result</h4>
+                <div class="text-lg font-bold"
+                     [class.text-green-600]="primalityResult.isPrime"
+                     [class.text-red-600]="!primalityResult.isPrime">
+                  {{ primalityResult.number }} is {{ primalityResult.isPrime ? 'PRIME' : 'COMPOSITE' }}
+                </div>
+
+                <div *ngIf="!primalityResult.isPrime && primalityResult.factors.length > 0" class="mt-2">
+                  <div class="text-sm text-gray-600">Factors: {{ primalityResult.factors.join(' × ') }}</div>
+                </div>
+
+                <div class="text-xs text-gray-500 mt-2">
+                  Time: {{ algorithmTimes.primalityTest.toFixed(2) }}ms
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="primalityResult" class="mt-6">
+            <h4 class="font-semibold text-gray-900 mb-2">Test Steps</h4>
+            <div class="bg-gray-50 p-4 rounded max-h-40 overflow-y-auto">
+              <div *ngFor="let step of primalityResult.testSteps" class="text-sm font-mono mb-1">
+                {{ step }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Examples</h3>
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-green-800">97:</h4>
+              <p class="text-sm text-gray-600">√97 ≈ 9.8; test p ∈ {{'{'}}2, 3, 5, 7{{'}'}}. None divide 97 ⇒ prime</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-red-800">301:</h4>
+              <p class="text-sm text-gray-600">√301 ≈ 17.3; test {{'}'}} 2, 3, 5, 7, 11, 13, 17{{'}'}}. 7 | 301 ⇒ composite</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Euler's Totient Function -->
+      <div *ngIf="currentSection === 3" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">The φ Function</h2>
+
+        <div class="bg-purple-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            φ(n) counts integers 1 ≤ k < n that are coprime to n (i.e., gcd(k, n) = 1).
+          </p>
+          <div class="bg-white p-4 rounded border font-mono text-center text-lg">
+            φ(n) = |{{'{'}} k : 1 ≤ k < n, gcd(k, n) = 1{{'}'}} |
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Properties</h3>
+            <div class="space-y-3">
+              <div class="bg-blue-50 p-3 rounded">
+                <h4 class="font-semibold text-blue-800">Prime:</h4>
+                <div class="font-mono text-sm">φ(p) = p - 1</div>
+              </div>
+              <div class="bg-green-50 p-3 rounded">
+                <h4 class="font-semibold text-green-800">Prime Power:</h4>
+                <div class="font-mono text-sm">φ(p^k) = p^k - p^(k-1)</div>
+              </div>
+              <div class="bg-yellow-50 p-3 rounded">
+                <h4 class="font-semibold text-yellow-800">Multiplicative:</h4>
+                <div class="font-mono text-sm">If gcd(m,n) = 1, then φ(mn) = φ(m)φ(n)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Calculator</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Calculate φ(n) for n =</label>
+                <input
+                  type="number"
+                  [(ngModel)]="totientNumber"
+                  (ngModelChange)="onTotientChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  min="1"
+                  max="1000"
+                >
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <button
+                  *ngFor="let num of totientExamples"
+                  (click)="calculateSpecificTotient(num)"
+                  class="px-3 py-1 bg-purple-100 text-purple-800 rounded text-sm hover:bg-purple-200 transition-colors"
+                >
+                  {{ num }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="totientResult" class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculation Result</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">Prime Factorization</h4>
+              <div class="bg-gray-50 p-3 rounded">
+                <div class="font-mono text-sm">
+                  {{ totientResult.n }} =
+                  <span *ngFor="let factor of totientResult.primeFactors; let last = last">
+                    {{ factor.prime }}<sup *ngIf="factor.power > 1">{{ factor.power }}</sup><span *ngIf="!last"> × </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-2">φ({{ totientResult.n }}) Calculation</h4>
+              <div class="bg-purple-50 p-3 rounded">
+                <div class="font-mono text-sm">{{ totientResult.calculation }}</div>
+                <div class="text-lg font-bold text-purple-600 mt-2">= {{ totientResult.totient }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Examples</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-blue-800">φ(13) = 12</h4>
+              <p class="text-sm text-gray-600">(13 is prime)</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-green-800">φ(10) = 4</h4>
+              <p class="text-sm text-gray-600">φ(2) × φ(5) = 1 × 4 = 4</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-yellow-800">φ(49) = 42</h4>
+              <p class="text-sm text-gray-600">49 - 7 = 42 (since 49 = 7²)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Fermat's Little Theorem -->
+      <div *ngIf="currentSection === 4" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Fermat's Little Theorem</h2>
+
+        <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Statement</h3>
+          <p class="text-gray-700 mb-4">For prime p and any integer a:</p>
+          <div class="bg-white p-4 rounded border space-y-2">
+            <div class="font-mono text-lg text-center">a^p ≡ a (mod p)</div>
+            <div class="text-center text-gray-600">If gcd(a, p) = 1, then</div>
+            <div class="font-mono text-lg text-center">a^(p-1) ≡ 1 (mod p)</div>
+          </div>
+          <p class="text-gray-700 mt-4">
+            This theorem lets us reduce large exponents modulo p and also compute inverses modulo p via a^(-1) ≡ a^(p-2).
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Fermat Calculator</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Base (a)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="fermatBase"
+                  (ngModelChange)="onFermatChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  min="1"
+                  max="100"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Exponent</label>
+                <input
+                  type="number"
+                  [(ngModel)]="fermatExponent"
+                  (ngModelChange)="onFermatChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  min="1"
+                  max="1000"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime Modulus (p)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="fermatModulus"
+                  (ngModelChange)="onFermatChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  min="2"
+                  max="100"
+                >
+              </div>
+
+              <div class="bg-yellow-50 p-4 rounded">
+                <h4 class="font-semibold text-yellow-800 mb-2">Result</h4>
+                <div class="font-mono text-lg">
+                  {{ fermatBase }}^{{ fermatExponent }} ≡ {{ fermatResult }} (mod {{ fermatModulus }})
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">Calculation Steps</h4>
+              <div class="max-h-60 overflow-y-auto">
+                <div *ngFor="let step of fermatSteps" class="text-sm font-mono mb-1 p-2 bg-white rounded border">
+                  {{ step }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Examples</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-green-800">2^16 mod 17</h4>
+              <p class="text-sm text-gray-600 mb-2">Since 16 = 17 - 1:</p>
+              <p class="font-mono text-sm">2^16 ≡ 1 (mod 17)</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-green-800">2^50 mod 17</h4>
+              <p class="text-sm text-gray-600 mb-2">Write 50 = 3 × 16 + 2:</p>
+              <p class="font-mono text-sm">2^50 ≡ (2^16)^3 × 2^2 ≡ 1^3 × 4 = 4</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Euler's Theorem -->
+      <div *ngIf="currentSection === 5" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Euler's Theorem: Generalization</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Statement</h3>
+          <p class="text-gray-700 mb-4">If gcd(a, n) = 1, then:</p>
+          <div class="bg-white p-4 rounded border space-y-2">
+            <div class="font-mono text-lg text-center">a^φ(n) ≡ 1 (mod n)</div>
+            <div class="text-center text-gray-600">and more generally</div>
+            <div class="font-mono text-lg text-center">a^(k×φ(n)+1) ≡ a (mod n)</div>
+          </div>
+          <p class="text-gray-700 mt-4">
+            Euler's theorem underlies RSA decryption: raising to the private exponent d, chosen so that ed ≡ 1 (mod φ(n)), recovers the original message.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Euler Calculator</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Base (a)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="eulerBase"
+                  (ngModelChange)="onEulerChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="1"
+                  max="100"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Exponent</label>
+                <input
+                  type="number"
+                  [(ngModel)]="eulerExponent"
+                  (ngModelChange)="onEulerChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="1"
+                  max="1000"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modulus (n)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="eulerModulus"
+                  (ngModelChange)="onEulerChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="2"
+                  max="100"
+                >
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Result</h4>
+                <div class="font-mono text-lg">
+                  {{ eulerBase }}^{{ eulerExponent }} ≡ {{ eulerResult }} (mod {{ eulerModulus }})
+                </div>
+                <div class="text-sm text-gray-600 mt-1">
+                  φ({{ eulerModulus }}) = {{ calculateTotientValue(eulerModulus) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">Calculation Steps</h4>
+              <div class="max-h-60 overflow-y-auto">
+                <div *ngFor="let step of eulerSteps" class="text-sm font-mono mb-1 p-2 bg-white rounded border">
+                  {{ step }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Example</h3>
+          <div class="space-y-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-purple-800">Compute 6^24 mod 35</h4>
+              <div class="text-sm text-gray-600 space-y-1 mt-2">
+                <div>Since φ(35) = φ(5 × 7) = φ(5) × φ(7) = 4 × 6 = 24</div>
+                <div class="font-mono">6^24 ≡ 1 (mod 35)</div>
+              </div>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-purple-800">For 20^62 mod 77, with φ(77) = 60:</h4>
+              <div class="text-sm text-gray-600 space-y-1 mt-2">
+                <div class="font-mono">20^62 = 20^(60+2) ≡ 1 × 20^2 = 400 ≡ 15 (mod 77)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Integer Division & GCD -->
+      <div *ngIf="currentSection === 6" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Integer Division & GCD</h2>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Division Algorithm</h3>
+            <p class="text-gray-700 mb-4">For integers a, n > 0, there exist unique q, r with:</p>
+            <div class="bg-white p-4 rounded border font-mono text-center text-lg">
+              a = qn + r, 0 ≤ r < n
+            </div>
+            <div class="mt-4 bg-white p-3 rounded border">
+              <h4 class="font-semibold text-green-800">Example</h4>
+              <div class="font-mono text-sm">255 = 23 × 11 + 2</div>
+              <div class="text-xs text-gray-600">(so q = 23, r = 2)</div>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Greatest Common Divisor</h3>
+            <p class="text-gray-700 mb-4">
+              gcd(a, b) is the largest integer dividing both a and b. If gcd(a, b) = 1, a and b are relatively prime.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-blue-800 mb-2">Properties</h4>
+              <ul class="text-sm space-y-1">
+                <li>• gcd(a, 0) = a</li>
+                <li>• gcd(a, b) = gcd(b, a mod b)</li>
+                <li>• gcd(a, b) = gcd(|a|, |b|)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Euclid's Algorithm Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Number (a)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="euclideanA"
+                  (ngModelChange)="onEuclideanChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  min="1"
+                  max="10000"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Second Number (b)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="euclideanB"
+                  (ngModelChange)="onEuclideanChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  min="1"
+                  max="10000"
+                >
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Result</h4>
+                <div class="font-mono text-xl">
+                  gcd({{ euclideanA }}, {{ euclideanB }}) = {{ euclideanGCD }}
+                </div>
+                <div class="text-xs text-gray-600 mt-1">
+                  Time: {{ algorithmTimes.euclidean.toFixed(3) }}ms
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">Algorithm Steps</h4>
+              <div class="max-h-60 overflow-y-auto space-y-2">
+                <div *ngFor="let step of euclideanSteps; let i = index"
+                     class="text-sm p-2 bg-white rounded border">
+                  <div class="font-mono">{{ step.equation }}</div>
+                  <div class="text-xs text-gray-600">
+                    Step {{ i + 1 }}: {{ step.a }} ÷ {{ step.b }} = {{ step.quotient }} remainder {{ step.remainder }}
+                  </div>
+                </div>
+                <div *ngIf="euclideanSteps.length > 0" class="text-sm p-2 bg-green-100 rounded border border-green-300">
+                  <div class="font-semibold text-green-800">Final: gcd = {{ euclideanGCD }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Example: gcd(36, 123)</h3>
+          <div class="bg-white p-4 rounded border font-mono text-sm space-y-1">
+            <div>123 = 3 × 36 + 15</div>
+            <div>36 = 2 × 15 + 6</div>
+            <div>15 = 2 × 6 + 3</div>
+            <div>6 = 2 × 3 + 0 ⇒ gcd = 3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: Extended Euclidean & Inverses -->
+      <div *ngIf="currentSection === 7" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Extended Euclidean Algorithm</h2>
+
+        <div class="bg-red-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            Beyond gcd, this computes integers (s, t) such that:
+          </p>
+          <div class="bg-white p-4 rounded border font-mono text-center text-lg">
+            s × a + t × b = gcd(a, b)
+          </div>
+          <p class="text-gray-700 mt-4">
+            When gcd(a, n) = 1, s gives the multiplicative inverse of a modulo n.
+          </p>
+        </div>
+
+        <div class="bg-orange-100 border-l-4 border-orange-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-orange-700">
+                <strong>Performance:</strong> Extended Euclid runs in O(log min(a, b)), making it practical even for large RSA moduli.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Modular Inverse Calculator</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Number (a)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="extendedA"
+                  (ngModelChange)="onExtendedEuclideanChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  min="1"
+                  max="1000"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modulus (n)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="extendedN"
+                  (ngModelChange)="onExtendedEuclideanChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  min="2"
+                  max="1000"
+                >
+              </div>
+
+              <div *ngIf="extendedResult" class="space-y-3">
+                <div class="bg-red-50 p-4 rounded">
+                  <h4 class="font-semibold text-red-800 mb-2">Bézout Identity</h4>
+                  <div class="font-mono text-sm">
+                    {{ extendedResult.x }} × {{ extendedA }} + {{ extendedResult.y }} × {{ extendedN }} = {{ extendedResult.gcd }}
+                  </div>
+                </div>
+
+                <div *ngIf="extendedResult.gcd === 1" class="bg-green-50 p-4 rounded">
+                  <h4 class="font-semibold text-green-800 mb-2">Modular Inverse</h4>
+                  <div class="font-mono text-lg">
+                    {{ extendedA }}^(-1) ≡ {{ extendedResult.x >= 0 ? extendedResult.x : extendedResult.x + extendedN }} (mod {{ extendedN }})
+                  </div>
+                </div>
+
+                <div *ngIf="extendedResult.gcd !== 1" class="bg-yellow-50 p-4 rounded">
+                  <h4 class="font-semibold text-yellow-800 mb-2">No Inverse</h4>
+                  <div class="text-sm">
+                    gcd({{ extendedA }}, {{ extendedN }}) = {{ extendedResult.gcd }} ≠ 1, so no modular inverse exists.
+                  </div>
+                </div>
+
+                <div class="text-xs text-gray-600">
+                  Time: {{ algorithmTimes.extendedEuclidean.toFixed(3) }}ms
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="extendedResult" class="bg-gray-50 p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">Algorithm Steps</h4>
+              <div class="max-h-60 overflow-y-auto space-y-1">
+                <div *ngFor="let step of extendedResult.steps"
+                     class="text-xs font-mono p-2 bg-white rounded border">
+                  {{ step.equation }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Example</h3>
+          <div class="bg-white p-4 rounded border">
+            <h4 class="font-semibold text-blue-800">Find 23^(-1) mod 100</h4>
+            <div class="text-sm text-gray-600 space-y-1 mt-2">
+              <div>Extended Euclid yields: 23 × (-13) + 100 × 3 = 1</div>
+              <div>So 23^(-1) ≡ -13 ≡ 87 (mod 100)</div>
+              <div class="font-mono">Verification: 23 × 87 = 2001 ≡ 1 (mod 100) ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8: Cryptographic Prime Generation -->
+      <div *ngIf="currentSection === 8" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Safe & Strong Primes</h2>
+
+        <div class="bg-purple-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            Cryptosystems require primes with special forms:
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded border-l-4 border-green-500">
+              <h4 class="font-semibold text-green-800">Safe Primes</h4>
+              <div class="font-mono text-sm">p = 2q + 1</div>
+              <p class="text-xs text-gray-600 mt-1">where q is also prime—ensures large cyclic subgroups for Diffie–Hellman</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+              <h4 class="font-semibold text-blue-800">Strong Primes</h4>
+              <div class="text-sm">Resist Pollard's p-1 factoring</div>
+              <p class="text-xs text-gray-600 mt-1">by having large prime factors in p-1</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Prime Generation Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Bit Size</label>
+                <select
+                  [(ngModel)]="primeGenerationBits"
+                  (ngModelChange)="onPrimeGenerationChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                >
+                  <option [value]="6">6 bits (up to 63)</option>
+                  <option [value]="7">7 bits (up to 127)</option>
+                  <option [value]="8">8 bits (up to 255)</option>
+                  <option [value]="9">9 bits (up to 511)</option>
+                  <option [value]="10">10 bits (up to 1023)</option>
+                </select>
+              </div>
+
+              <div class="bg-purple-50 p-4 rounded">
+                <h4 class="font-semibold text-purple-800 mb-2">Generation Stats</h4>
+                <div class="text-sm space-y-1">
+                  <div>Total Primes: {{ generatedPrimes.length }}</div>
+                  <div>Safe Primes: {{ safePrimes.length }}</div>
+                  <div>Strong Primes: {{ strongPrimes.length }}</div>
+                  <div class="text-xs text-gray-600">Time: {{ algorithmTimes.primeGeneration.toFixed(2) }}ms</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-2">All Primes</h4>
+                <div class="bg-gray-50 p-3 rounded max-h-32 overflow-y-auto">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let prime of generatedPrimes"
+                          class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-mono">
+                      {{ prime }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Safe Primes (p = 2q + 1)</h4>
+                <div class="bg-green-50 p-3 rounded max-h-24 overflow-y-auto">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let prime of safePrimes"
+                          class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-mono">
+                      {{ prime }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="font-semibold text-gray-900 mb-2">Strong Primes</h4>
+                <div class="bg-yellow-50 p-3 rounded max-h-24 overflow-y-auto">
+                  <div class="flex flex-wrap gap-1">
+                    <span *ngFor="let prime of strongPrimes"
+                          class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-mono">
+                      {{ prime }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Additional Notes</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-indigo-800">Miller-Rabin Testing</h4>
+              <p class="text-sm text-gray-600">
+                Primality testing and random generation loops yield high-confidence primes in milliseconds for 2048-bit sizes.
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-indigo-800">Cryptographic Applications</h4>
+              <p class="text-sm text-gray-600">
+                Safe primes are essential for Diffie-Hellman, while strong primes provide additional security against certain factoring attacks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 9: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 9" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning & Exercises</h2>
+
+        <div class="space-y-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 1: Primality Challenge</h3>
+            <p class="text-gray-700 mb-4">
+              Test whether 1049, 2029, and 4093 are prime using trial division up to √n.
+            </p>
+            <div class="grid md:grid-cols-3 gap-4">
+              <button
+                (click)="testSpecificNumber(1049)"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Test 1049
+              </button>
+              <button
+                (click)="testSpecificNumber(2029)"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Test 2029
+              </button>
+              <button
+                (click)="testSpecificNumber(4093)"
+                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Test 4093
+              </button>
+            </div>
+
+            <div *ngIf="primalityResult && [1049, 2029, 4093].includes(primalityResult.number)"
+                 class="mt-4 bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Result for {{ primalityResult.number }}</h4>
+              <div class="text-lg font-bold"
+                   [class.text-green-600]="primalityResult.isPrime"
+                   [class.text-red-600]="!primalityResult.isPrime">
+                {{ primalityResult.number }} is {{ primalityResult.isPrime ? 'PRIME' : 'COMPOSITE' }}
+              </div>
+              <div *ngIf="!primalityResult.isPrime && primalityResult.factors.length > 0" class="text-sm text-gray-600">
+                Factors: {{ primalityResult.factors.join(' × ') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 2: Totient Computation</h3>
+            <p class="text-gray-700 mb-4">
+              Compute φ(n) for n = 84, 210, and 1001 via prime factorization.
+            </p>
+            <div class="grid md:grid-cols-3 gap-4">
+              <button
+                (click)="calculateSpecificTotient(84)"
+                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+              >
+                φ(84)
+              </button>
+              <button
+                (click)="calculateSpecificTotient(210)"
+                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+              >
+                φ(210)
+              </button>
+              <button
+                (click)="calculateSpecificTotient(1001)"
+                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+              >
+                φ(1001)
+              </button>
+            </div>
+
+            <div *ngIf="totientResult && [84, 210, 1001].includes(totientResult.n)"
+                 class="mt-4 bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">φ({{ totientResult.n }}) Calculation</h4>
+              <div class="font-mono text-sm">{{ totientResult.calculation }}</div>
+              <div class="text-lg font-bold text-green-600 mt-2">= {{ totientResult.totient }}</div>
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 3: Fermat Practice</h3>
+            <p class="text-gray-700 mb-4">
+              Find 7^100 mod 13 and 5^1234 mod 17 using Fermat's Little Theorem.
+            </p>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-yellow-800">7^100 mod 13</h4>
+                <button
+                  (click)="fermatBase = 7; fermatExponent = 100; fermatModulus = 13; onFermatChange()"
+                  class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 transition-colors"
+                >
+                  Calculate
+                </button>
+                <div *ngIf="fermatBase === 7 && fermatExponent === 100 && fermatModulus === 13"
+                     class="mt-2 font-mono text-lg text-yellow-700">
+                  Result: {{ fermatResult }}
+                </div>
+              </div>
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-yellow-800">5^1234 mod 17</h4>
+                <button
+                  (click)="fermatBase = 5; fermatExponent = 1234; fermatModulus = 17; onFermatChange()"
+                  class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 transition-colors"
+                >
+                  Calculate
+                </button>
+                <div *ngIf="fermatBase === 5 && fermatExponent === 1234 && fermatModulus === 17"
+                     class="mt-2 font-mono text-lg text-yellow-700">
+                  Result: {{ fermatResult }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 4: Euclid's Algorithm Lab</h3>
+            <p class="text-gray-700 mb-4">
+              Implement both GCD and Extended GCD; verify inverses for a ∈ [2, 50] modulo n = 101.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-purple-800 mb-2">Implementation Steps</h4>
+              <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                <li>Implement Euclidean algorithm for GCD computation</li>
+                <li>Extend to compute Bézout coefficients (s, t)</li>
+                <li>Use extended algorithm to find modular inverses</li>
+                <li>Verify that a × a^(-1) ≡ 1 (mod 101) for each a</li>
+                <li>Test edge cases and performance for large inputs</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 5: Safe-Prime Walkthrough</h3>
+            <p class="text-gray-700 mb-4">
+              Generate a 256-bit safe prime by iterating Miller–Rabin tests; document average iterations needed.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-red-800 mb-2">Implementation Guide</h4>
+              <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                <li>Generate random odd 256-bit candidates</li>
+                <li>Check if candidate p is prime using Miller-Rabin</li>
+                <li>Check if (p-1)/2 is also prime (safe prime condition)</li>
+                <li>Count iterations until finding a safe prime</li>
+                <li>Analyze distribution and average search time</li>
+                <li>Compare with strong prime generation</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+        <button
+          (click)="previousSection()"
+          [disabled]="currentSection === 1"
+          class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="flex space-x-2">
+          <button
+            *ngFor="let section of [].constructor(totalSections); let i = index"
+            (click)="goToSection(i + 1)"
+            class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
+            [class.bg-emerald-600]="currentSection === i + 1"
+            [class.text-white]="currentSection === i + 1"
+            [class.bg-gray-200]="currentSection !== i + 1"
+            [class.text-gray-700]="currentSection !== i + 1"
+            [class.hover:bg-gray-300]="currentSection !== i + 1"
+          >
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <button
+          (click)="nextSection()"
+          [disabled]="currentSection === totalSections"
+          class="flex items-center px-4 py-2 text-sm font-medium text-white bg-emerald-600 border border-transparent rounded-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+

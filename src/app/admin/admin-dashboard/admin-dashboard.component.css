@@ -1,0 +1,36 @@
+.admin-dashboard {
+    min-height: 100vh;
+    background-color: #f9fafb;
+  }
+  
+  .stats-card {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .tab-button {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .tab-button.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #3b82f6;
+  }
+  
+  .activity-item {
+    transition: background-color 0.2s ease;
+  }
+  
+  .activity-item:hover {
+    background-color: #f9fafb;
+  }
+  

@@ -1,0 +1,905 @@
+<div class="chapter-container">
+    <!-- Header -->
+    <div class="chapter-header">
+      <div class="chapter-nav">
+        <button (click)="goToDashboard()" class="nav-button">
+          ← Dashboard
+        </button>
+        <div class="chapter-info">
+          <h1>Chapter 16: Homomorphic Encryption</h1>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgress()"></div>
+          </div>
+          <span class="progress-text">{{ currentSection }} of {{ totalSections }} sections</span>
+        </div>
+        <button (click)="goToNextChapter()" class="nav-button">
+          Final Assessment →
+        </button>
+      </div>
+    </div>
+  
+    <!-- Section Navigation -->
+    <div class="section-nav">
+      <button 
+        *ngFor="let title of sectionTitles; let i = index"
+        (click)="goToSection(i + 1)"
+        [class.active]="currentSection === i + 1"
+        class="section-button">
+        {{ i + 1 }}. {{ title }}
+      </button>
+    </div>
+  
+    <!-- Main Content -->
+    <div class="chapter-content">
+  
+      <!-- Section 1: Why Homomorphic Encryption? -->
+      <div *ngIf="currentSection === 1" class="section">
+        <h2>Why Homomorphic Encryption?</h2>
+        
+        <div class="concept-box">
+          <h3>🔐 Securing the Keys That Secure Everything</h3>
+          <p>
+            Traditional encryption protects data at rest or in transit, but requires decryption for processing—exposing 
+            plaintext to the processor. Homomorphic encryption (HE) lets you compute directly on ciphertexts:
+          </p>
+          
+          <div class="formula-box">
+            <strong>Enc(f(m₁, m₂, ...)) = f(Enc(m₁), Enc(m₂), ...)</strong>
+          </div>
+          
+          <p>
+            So that decryption yields the same result as applying <em>f</em> on the original data. This enables 
+            secure outsourcing of computation to untrusted servers, privacy-preserving analytics, and more.
+          </p>
+        </div>
+  
+        <div class="demo-section">
+          <h3>🎯 Key Benefits</h3>
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <h4>🏥 Healthcare</h4>
+              <p>Analyze patient data without exposing sensitive information</p>
+            </div>
+            <div class="benefit-card">
+              <h4>💰 Finance</h4>
+              <p>Perform risk analysis on encrypted financial portfolios</p>
+            </div>
+            <div class="benefit-card">
+              <h4>🗳️ Voting</h4>
+              <p>Count encrypted votes while maintaining ballot secrecy</p>
+            </div>
+            <div class="benefit-card">
+              <h4>☁️ Cloud Computing</h4>
+              <p>Outsource computation without trusting the cloud provider</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 2: Algebraic Homomorphism -->
+      <div *ngIf="currentSection === 2" class="section">
+        <h2>Algebraic Homomorphism</h2>
+        
+        <div class="concept-box">
+          <h3>What Makes an Encryption Scheme Homomorphic?</h3>
+          
+          <div class="definition-grid">
+            <div class="definition-card">
+              <h4>➕ Additive Homomorphism</h4>
+              <div class="formula">Enc(m₁) ⋄ Enc(m₂) = Enc(m₁ + m₂)</div>
+              <p>Ciphertext operation corresponds to plaintext addition</p>
+            </div>
+            
+            <div class="definition-card">
+              <h4>✖️ Multiplicative Homomorphism</h4>
+              <div class="formula">Enc(m₁) ⋄ Enc(m₂) = Enc(m₁ × m₂)</div>
+              <p>Ciphertext operation corresponds to plaintext multiplication</p>
+            </div>
+            
+            <div class="definition-card">
+              <h4>🔄 Fully Homomorphic</h4>
+              <div class="formula">Supports both + and × operations</div>
+              <p>Can evaluate any polynomial circuit of arbitrary depth</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="interactive-demo">
+          <h3>🧮 Homomorphism Visualization</h3>
+          <div class="homomorphism-demo">
+            <div class="operation-flow">
+              <div class="step">
+                <h4>Plaintext Domain</h4>
+                <div class="values">m₁ = 5, m₂ = 3</div>
+                <div class="operation">5 + 3 = 8</div>
+              </div>
+              
+              <div class="arrow">→ Encrypt →</div>
+              
+              <div class="step">
+                <h4>Ciphertext Domain</h4>
+                <div class="values">c₁ = Enc(5), c₂ = Enc(3)</div>
+                <div class="operation">c₁ ⋄ c₂ = Enc(8)</div>
+              </div>
+              
+              <div class="arrow">→ Decrypt →</div>
+              
+              <div class="step">
+                <h4>Result</h4>
+                <div class="values">Dec(Enc(8)) = 8</div>
+                <div class="operation">✓ Same result!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 3: Partially Homomorphic Encryption -->
+      <div *ngIf="currentSection === 3" class="section">
+        <h2>Partially Homomorphic Encryption (PHE)</h2>
+        
+        <div class="concept-box">
+          <h3>Additive & Multiplicative PHE</h3>
+          <p>
+            Additive-only schemes let you sum encrypted values (e.g., Paillier).
+            Multiplicative-only schemes let you multiply ciphertexts (e.g., RSA without padding, ElGamal).
+          </p>
+          
+          <div class="callout-box">
+            <strong>💡 Key Insight:</strong> Partially homomorphic schemes are far more efficient than FHE for their supported operation.
+          </div>
+        </div>
+  
+        <div class="comparison-table">
+          <h3>📊 PHE Scheme Comparison</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Scheme</th>
+                <th>Operation</th>
+                <th>Security Basis</th>
+                <th>Efficiency</th>
+                <th>Use Cases</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Paillier</strong></td>
+                <td>Addition</td>
+                <td>Composite Residuosity</td>
+                <td>High</td>
+                <td>Voting, Statistics</td>
+              </tr>
+              <tr>
+                <td><strong>RSA</strong></td>
+                <td>Multiplication</td>
+                <td>Integer Factorization</td>
+                <td>Very High</td>
+                <td>Signatures, Protocols</td>
+              </tr>
+              <tr>
+                <td><strong>ElGamal</strong></td>
+                <td>Multiplication</td>
+                <td>Discrete Logarithm</td>
+                <td>High</td>
+                <td>Mix Networks, Auctions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Section 4: Key PHE Examples -->
+      <div *ngIf="currentSection === 4" class="section">
+        <h2>Key PHE Examples</h2>
+        
+        <!-- Paillier Demo -->
+        <div class="demo-section">
+          <h3>🔢 Paillier Additive Homomorphism</h3>
+          <div class="paillier-demo">
+            <div class="input-section">
+              <label>
+                First Number: 
+                <input type="number" [(ngModel)]="paillierDemo.input1" (change)="runPaillierDemo()">
+              </label>
+              <label>
+                Second Number: 
+                <input type="number" [(ngModel)]="paillierDemo.input2" (change)="runPaillierDemo()">
+              </label>
+            </div>
+            
+            <div class="calculation-steps">
+              <div class="step">
+                <h4>1. Encrypt both numbers</h4>
+                <p>Enc({{ paillierDemo.input1 }}) = {{ paillierDemo.encrypted1 }}</p>
+                <p>Enc({{ paillierDemo.input2 }}) = {{ paillierDemo.encrypted2 }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>2. Multiply ciphertexts (homomorphic addition)</h4>
+                <p>{{ paillierDemo.encrypted1 }} × {{ paillierDemo.encrypted2 }} = {{ paillierDemo.result }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>3. Decrypt result</h4>
+                <p>Dec({{ paillierDemo.result }}) = {{ paillierDemo.decrypted }}</p>
+                <p class="result">✓ {{ paillierDemo.input1 }} + {{ paillierDemo.input2 }} = {{ paillierDemo.decrypted }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- RSA Demo -->
+        <div class="demo-section">
+          <h3>✖️ RSA Multiplicative Homomorphism</h3>
+          <div class="rsa-demo">
+            <div class="input-section">
+              <label>
+                First Number: 
+                <input type="number" [(ngModel)]="rsaDemo.input1" (change)="runRSADemo()">
+              </label>
+              <label>
+                Second Number: 
+                <input type="number" [(ngModel)]="rsaDemo.input2" (change)="runRSADemo()">
+              </label>
+            </div>
+            
+            <div class="calculation-steps">
+              <div class="step">
+                <h4>1. Encrypt both numbers</h4>
+                <p>Enc({{ rsaDemo.input1 }}) = {{ rsaDemo.encrypted1 }}</p>
+                <p>Enc({{ rsaDemo.input2 }}) = {{ rsaDemo.encrypted2 }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>2. Multiply ciphertexts</h4>
+                <p>{{ rsaDemo.encrypted1 }} × {{ rsaDemo.encrypted2 }} = {{ rsaDemo.result }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>3. Decrypt result</h4>
+                <p>Dec({{ rsaDemo.result }}) = {{ rsaDemo.decrypted }}</p>
+                <p class="result">✓ {{ rsaDemo.input1 }} × {{ rsaDemo.input2 }} = {{ rsaDemo.decrypted }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- ElGamal Demo -->
+        <div class="demo-section">
+          <h3>🔐 ElGamal Multiplicative Homomorphism</h3>
+          <div class="elgamal-demo">
+            <div class="input-section">
+              <label>
+                First Number: 
+                <input type="number" [(ngModel)]="elgamalDemo.input1" (change)="runElGamalDemo()">
+              </label>
+              <label>
+                Second Number: 
+                <input type="number" [(ngModel)]="elgamalDemo.input2" (change)="runElGamalDemo()">
+              </label>
+            </div>
+            
+            <div class="calculation-steps">
+              <div class="step">
+                <h4>1. Encrypt both numbers (ElGamal pairs)</h4>
+                <p>Enc({{ elgamalDemo.input1 }}) = {{ elgamalDemo.encrypted1 }}</p>
+                <p>Enc({{ elgamalDemo.input2 }}) = {{ elgamalDemo.encrypted2 }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>2. Component-wise multiplication</h4>
+                <p>Result = {{ elgamalDemo.result }}</p>
+              </div>
+              
+              <div class="step">
+                <h4>3. Decrypt result</h4>
+                <p>Dec({{ elgamalDemo.result }}) = {{ elgamalDemo.decrypted }}</p>
+                <p class="result">✓ {{ elgamalDemo.input1 }} × {{ elgamalDemo.input2 }} = {{ elgamalDemo.decrypted }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 5: Somewhat Homomorphic Encryption -->
+      <div *ngIf="currentSection === 5" class="section">
+        <h2>Somewhat Homomorphic Encryption (SHE)</h2>
+        
+        <div class="concept-box">
+          <h3>Support Both Operations Up to Limited Depth</h3>
+          <p>
+            A somewhat homomorphic scheme allows both addition and multiplication but only up to a fixed 
+            "circuit depth" before noise overwhelms correctness. SHE bridges simple PHE and full FHE.
+          </p>
+        </div>
+  
+        <div class="interactive-demo">
+          <h3>🔄 Circuit Depth Simulation</h3>
+          <div class="circuit-simulator">
+            <div class="controls">
+              <button (click)="decreaseDepth()" [disabled]="circuitDepth <= 1">← Decrease Depth</button>
+              <span class="depth-display">Circuit Depth: {{ circuitDepth }}</span>
+              <button (click)="increaseDepth()" [disabled]="circuitDepth >= maxDepth">Increase Depth →</button>
+            </div>
+            
+            <div class="noise-meter">
+              <h4>Noise Level</h4>
+              <div class="noise-bar">
+                <div class="noise-fill" [style.width.%]="(noiseLevel / maxNoise) * 100" 
+                     [class.danger]="noiseLevel > 80"></div>
+              </div>
+              <span class="noise-text">{{ noiseLevel }}/{{ maxNoise }}</span>
+              <p *ngIf="noiseLevel > 80" class="warning">⚠️ Noise too high! Decryption may fail.</p>
+            </div>
+            
+            <div class="circuit-actions">
+              <button (click)="bootstrap()" class="bootstrap-btn">🔄 Bootstrap (Reset Noise)</button>
+              <button (click)="resetCircuit()" class="reset-btn">↺ Reset Circuit</button>
+            </div>
+            
+            <div class="circuit-explanation">
+              <p>
+                <strong>Circuit Depth {{ circuitDepth }}:</strong> 
+                {{ circuitDepth === 1 ? 'Single operation' : 
+                   circuitDepth <= 3 ? 'Simple computation' :
+                   circuitDepth <= 6 ? 'Moderate complexity' : 'High complexity' }}
+              </p>
+              <p>Each additional operation increases noise. When noise exceeds threshold, bootstrapping is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 6: Fully Homomorphic Encryption -->
+      <div *ngIf="currentSection === 6" class="section">
+        <h2>Fully Homomorphic Encryption (FHE)</h2>
+        
+        <div class="concept-box">
+          <h3>Unlimited Computation on Ciphertexts</h3>
+          <p>
+            FHE schemes can evaluate any Boolean or arithmetic circuit of unbounded depth by periodically 
+            "bootstrapping", a process that refreshes ciphertext noise.
+          </p>
+          
+          <div class="callout-box">
+            <strong>🔑 Key Insight:</strong> Bootstrapping was the key insight in Gentry's 2009 construction, turning SHE into FHE.
+          </div>
+        </div>
+  
+        <div class="fhe-capabilities">
+          <h3>🚀 FHE Capabilities</h3>
+          <div class="capability-grid">
+            <div class="capability-card">
+              <h4>🔢 Arbitrary Arithmetic</h4>
+              <p>Addition, multiplication, division, comparison operations</p>
+            </div>
+            <div class="capability-card">
+              <h4>🔀 Boolean Circuits</h4>
+              <p>AND, OR, NOT gates for any logical computation</p>
+            </div>
+            <div class="capability-card">
+              <h4>🔄 Unlimited Depth</h4>
+              <p>No restriction on computation complexity with bootstrapping</p>
+            </div>
+            <div class="capability-card">
+              <h4>🎯 Universal Computation</h4>
+              <p>Any function computable on plaintext is computable on ciphertext</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="bootstrapping-demo">
+          <h3>🔄 Bootstrapping Process</h3>
+          <div class="bootstrap-steps">
+            <div class="bootstrap-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>High Noise Ciphertext</h4>
+                <p>After many operations, noise approaches threshold</p>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="bootstrap-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Homomorphic Decryption</h4>
+                <p>Evaluate decryption circuit homomorphically</p>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="bootstrap-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Fresh Ciphertext</h4>
+                <p>Same plaintext, but with low noise level</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 7: Gentry's Blueprint -->
+      <div *ngIf="currentSection === 7" class="section">
+        <h2>Gentry's Blueprint</h2>
+        
+        <div class="concept-box">
+          <h3>First FHE via Ideal Lattices</h3>
+          <p>Craig Gentry's landmark FHE construction follows this blueprint:</p>
+          
+          <div class="blueprint-steps">
+            <div class="blueprint-step">
+              <h4>1. Build an SHE scheme on ideal lattices</h4>
+              <p>Create a somewhat homomorphic scheme with limited depth</p>
+            </div>
+            <div class="blueprint-step">
+              <h4>2. Show how to homomorphically evaluate its own decryption circuit</h4>
+              <p>The scheme must be able to decrypt itself homomorphically</p>
+            </div>
+            <div class="blueprint-step">
+              <h4>3. Bootstrap by decrypting under encryption</h4>
+              <p>Reduce noise to enable further operations, achieving unlimited depth</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="gentry-timeline">
+          <h3>📅 FHE Development Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="year">2009</div>
+              <div class="event">
+                <h4>Gentry's Breakthrough</h4>
+                <p>First FHE construction using ideal lattices</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="year">2011-2012</div>
+              <div class="event">
+                <h4>BGV & BFV</h4>
+                <p>More practical FHE schemes with better performance</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="year">2017</div>
+              <div class="event">
+                <h4>CKKS</h4>
+                <p>Approximate FHE for real-valued computations</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="year">2020+</div>
+              <div class="event">
+                <h4>Practical Applications</h4>
+                <p>Real-world deployments in cloud computing and ML</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 8: Practical FHE Families -->
+      <div *ngIf="currentSection === 8" class="section">
+        <h2>Practical FHE Families</h2>
+        
+        <div class="concept-box">
+          <h3>BGV, BFV & CKKS</h3>
+          <p>These schemes optimize parameter choices, noise management, and performance for real-world use.</p>
+        </div>
+  
+        <div class="fhe-comparison">
+          <h3>📊 FHE Scheme Comparison</h3>
+          <div class="scheme-cards">
+            <div *ngFor="let scheme of fheSchemes" class="scheme-card">
+              <h4>{{ scheme.name }}</h4>
+              <div class="scheme-details">
+                <div class="detail">
+                  <span class="label">Security:</span>
+                  <span class="value">{{ scheme.securityLevel }}-bit</span>
+                </div>
+                <div class="detail">
+                  <span class="label">Key Size:</span>
+                  <span class="value">{{ scheme.keySize }}</span>
+                </div>
+                <div class="detail">
+                  <span class="label">Bootstrap:</span>
+                  <span class="value">{{ scheme.bootstrapTime }}</span>
+                </div>
+                <div class="detail">
+                  <span class="label">Data Type:</span>
+                  <span class="value">{{ scheme.dataType }}</span>
+                </div>
+              </div>
+              <div class="applications">
+                <h5>Applications:</h5>
+                <ul>
+                  <li *ngFor="let app of scheme.applications">{{ app }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="scheme-details">
+          <h3>🔍 Detailed Comparison</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>BGV</th>
+                <th>BFV</th>
+                <th>CKKS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Plaintext Space</strong></td>
+                <td>Z/pZ (integers mod p)</td>
+                <td>Z/tZ (integers mod t)</td>
+                <td>C (complex numbers)</td>
+              </tr>
+              <tr>
+                <td><strong>Noise Growth</strong></td>
+                <td>Multiplicative</td>
+                <td>Multiplicative</td>
+                <td>Additive</td>
+              </tr>
+              <tr>
+                <td><strong>Precision</strong></td>
+                <td>Exact</td>
+                <td>Exact</td>
+                <td>Approximate</td>
+              </tr>
+              <tr>
+                <td><strong>Best For</strong></td>
+                <td>General computation</td>
+                <td>Database operations</td>
+                <td>Machine learning</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Section 9: Performance & Parameter Selection -->
+      <div *ngIf="currentSection === 9" class="section">
+        <h2>Performance & Parameter Selection</h2>
+        
+        <div class="concept-box">
+          <h3>Noise Growth & Security</h3>
+          <p>
+            Each homomorphic operation increases noise; parameters (modulus size, polynomial degree) must 
+            balance security (lattice hardness) and capacity (allowed operations before bootstrapping).
+          </p>
+        </div>
+  
+        <div class="performance-metrics">
+          <h3>⚡ Performance Metrics</h3>
+          <table class="metrics-table">
+            <thead>
+              <tr>
+                <th>Scheme</th>
+                <th>Security Level</th>
+                <th>Typical Key Size</th>
+                <th>Bootstrapping Cost</th>
+                <th>Operations/sec</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>BGV</strong></td>
+                <td>128-bit</td>
+                <td>~10 MB</td>
+                <td>2-5 minutes</td>
+                <td>~1,000</td>
+              </tr>
+              <tr>
+                <td><strong>BFV</strong></td>
+                <td>128-bit</td>
+                <td>~8 MB</td>
+                <td>1-3 minutes</td>
+                <td>~2,000</td>
+              </tr>
+              <tr>
+                <td><strong>CKKS</strong></td>
+                <td>128-bit</td>
+                <td>~12 MB</td>
+                <td>3-7 minutes</td>
+                <td>~500</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  
+        <div class="parameter-tuning">
+          <h3>🎛️ Parameter Tuning Guidelines</h3>
+          <div class="tuning-grid">
+            <div class="tuning-card">
+              <h4>🔐 Security Parameters</h4>
+              <ul>
+                <li><strong>Polynomial degree (n):</strong> 2¹² to 2¹⁶</li>
+                <li><strong>Modulus size (q):</strong> Balance security vs. capacity</li>
+                <li><strong>Error distribution:</strong> Discrete Gaussian</li>
+              </ul>
+            </div>
+            <div class="tuning-card">
+              <h4>⚡ Performance Parameters</h4>
+              <ul>
+                <li><strong>Multiplicative depth:</strong> Determines circuit complexity</li>
+                <li><strong>Plaintext modulus:</strong> Affects precision and speed</li>
+                <li><strong>Relinearization:</strong> Keeps ciphertext size manageable</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+  
+        <div class="optimization-tips">
+          <h3>💡 Optimization Strategies</h3>
+          <div class="tips-list">
+            <div class="tip">
+              <h4>🔄 Batching</h4>
+              <p>Pack multiple values into single ciphertext using SIMD operations</p>
+            </div>
+            <div class="tip">
+              <h4>📊 Circuit Optimization</h4>
+              <p>Minimize multiplicative depth through algebraic restructuring</p>
+            </div>
+            <div class="tip">
+              <h4>🎯 Lazy Relinearization</h4>
+              <p>Delay relinearization until necessary to reduce overhead</p>
+            </div>
+            <div class="tip">
+              <h4>⚖️ Parameter Selection</h4>
+              <p>Use automated tools to find optimal security-performance trade-offs</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 10: Applications & Use Cases -->
+      <div *ngIf="currentSection === 10" class="section">
+        <h2>Applications & Use Cases</h2>
+        
+        <div class="concept-box">
+          <h3>Where HE Shines</h3>
+          <p>Homomorphic encryption enables privacy-preserving computation across various domains.</p>
+        </div>
+  
+        <div class="applications-showcase">
+          <h3>🎯 Real-World Applications</h3>
+          <div class="application-cards">
+            <div *ngFor="let app of applications" class="application-card">
+              <h4>{{ app.name }}</h4>
+              <p class="description">{{ app.description }}</p>
+              <div class="example">
+                <strong>Example:</strong> {{ app.example }}
+              </div>
+              <div class="app-details">
+                <span class="complexity" [class]="'complexity-' + app.complexity.toLowerCase().replace(' ', '-')">
+                  {{ app.complexity }} Complexity
+                </span>
+                <div class="schemes">
+                  <span *ngFor="let scheme of app.schemes" class="scheme-tag">{{ scheme }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="use-case-deep-dive">
+          <h3>🔍 Use Case Deep Dive: Privacy-Preserving ML</h3>
+          <div class="ml-pipeline">
+            <div class="pipeline-step">
+              <h4>1. Data Encryption</h4>
+              <p>Client encrypts sensitive features using CKKS</p>
+              <div class="code-example">Enc([age, income, credit_score])</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+              <h4>2. Model Inference</h4>
+              <p>Server computes prediction on encrypted data</p>
+              <div class="code-example">y = w₁·Enc(x₁) + w₂·Enc(x₂) + b</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+              <h4>3. Encrypted Result</h4>
+              <p>Client receives and decrypts prediction</p>
+              <div class="code-example">Dec(Enc(prediction)) = 0.85</div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="industry-adoption">
+          <h3>🏢 Industry Adoption</h3>
+          <div class="adoption-grid">
+            <div class="industry-card">
+              <h4>🏥 Healthcare</h4>
+              <ul>
+                <li>Genomic analysis without exposing DNA data</li>
+                <li>Drug discovery on encrypted patient records</li>
+                <li>Medical image analysis in the cloud</li>
+              </ul>
+            </div>
+            <div class="industry-card">
+              <h4>💰 Financial Services</h4>
+              <ul>
+                <li>Fraud detection on encrypted transactions</li>
+                <li>Risk assessment without data exposure</li>
+                <li>Regulatory compliance with privacy</li>
+              </ul>
+            </div>
+            <div class="industry-card">
+              <h4>🏛️ Government</h4>
+              <ul>
+                <li>Secure electronic voting systems</li>
+                <li>Census data analysis with privacy</li>
+                <li>Intelligence analysis on encrypted data</li>
+              </ul>
+            </div>
+            <div class="industry-card">
+              <h4>☁️ Cloud Computing</h4>
+              <ul>
+                <li>Secure multi-party computation</li>
+                <li>Privacy-preserving analytics</li>
+                <li>Confidential computing platforms</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Section 11: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 11" class="section">
+        <h2>Active Learning & Exercises</h2>
+        
+        <div class="exercises-section">
+          <h3>🎯 Hands-On Exercises</h3>
+          <div class="exercises-grid">
+            <div *ngFor="let exercise of exercises" class="exercise-card">
+              <div class="exercise-header">
+                <h4>{{ exercise.title }}</h4>
+                <span class="difficulty" [class]="'difficulty-' + exercise.difficulty.toLowerCase()">
+                  {{ exercise.difficulty }}
+                </span>
+              </div>
+              <p class="exercise-description">{{ exercise.description }}</p>
+              <div class="exercise-actions">
+                <button 
+                  (click)="toggleExercise(exercise.id)"
+                  [class.completed]="exercise.completed"
+                  class="exercise-toggle">
+                  {{ exercise.completed ? '✓ Completed' : 'Mark Complete' }}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="exercise-progress">
+            <h4>Exercise Progress</h4>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(getCompletedExercises() / exercises.length) * 100"></div>
+            </div>
+            <span>{{ getCompletedExercises() }} of {{ exercises.length }} completed</span>
+          </div>
+        </div>
+  
+        <div class="quiz-section">
+          <h3>📝 Knowledge Check Quiz</h3>
+          <div class="quiz-container">
+            <div class="quiz-progress">
+              Question {{ currentQuiz + 1 }} of {{ quizQuestions.length }}
+            </div>
+            
+            <div class="quiz-question">
+              <h4>{{ quizQuestions[currentQuiz].question }}</h4>
+              <div class="quiz-options">
+                <button 
+                  *ngFor="let option of quizQuestions[currentQuiz].options; let i = index"
+                  (click)="selectAnswer(i)"
+                  [class.selected]="selectedAnswer === i"
+                  [class.correct]="showExplanation && i === quizQuestions[currentQuiz].correct"
+                  [class.incorrect]="showExplanation && i === selectedAnswer && i !== quizQuestions[currentQuiz].correct"
+                  [disabled]="showExplanation"
+                  class="quiz-option">
+                  {{ option }}
+                </button>
+              </div>
+            </div>
+            
+            <div *ngIf="showExplanation" class="quiz-explanation">
+              <h5>Explanation:</h5>
+              <p>{{ quizQuestions[currentQuiz].explanation }}</p>
+            </div>
+            
+            <div class="quiz-actions">
+              <button 
+                *ngIf="!showExplanation" 
+                (click)="submitAnswer()" 
+                [disabled]="selectedAnswer === -1"
+                class="submit-btn">
+                Submit Answer
+              </button>
+              <button 
+                *ngIf="showExplanation && currentQuiz < quizQuestions.length - 1" 
+                (click)="nextQuestion()"
+                class="next-btn">
+                Next Question
+              </button>
+              <button 
+                *ngIf="showExplanation && currentQuiz === quizQuestions.length - 1" 
+                (click)="resetQuiz()"
+                class="reset-btn">
+                Retake Quiz
+              </button>
+            </div>
+            
+            <div *ngIf="currentQuiz === quizQuestions.length - 1 && showExplanation" class="quiz-score">
+              <h4>Quiz Complete!</h4>
+              <p>Your score: {{ quizScore }} / {{ quizQuestions.length }}</p>
+              <p *ngIf="quizScore === quizQuestions.length">🎉 Perfect score! Excellent understanding of homomorphic encryption!</p>
+              <p *ngIf="quizScore >= quizQuestions.length * 0.8 && quizScore < quizQuestions.length">👏 Great job! You have a solid grasp of the concepts.</p>
+              <p *ngIf="quizScore < quizQuestions.length * 0.8">📚 Consider reviewing the material and trying again.</p>
+            </div>
+          </div>
+        </div>
+  
+        <div class="practical-implementations">
+          <h3>💻 Implementation Challenges</h3>
+          <div class="implementation-grid">
+            <div class="implementation-card">
+              <h4>🔢 Paillier Library</h4>
+              <p>Build a complete Paillier implementation with key generation, encryption, and homomorphic addition.</p>
+              <div class="code-snippet">
+                <pre><code>class Paillier:
+      def __init__(self, key_size=1024):
+          self.generate_keys(key_size)
+      
+      def encrypt(self, plaintext):
+          # Your implementation here
+          pass
+      
+      def add(self, c1, c2):
+          # Homomorphic addition
+          return (c1 * c2) % self.n_squared</code></pre>
+              </div>
+            </div>
+            
+            <div class="implementation-card">
+              <h4>🧮 Circuit Evaluator</h4>
+              <p>Create a simple circuit evaluator that tracks noise growth and determines when bootstrapping is needed.</p>
+              <div class="code-snippet">
+                <pre><code>class FHECircuit:
+      def __init__(self, max_noise=100):
+          self.noise_level = 10
+          self.max_noise = max_noise
+      
+      def add(self, a, b):
+          self.noise_level += 2
+          return self.check_noise()
+      
+      def multiply(self, a, b):
+          self.noise_level *= 1.5
+          return self.check_noise()</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+    <!-- Section Navigation -->
+    <div class="section-controls">
+      <button (click)="prevSection()" [disabled]="currentSection === 1" class="nav-btn prev-btn">
+        ← Previous Section
+      </button>
+      <span class="section-indicator">
+        Section {{ currentSection }} of {{ totalSections }}
+      </span>
+      <button (click)="nextSection()" [disabled]="currentSection === totalSections" class="nav-btn next-btn">
+        Next Section →
+      </button>
+    </div>
+  
+  </div>
+  

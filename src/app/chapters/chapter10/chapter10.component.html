@@ -1,0 +1,955 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100">
+  <!-- Header -->
+  <header class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <button
+            (click)="backToDashboard()"
+            class="mr-4 p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">🔐 Chapter 10: Asymmetric-Key Cryptography</h1>
+            <p class="text-sm text-gray-600">Public-Key Cryptographic Systems</p>
+          </div>
+        </div>
+        <div class="text-sm text-gray-600">
+          Section {{ currentSection }} of {{ totalSections }}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-2">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-purple-600 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="(currentSection / totalSections) * 100"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+
+      <!-- Section 1: Introduction to Asymmetric-Key Cryptography -->
+      <div *ngIf="currentSection === 1" class="p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Why Asymmetric-Key Cryptography?</h2>
+
+        <div class="bg-purple-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Asymmetric (public-key) cryptography complements symmetric-key methods by solving the key-distribution problem: you no longer need to share a secret key beforehand. Instead, each user has a public key (widely known) and a private key (kept secret). Messages encrypted with one key can only be decrypted with the other.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Symmetric vs. Asymmetric</h3>
+            <div class="space-y-4">
+              <div class="bg-white p-4 rounded border-l-4 border-blue-500">
+                <h4 class="font-semibold text-gray-900">Symmetric</h4>
+                <p class="text-sm text-gray-600">Same key for encryption/decryption; fast but requires secure key exchange.</p>
+                <div class="flex items-center mt-2">
+                  <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center text-white text-xs">K</div>
+                  <div class="mx-2">↔</div>
+                  <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center text-white text-xs">K</div>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded border-l-4 border-purple-500">
+                <h4 class="font-semibold text-gray-900">Asymmetric</h4>
+                <p class="text-sm text-gray-600">Separate keys; eliminates secure channel requirement at the cost of extra computation.</p>
+                <div class="flex items-center mt-2">
+                  <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center text-white text-xs">Pub</div>
+                  <div class="mx-2">↔</div>
+                  <div class="w-8 h-8 bg-red-500 rounded flex items-center justify-center text-white text-xs">Priv</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Core Advantages</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Enables digital signatures for authentication and non-repudiation</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Supports secure key exchange for large-message encryption using hybrid schemes</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">No need for pre-shared secrets between communicating parties</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                <strong>Trade-off:</strong> Asymmetric cryptography is computationally more expensive than symmetric cryptography, typically 100-1000x slower.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Trapdoor One-Way Functions -->
+      <div *ngIf="currentSection === 2" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">The Mathematical Backbone</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            At the heart of every public-key system is a trapdoor one-way function (TOWF): easy to compute in one direction but infeasible to invert without secret "trapdoor" information. Two canonical examples are integer factorization and discrete logarithms.
+          </p>
+        </div>
+
+        <div class="space-y-6">
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">One-Way Function (OWF)</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div class="bg-green-50 p-4 rounded">
+                  <h4 class="font-semibold text-green-800 mb-2">Easy Direction</h4>
+                  <div class="font-mono text-sm">y = f(x)</div>
+                  <p class="text-sm text-green-700 mt-1">Computable in polynomial time</p>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded">
+                  <h4 class="font-semibold text-red-800 mb-2">Hard Direction</h4>
+                  <div class="font-mono text-sm">x = f⁻¹(y)</div>
+                  <p class="text-sm text-red-700 mt-1">Computationally infeasible</p>
+                </div>
+              </div>
+
+              <div class="bg-purple-50 p-4 rounded">
+                <h4 class="font-semibold text-purple-800 mb-2">Trapdoor</h4>
+                <div class="font-mono text-sm mb-2">f⁻¹(y, trapdoor) is easy</div>
+                <p class="text-sm text-purple-700">Additional secret data enabling efficient inversion</p>
+                <div class="mt-3 flex items-center">
+                  <div class="w-4 h-4 bg-purple-600 rounded mr-2"></div>
+                  <span class="text-xs text-purple-600">Secret Information</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-orange-50 rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Example 1: Factorization</h3>
+              <div class="space-y-3">
+                <div class="bg-white p-3 rounded border">
+                  <div class="font-mono text-sm">n = p × q</div>
+                  <p class="text-xs text-gray-600 mt-1">Easy: Computing n from (p,q)</p>
+                </div>
+                <div class="bg-white p-3 rounded border">
+                  <div class="font-mono text-sm">p, q = factor(n)</div>
+                  <p class="text-xs text-gray-600 mt-1">Hard: Factoring n without (p,q)</p>
+                </div>
+                <div class="text-sm text-orange-700">
+                  <strong>Trapdoor:</strong> Knowledge of p and q
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-teal-50 rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">Example 2: Discrete Logarithm</h3>
+              <div class="space-y-3">
+                <div class="bg-white p-3 rounded border">
+                  <div class="font-mono text-sm">y = x^k mod n</div>
+                  <p class="text-xs text-gray-600 mt-1">Easy: Modular exponentiation</p>
+                </div>
+                <div class="bg-white p-3 rounded border">
+                  <div class="font-mono text-sm">k = log_x(y) mod n</div>
+                  <p class="text-xs text-gray-600 mt-1">Hard: Discrete logarithm problem</p>
+                </div>
+                <div class="text-sm text-teal-700">
+                  <strong>Trapdoor:</strong> Knowledge of k'
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: The RSA Cryptosystem -->
+      <div *ngIf="currentSection === 3" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Generation, Encryption & Decryption</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            RSA uses the difficulty of factoring large semiprimes. Each user:
+          </p>
+          <ol class="list-decimal list-inside space-y-2 text-gray-700">
+            <li>Selects primes p, q, computes n = p×q and φ(n) = (p-1)(q-1)</li>
+            <li>Chooses public exponent e with gcd(e, φ(n)) = 1</li>
+            <li>Computes private exponent d such that e·d ≡ 1 (mod φ(n))</li>
+          </ol>
+          <p class="text-gray-700 mt-4">
+            The public key is (e, n); the private key is (d, n).
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">RSA Formulas</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-green-50 p-4 rounded">
+              <h4 class="font-semibold text-green-800 mb-2">Encryption</h4>
+              <div class="font-mono text-lg">C = P^e mod n</div>
+            </div>
+            <div class="bg-blue-50 p-4 rounded">
+              <h4 class="font-semibold text-blue-800 mb-2">Decryption</h4>
+              <div class="font-mono text-lg">P = C^d mod n</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive RSA Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime p</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rsaP"
+                  (ngModelChange)="onRSAParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="2"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime q</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rsaQ"
+                  (ngModelChange)="onRSAParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="2"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Public exponent e</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rsaE"
+                  (ngModelChange)="onRSAParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="3"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Plaintext P</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rsaPlaintext"
+                  (ngModelChange)="calculateRSAEncryption()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div *ngIf="rsaKeyPair" class="bg-gray-50 p-4 rounded">
+                <h4 class="font-semibold text-gray-900 mb-2">Generated Keys</h4>
+                <div class="text-sm space-y-1">
+                  <div>n = {{ rsaKeyPair.publicKey.n }}</div>
+                  <div>φ(n) = {{ rsaKeyPair.phi }}</div>
+                  <div>Public Key: ({{ rsaKeyPair.publicKey.e }}, {{ rsaKeyPair.publicKey.n }})</div>
+                  <div>Private Key: ({{ rsaKeyPair.privateKey.d }}, {{ rsaKeyPair.privateKey.n }})</div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Encryption Result</h4>
+                <div class="font-mono">C = {{ rsaCiphertext }}</div>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Decryption Result</h4>
+                <div class="font-mono">P = {{ rsaDecrypted }}</div>
+                <div
+                  class="text-xs mt-1"
+                  [class.text-green-600]="rsaDecrypted === rsaPlaintext"
+                  [class.text-red-600]="rsaDecrypted !== rsaPlaintext"
+                >
+                  {{ rsaDecrypted === rsaPlaintext ? '✓ Correct' : '✗ Error' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Example</h3>
+          <div class="text-sm space-y-2">
+            <div>Let p = 7, q = 11. Then n = 77, φ(n) = 60.</div>
+            <div>Choose e = 13; compute d = 37 since 13 × 37 ≡ 1 (mod 60).</div>
+            <div>Encrypt P = 5: C = 5^13 mod 77 = 26.</div>
+            <div>Decrypt C = 26: P = 26^37 mod 77 = 5.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Padding & Practical Considerations -->
+      <div *ngIf="currentSection === 4" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Optimal Asymmetric Encryption Padding (OAEP)</h2>
+
+        <div class="bg-red-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            Raw RSA is vulnerable to deterministic-ciphertext and small-message attacks. OAEP mixes the plaintext with random padding before exponentiation, ensuring each encryption is unique and thwarting chosen-ciphertext exploits.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">OAEP Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Original Plaintext</label>
+                <input
+                  type="text"
+                  [(ngModel)]="oaepPlaintext"
+                  (ngModelChange)="onOAEPParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Random Seed</label>
+                <input
+                  type="number"
+                  [(ngModel)]="oaepRandomSeed"
+                  (ngModelChange)="onOAEPParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+            </div>
+
+            <div class="bg-purple-50 p-4 rounded">
+              <h4 class="font-semibold text-purple-800 mb-2">Padded Result</h4>
+              <div class="font-mono text-sm break-all">{{ oaepPadded }}</div>
+              <p class="text-xs text-purple-700 mt-2">
+                Different seeds produce different ciphertexts for the same plaintext
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">OAEP Benefits</h3>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Prevents deterministic encryption attacks</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Thwarts chosen-ciphertext attacks</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Ensures semantic security</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Provides integrity checking</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-orange-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Error Handling</h3>
+            <p class="text-gray-700 mb-3">
+              Unlike many symmetric algorithms, any bit error in an RSA ciphertext typically breaks decryption entirely.
+            </p>
+            <div class="bg-white p-3 rounded border text-sm">
+              <div class="text-orange-600">⚠ Single bit error → Complete failure</div>
+              <div class="text-gray-600 mt-1">Solution: Error-correcting codes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: The Rabin Cryptosystem -->
+      <div *ngIf="currentSection === 5" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Squaring Mod n</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            Rabin's scheme encrypts by squaring: C = P² mod n. Decryption requires computing modular square roots, yielding four candidates—only one is the original plaintext. Its security is provably equivalent to integer factorization.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Rabin Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime p</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rabinP"
+                  (ngModelChange)="onRabinParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime q</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rabinQ"
+                  (ngModelChange)="onRabinParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Plaintext P</label>
+                <input
+                  type="number"
+                  [(ngModel)]="rabinPlaintext"
+                  (ngModelChange)="calculateRabinEncryption()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-gray-50 p-4 rounded">
+                <h4 class="font-semibold text-gray-900 mb-2">Parameters</h4>
+                <div class="text-sm">n = p × q = {{ rabinN }}</div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Encryption</h4>
+                <div class="font-mono">C = P² mod n = {{ rabinCiphertext }}</div>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Square Roots</h4>
+                <div class="text-sm">
+                  <div>Four possible roots:</div>
+                  <div class="font-mono mt-1">{{ rabinRoots.join(', ') }}</div>
+                  <div class="text-xs text-blue-700 mt-1">
+                    Original plaintext: {{ rabinPlaintext }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Worked Example</h3>
+          <div class="text-sm space-y-2">
+            <div>With p = 23, q = 7, n = 161, encrypt P = 24:</div>
+            <div ngNonBindable>C = 24² mod 161 = 93</div>
+            <div ngNonBindable>Decryption produces roots {{'{'}}116, 24, 137, 45{{'}'}}</div>
+            <div ngNonBindable>The correct P = 24 is selected via padding or redundancy</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: ElGamal Cryptosystem -->
+      <div *ngIf="currentSection === 6" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Discrete Logarithm-Based Encryption</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            ElGamal operates in a multiplicative group modulo a prime p. The public key is (p, g, h = g^x), where x is private. Encryption of P yields a pair (g^k, h^k·P), randomized by fresh k. Decryption uses the private exponent x to recover P.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive ElGamal Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prime p</label>
+                <input
+                  type="number"
+                  [(ngModel)]="elgamalP"
+                  (ngModelChange)="onElGamalParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Generator g</label>
+                <input
+                  type="number"
+                  [(ngModel)]="elgamalG"
+                  (ngModelChange)="onElGamalParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Private key x</label>
+                <input
+                  type="number"
+                  [(ngModel)]="elgamalX"
+                  (ngModelChange)="onElGamalParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Random k</label>
+                <input
+                  type="number"
+                  [(ngModel)]="elgamalK"
+                  (ngModelChange)="calculateElGamalEncryption()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Plaintext P</label>
+                <input
+                  type="number"
+                  [(ngModel)]="elgamalPlaintext"
+                  (ngModelChange)="calculateElGamalEncryption()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-gray-50 p-4 rounded">
+                <h4 class="font-semibold text-gray-900 mb-2">Public Key</h4>
+                <div class="text-sm">
+                  <div>p = {{ elgamalP }}</div>
+                  <div>g = {{ elgamalG }}</div>
+                  <div>h = g^x mod p = {{ elgamalH }}</div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Ciphertext</h4>
+                <div class="text-sm">
+                  <div>C₁ = g^k mod p = {{ elgamalC1 }}</div>
+                  <div>C₂ = h^k·P mod p = {{ elgamalC2 }}</div>
+                </div>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Decryption</h4>
+                <div class="text-sm">
+                  <div>P = C₂ · (C₁^x)⁻¹ mod p</div>
+                  <div class="font-mono mt-1">P = {{ elgamalDecrypted }}</div>
+                  <div class="text-xs mt-1" [class.text-green-600]="elgamalDecrypted === elgamalPlaintext" [class.text-red-600]="elgamalDecrypted !== elgamalPlaintext">
+                    {{ elgamalDecrypted === elgamalPlaintext ? '✓ Correct' : '✗ Error' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">ElGamal Properties</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-semibold text-purple-800 mb-2">Advantages</h4>
+              <ul class="text-sm space-y-1">
+                <li>• Probabilistic encryption</li>
+                <li>• Semantic security</li>
+                <li>• Homomorphic properties</li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="font-semibold text-purple-800 mb-2">Disadvantages</h4>
+              <ul class="text-sm space-y-1">
+                <li>• Ciphertext expansion (2×)</li>
+                <li>• Requires fresh randomness</li>
+                <li>• Slower than RSA</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: Elliptic Curve Cryptosystems (ECC) -->
+      <div *ngIf="currentSection === 7" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Smaller Keys, Equivalent Security</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            Elliptic-curve schemes replace integer groups with points on a curve over a finite field. The elliptic-curve discrete logarithm problem yields equivalent security with much shorter keys (e.g., 256-bit ECC ≃ 3072-bit RSA).
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Key-Size Comparison</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Security Level</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Symmetric (bits)</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RSA Modulus (bits)</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ECC Field (bits)</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let level of securityLevels">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ level.level }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ level.symmetric }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ level.rsa }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">{{ level.ecc }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">ECC Advantages</h3>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Smaller key sizes</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Faster operations</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Lower bandwidth</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">✓</span>
+                <span>Less storage</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Common Curves</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• P-256 (secp256r1)</li>
+              <li>• P-384 (secp384r1)</li>
+              <li>• P-521 (secp521r1)</li>
+              <li>• Curve25519</li>
+              <li>• Ed25519</li>
+            </ul>
+          </div>
+
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Applications</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• TLS/SSL certificates</li>
+              <li>• Bitcoin signatures</li>
+              <li>• Mobile devices</li>
+              <li>• IoT security</li>
+              <li>• Smart cards</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8: Applications & Hybrid Schemes -->
+      <div *ngIf="currentSection === 8" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Digital Signatures & Hybrid Schemes</h2>
+
+        <div class="space-y-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Digital Signatures</h3>
+            <p class="text-gray-700 mb-4">
+              RSA, ElGamal, and ECC support signing by reversing roles: the private key "encrypts" a hash, and anyone verifies with the public key. Signatures provide authentication, integrity, and non-repudiation.
+            </p>
+
+            <div class="bg-white rounded-lg border p-4">
+              <h4 class="font-semibold text-gray-900 mb-3">Digital Signature Demo</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="signatureMessage"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <button
+                    (click)="generateDigitalSignature()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                  >
+                    Generate Signature
+                  </button>
+                  <button
+                    (click)="verifyDigitalSignature()"
+                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                  >
+                    Verify Signature
+                  </button>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="bg-gray-50 p-3 rounded">
+                    <div class="text-sm">
+                      <div>Hash: {{ signatureHash }}</div>
+                      <div>Signature: {{ digitalSignature }}</div>
+                      <div class="mt-2" [class.text-green-600]="signatureVerified" [class.text-red-600]="!signatureVerified">
+                        {{ signatureVerified ? '✓ Signature Valid' : '✗ Signature Invalid' }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Digital Envelope</h3>
+            <p class="text-gray-700 mb-4">
+              To encrypt long messages, generate a random symmetric key K, encrypt data with K, then wrap K via RSA (or ECC). The result is a compact digital envelope combining speed and secure key transport.
+            </p>
+
+            <div class="bg-white rounded-lg border p-4">
+              <h4 class="font-semibold text-gray-900 mb-3">Hybrid Encryption Process</h4>
+              <div class="grid md:grid-cols-3 gap-4">
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">1</div>
+                  <h5 class="font-semibold text-gray-900">Generate</h5>
+                  <p class="text-sm text-gray-600">Random symmetric key K</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">2</div>
+                  <h5 class="font-semibold text-gray-900">Encrypt</h5>
+                  <p class="text-sm text-gray-600">Data with K (fast)</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">3</div>
+                  <h5 class="font-semibold text-gray-900">Wrap</h5>
+                  <p class="text-sm text-gray-600">K with RSA/ECC</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Cryptosystem Comparison</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">System</th>
+                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Size</th>
+                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Encryption</th>
+                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Decryption</th>
+                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Security Basis</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr *ngFor="let system of cryptosystems">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ system.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ system.keySize }} bits</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ system.encryptionSpeed }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ system.decryptionSpeed }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ system.securityBasis }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 9: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 9" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning & Exercises</h2>
+
+        <div class="space-y-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 1: Implement RSA Key Pair</h3>
+            <p class="text-gray-700 mb-4">
+              Write code to generate 512-bit primes, compute (e,d), and demonstrate encrypt/decrypt on short messages.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Implementation Steps</h4>
+              <ol class="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                <li>Generate two large random primes p and q</li>
+                <li>Compute n = p × q and φ(n) = (p-1)(q-1)</li>
+                <li>Choose e such that gcd(e, φ(n)) = 1</li>
+                <li>Compute d = e⁻¹ mod φ(n)</li>
+                <li>Test encryption/decryption with sample messages</li>
+                <li>Verify that P = (P^e mod n)^d mod n</li>
+              </ol>
+            </div>
+
+            <button
+              (click)="simulatePerformance()"
+              class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Simulate Performance Test
+            </button>
+
+            <div *ngIf="performanceResults.rsa.keyGen > 0" class="mt-4 bg-gray-50 p-4 rounded">
+              <h4 class="font-semibold text-gray-900 mb-2">Performance Results (ms)</h4>
+              <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h5 class="font-semibold text-blue-800">RSA (2048-bit)</h5>
+                  <div>Key Generation: {{ performanceResults.rsa.keyGen.toFixed(1) }}</div>
+                  <div>Encryption: {{ performanceResults.rsa.encrypt.toFixed(1) }}</div>
+                  <div>Decryption: {{ performanceResults.rsa.decrypt.toFixed(1) }}</div>
+                </div>
+                <div>
+                  <h5 class="font-semibold text-green-800">ECC (256-bit)</h5>
+                  <div>Key Generation: {{ performanceResults.ecc.keyGen.toFixed(1) }}</div>
+                  <div>Encryption: {{ performanceResults.ecc.encrypt.toFixed(1) }}</div>
+                  <div>Decryption: {{ performanceResults.ecc.decrypt.toFixed(1) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 2: OAEP Visualization</h3>
+            <p class="text-gray-700 mb-4">
+              Simulate OAEP padding on a 64-bit block; show how different random seeds yield different ciphertexts for the same plaintext.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Demonstration</h4>
+              <div class="space-y-2 text-sm">
+                <div ngNonBindable>Same plaintext: "{{ oaepPlaintext }}"</div>
+                <div>Seed 1: {{ oaepPadded }}</div>
+                <div>Seed 2: {{ oaepPlaintext }}_PAD_{{ (oaepRandomSeed + 1000).toString() }}_{{ ran }}</div>
+                <div class="text-gray-600 mt-2">Notice how different seeds produce different padded outputs</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 3: Rabin Decryption Filter</h3>
+            <p class="text-gray-700 mb-4">
+              Decrypt a Rabin-encrypted value and implement logic to select the correct plaintext via checksum or known prefix.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Selection Strategies</h4>
+              <ul class="space-y-1 text-sm text-gray-600">
+                <li>• Add redundancy to plaintext (e.g., repeat last byte)</li>
+                <li>• Use known message format or header</li>
+                <li>• Implement checksum verification</li>
+                <li>• Apply padding with recognizable pattern</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 4: Elliptic-Curve Demo</h3>
+            <p class="text-gray-700 mb-4">
+              Use a library (e.g., Python's ec module) to generate a curve key pair, sign a message, and verify the signature.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Python Example</h4>
+              <pre ngNonBindable class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-x-auto">
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+
+# Generate key pair
+private_key = ec.generate_private_key(ec.SECP256R1())
+public_key = private_key.public_key()
+
+# Sign message
+message = b"Hello, ECC!"
+signature = private_key.sign(message, ec.ECDSA(hashes.SHA256()))
+
+# Verify signature
+try:
+    public_key.verify(signature, message, ec.ECDSA(hashes.SHA256()))
+    print("Signature verified!")
+except:
+    print("Signature verification failed!")
+              </pre>
+            </div>
+          </div>
+
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exercise 5: Performance Comparison</h3>
+            <p class="text-gray-700 mb-4">
+              Benchmark RSA vs. ECC key generation, signing, and encryption for equivalent security parameters.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Metrics to Measure</h4>
+              <ul class="space-y-1 text-sm text-gray-600">
+                <li>• Key generation time</li>
+                <li>• Signature generation speed</li>
+                <li>• Signature verification speed</li>
+                <li>• Encryption/decryption throughput</li>
+                <li>• Memory usage</li>
+                <li>• Key and signature sizes</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+        <button
+          (click)="previousSection()"
+          [disabled]="currentSection === 1"
+          class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="flex space-x-2">
+          <button
+            *ngFor="let section of [].constructor(totalSections); let i = index"
+            (click)="goToSection(i + 1)"
+            class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
+            [class.bg-purple-600]="currentSection === i + 1"
+            [class.text-white]="currentSection === i + 1"
+            [class.bg-gray-200]="currentSection !== i + 1"
+            [class.text-gray-700]="currentSection !== i + 1"
+            [class.hover:bg-gray-300]="currentSection !== i + 1"
+          >
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <button
+          (click)="nextSection()"
+          [disabled]="currentSection === totalSections"
+          class="flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>

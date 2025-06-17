@@ -1,0 +1,724 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100">
+  <!-- Header -->
+  <header class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <button
+            (click)="backToDashboard()"
+            class="mr-4 p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">🔐 Chapter 6: The Data Encryption Standard (DES)</h1>
+            <p class="text-sm text-gray-600">Historical Foundation of Modern Cryptography</p>
+          </div>
+        </div>
+        <div class="text-sm text-gray-600">
+          Section {{ currentSection }} of {{ totalSections }}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-2">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-purple-600 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="(currentSection / totalSections) * 100"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+
+      <!-- Section 1: Origins of DES -->
+      <div *ngIf="currentSection === 1" class="p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Origins of DES</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 text-lg leading-relaxed">
+            DES began as Lucifer, developed at IBM under Horst Feistel in the 1970s. In 1973, the U.S. National Bureau of Standards (now NIST) issued a call for a public block‐cipher standard. IBM's revised Lucifer—with input from the NSA—was selected and published as the Federal Information Processing Standard (FIPS) 46 in March 1975.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Timeline</h3>
+          <div class="space-y-4">
+            <div *ngFor="let event of timelineEvents" class="flex items-start">
+              <div class="flex-shrink-0 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-sm font-bold text-purple-600">{{ event.year }}</span>
+              </div>
+              <div class="flex-1 pt-3">
+                <p class="text-gray-700">{{ event.event }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: DES at a Glance -->
+      <div *ngIf="currentSection === 2" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Characteristics</h2>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">DES Specifications</h3>
+            <dl class="space-y-3">
+              <div *ngFor="let char of desCharacteristics">
+                <dt class="text-sm font-medium text-gray-600">{{ char.property }}</dt>
+                <dd class="text-lg text-gray-900 font-mono">{{ char.value }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Security Status</h3>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">56-bit key too small for modern attacks</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Officially withdrawn in 2005</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Paved way for modern cryptanalysis</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Enabled hardware acceleration</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+          <p class="text-gray-700">
+            Though once ubiquitous, DES's 56-bit key is now too small to resist modern brute-force attacks—hence its retirement and replacement by AES. However, DES paved the way for rigorous cryptanalytic study and hardware acceleration of block ciphers.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 3: High-Level Structure -->
+      <div *ngIf="currentSection === 3" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Initial & Final Permutations</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            DES begins and ends with fixed P-boxes (permutation boxes) that reorder bits but add no cryptographic strength. They serve implementation convenience on 1970s hardware.
+          </p>
+          <div class="bg-blue-100 border-l-4 border-blue-500 p-4">
+            <p class="text-blue-800 font-medium">
+              Note: Initial and final permutations are inverses of each other and can be combined out without affecting security.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Sixteen Feistel Rounds</h3>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-3">Round Structure</h4>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                  <span class="text-green-600 mr-2">•</span>
+                  <span>Split 64-bit block into L (left) and R (right) halves</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-600 mr-2">•</span>
+                  <span>For round i (1≤i≤16):</span>
+                </li>
+                <li class="ml-6 font-mono text-sm">
+                  <div>Lᵢ = Rᵢ₋₁</div>
+                  <div>Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)</div>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-600 mr-2">•</span>
+                  <span>After 16 rounds, swap halves and apply final permutation</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="font-semibold text-gray-900 mb-3">Interactive Demo</h4>
+              <button
+                (click)="toggleFeistelAnimation()"
+                class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors mb-4"
+              >
+                {{ showFeistelAnimation ? 'Hide' : 'Show' }} Feistel Animation
+              </button>
+
+              <div *ngIf="showFeistelAnimation" class="bg-white p-4 rounded border">
+                <div class="text-center">
+                  <h5 class="font-semibold mb-2">Round {{ currentRound }}</h5>
+                  <div class="flex justify-center items-center mb-4">
+                    <div class="text-center mr-4">
+                      <div class="text-sm text-gray-600">L{{ currentRound-1 }}</div>
+                      <div class="w-20 h-12 bg-blue-200 flex items-center justify-center font-mono text-xs">
+                        {{ leftHalf }}
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-sm text-gray-600">R{{ currentRound-1 }}</div>
+                      <div class="w-20 h-12 bg-green-200 flex items-center justify-center font-mono text-xs">
+                        {{ rightHalf }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="space-x-2">
+                    <button
+                      (click)="simulateFeistelRound()"
+                      class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                    >
+                      Next Round
+                    </button>
+                    <button
+                      (click)="resetFeistelDemo()"
+                      class="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-green-100 border-l-4 border-green-500 p-4">
+            <p class="text-green-800">
+              <strong>Feistel's genius:</strong> Encryption and decryption share the same structure—only the round-key order is reversed.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: The DES Round Function (F) -->
+      <div *ngIf="currentSection === 4" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">The DES Round Function (F)</h2>
+
+        <div class="space-y-6">
+          <!-- Step 1: Expansion -->
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Step 1: Expansion (E-Box)</h3>
+            <p class="text-gray-700 mb-4">
+              The 32-bit Rᵢ₋₁ is expanded to 48 bits by duplicating and reordering certain bits, enabling mixing with the 48-bit subkey.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <div class="font-mono text-sm">
+                <div class="mb-2">32-bit input: <span class="bg-blue-200 px-2 py-1 rounded">{{ rightHalf }}...</span></div>
+                <div>48-bit output: <span class="bg-blue-300 px-2 py-1 rounded">{{ rightHalf }}{{ rightHalf.substring(0, 4) }}...</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Key Mixing -->
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Step 2: Key Mixing (XOR)</h3>
+            <ul class="space-y-2 text-gray-700 mb-4">
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">•</span>
+                <span>XOR the expanded data with the round key Kᵢ</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-600 mr-2">•</span>
+                <span>Simple, efficient, and reversible: (E(R)⊕K)⊕K = E(R)</span>
+              </li>
+            </ul>
+            <div class="bg-white p-4 rounded border">
+              <div class="font-mono text-sm">
+                <div class="mb-1">Expanded data: <span class="bg-green-200 px-2 py-1 rounded">{{ roundKey }}</span></div>
+                <div class="mb-1">Round key Kᵢ: <span class="bg-yellow-200 px-2 py-1 rounded">{{ roundKey }}</span></div>
+                <div>XOR result: <span class="bg-green-300 px-2 py-1 rounded">000000000000</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: S-Boxes -->
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Step 3: Substitution (S-Boxes)</h3>
+            <p class="text-gray-700 mb-4">
+              DES uses eight 6×4 S-boxes that introduce nonlinearity ("confusion"). Each 6-bit chunk indexes row/column in its S-box table, producing a 4-bit output.
+            </p>
+
+            <div class="bg-white p-4 rounded border mb-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Mini-Example</h4>
+              <div class="font-mono text-sm bg-gray-100 p-3 rounded">
+                Input to S-Box 1: 100011 → row = 11 (3), col = 0001 (1) → output 1100
+              </div>
+            </div>
+
+            <button
+              (click)="toggleSBoxDemo()"
+              class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors mb-4"
+            >
+              {{ showSBoxDemo ? 'Hide' : 'Show' }} S-Box Demo
+            </button>
+
+            <div *ngIf="showSBoxDemo" class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-3">Interactive S-Box Lookup</h4>
+              <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">6-bit Input</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="sBoxInput"
+                    (ngModelChange)="calculateSBoxOutput()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                    maxlength="6"
+                    placeholder="100011"
+                  >
+                  <p class="text-xs text-gray-500 mt-1">First and last bits = row, middle 4 bits = column</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">4-bit Output</label>
+                  <div class="px-3 py-2 border border-gray-300 rounded-md bg-gray-50 font-mono">
+                    {{ sBoxOutput }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-sm text-gray-600">
+                <p><strong>Row calculation:</strong> {{ sBoxInput[0] || '?' }}{{ sBoxInput[5] || '?' }} (binary) = {{ sBoxInput.length >= 6 ? getRowFromSBoxInput() : '?' }} (decimal)</p>
+                <p><strong>Column calculation:</strong> {{ sBoxInput.substring(1, 5) || '????' }} (binary) = {{ sBoxInput.length >= 5 ? getColFromSBoxInput() : '?' }} (decimal)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Permutation -->
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Step 4: Permutation (P-Box)</h3>
+            <p class="text-gray-700">
+              Finally, the 32-bit concatenation of all S-box outputs is permuted to spread bits across future rounds ("diffusion").
+            </p>
+            <div class="bg-white p-4 rounded border mt-4">
+              <div class="font-mono text-sm">
+                <div class="mb-2">S-box outputs: <span class="bg-yellow-200 px-2 py-1 rounded">11001010</span></div>
+                <div>After P-box: <span class="bg-yellow-300 px-2 py-1 rounded">01010011</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Key Schedule -->
+      <div *ngIf="currentSection === 5" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Generating 16 Round Keys</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            From the 64-bit master key, DES discards every 8th bit (parity) to form a 56-bit key, then applies Permuted Choice 1 (PC-1) to split it into two 28-bit halves.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Key Schedule Process</h3>
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <span class="text-blue-600 mr-2">•</span>
+              <span><strong>Left shifts:</strong> Each half is circularly shifted by 1 or 2 bits according to the rotation schedule</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-600 mr-2">•</span>
+              <span><strong>Permuted Choice 2 (PC-2):</strong> Combine halves and select 48 bits → round key Kᵢ</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-blue-600 mr-2">•</span>
+              <span><strong>Repeat:</strong> For all 16 rounds, ensuring each subkey differs and maximizes avalanche</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Key Schedule Demo</h3>
+          <div class="flex items-center gap-4 mb-4">
+            <button
+              (click)="toggleKeyScheduleAnimation()"
+              class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+            >
+              {{ showKeyScheduleAnimation ? 'Hide' : 'Show' }} Key Schedule
+            </button>
+            <button
+              (click)="nextKeyScheduleStep()"
+              class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Next Step
+            </button>
+            <button
+              (click)="resetKeySchedule()"
+              class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+            >
+              Reset
+            </button>
+          </div>
+
+          <div *ngIf="showKeyScheduleAnimation" class="bg-white p-4 rounded border">
+            <h4 class="font-semibold text-gray-900 mb-2">Step {{ currentKeyScheduleStep + 1 }}: {{ keyScheduleSteps[currentKeyScheduleStep] }}</h4>
+            <div class="font-mono text-xs bg-gray-100 p-3 rounded overflow-x-auto">
+              <div *ngIf="currentKeyScheduleStep === 0">
+                64-bit key: {{ masterKey }}
+              </div>
+              <div *ngIf="currentKeyScheduleStep === 1">
+                56-bit key: {{ masterKey.substring(0, 56) }}
+              </div>
+              <div *ngIf="currentKeyScheduleStep === 2">
+                After PC-1: {{ masterKey.substring(0, 56) }}
+              </div>
+              <div *ngIf="currentKeyScheduleStep === 3">
+                C₀: {{ masterKey.substring(0, 28) }}<br>
+                D₀: {{ masterKey.substring(28, 56) }}
+              </div>
+              <div *ngIf="currentKeyScheduleStep === 4">
+                Round key K₁: {{ masterKey.substring(0, 48) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-red-50 border-l-4 border-red-400 p-4">
+          <p class="text-red-800">
+            <strong>Weak Keys:</strong> A tiny set of keys produce identical subkeys every round. Their probability is negligible (≈ 10⁻¹⁵) but worth noting.
+          </p>
+        </div>
+      </div>
+
+      <!-- Section 6: Security Analysis -->
+      <div *ngIf="currentSection === 6" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Avalanche & Completeness</h2>
+
+        <div class="bg-green-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            DES exhibits a strong avalanche effect: flipping one plaintext bit changes ~50 percent of ciphertext bits over 16 rounds. Its completeness ensures every ciphertext bit depends on many plaintext bits.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Design Criteria</h3>
+            <ul class="space-y-3 text-gray-700">
+              <li class="flex items-start">
+                <span class="text-blue-600 mr-2">•</span>
+                <span><strong>S-Box Design:</strong> Chosen to resist differential and linear cryptanalysis</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-blue-600 mr-2">•</span>
+                <span><strong>Round Count:</strong> 16 rounds balance security vs. performance</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-blue-600 mr-2">•</span>
+                <span><strong>Avalanche Effect:</strong> Small input changes cause large output changes</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Weaknesses</h3>
+            <ul class="space-y-3 text-gray-700">
+              <li class="flex items-start">
+                <span class="text-red-600 mr-2">•</span>
+                <span><strong>Key Size:</strong> 56 bits is too small; brute forcing took under a week by 1998</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-600 mr-2">•</span>
+                <span><strong>Meet-in-the-Middle:</strong> Attacks against double DES cut complexity to ~2¹¹²</span>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-600 mr-2">•</span>
+                <span><strong>Block Size:</strong> 64-bit blocks vulnerable to birthday attacks</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: Beyond Single DES -->
+      <div *ngIf="currentSection === 7" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Double DES (2DES) & Triple DES (3DES)</h2>
+
+        <div class="space-y-6">
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Double DES (2DES)</h3>
+            <p class="text-gray-700 mb-4">
+              Encrypting twice with independent keys yields only a modest security boost due to the meet-in-the-middle attack, reducing effective strength to ~2¹¹² operations.
+            </p>
+
+            <button
+              (click)="demonstrateMeetInMiddle()"
+              class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors mb-4"
+            >
+              Demonstrate Meet-in-the-Middle
+            </button>
+
+            <div *ngIf="showMeetInMiddle" class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Meet-in-the-Middle Attack</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="text-sm font-medium text-gray-700 mb-2">Forward Encryption</h5>
+                  <div class="space-y-1 text-xs font-mono">
+                    <div *ngFor="let val of intermediateValues.slice(0, 3)">{{ val }}</div>
+                  </div>
+                </div>
+                <div>
+                  <h5 class="text-sm font-medium text-gray-700 mb-2">Backward Decryption</h5>
+                  <div class="space-y-1 text-xs font-mono">
+                    <div *ngFor="let val of intermediateValues.slice(3)" [class.bg-yellow-200]="val.includes('A1B2C3D4')">
+                      {{ val }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 mt-2">
+                <strong>Match found!</strong> When intermediate values match, we've found the key pair.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Triple DES (3DES)</h3>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-900 mb-2">E-DE Mode</h4>
+                <div class="font-mono text-sm mb-2">
+                  C = E<sub>K1</sub>[D<sub>K2</sub>[E<sub>K1</sub>(P)]]
+                </div>
+                <p class="text-sm text-gray-600">112-bit security (two keys)</p>
+              </div>
+
+              <div class="bg-white p-4 rounded border">
+                <h4 class="font-semibold text-gray-900 mb-2">Three-Key Variant</h4>
+                <div class="font-mono text-sm mb-2">
+                  C = E<sub>K3</sub>[D<sub>K2</sub>[E<sub>K1</sub>(P)]]
+                </div>
+                <p class="text-sm text-gray-600">168-bit security (three keys)</p>
+              </div>
+            </div>
+
+            <p class="text-gray-700">
+              3DES remained a standard until AES adoption; it's now deprecated for new applications but persists for backward compatibility.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8: Practical Considerations & Legacy -->
+      <div *ngIf="currentSection === 8" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Hardware vs. Software Performance</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700">
+            DES's simple operations (bit-shifts, XOR, lookup tables) allowed extremely fast hardware implementations in the 1980s. In software, modern ciphers like AES outperform DES by design.
+          </p>
+        </div>
+
+        <div class="overflow-x-auto mb-6">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cipher</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Key Size</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Block Size</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Speed</th>
+                <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Security</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let perf of performanceData">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ perf.cipher }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ perf.keySize }} bits</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ perf.blockSize }} bits</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ perf.speed }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <span
+                    class="px-2 py-1 text-xs font-medium rounded-full"
+                    [class.bg-red-100]="perf.security === 'Broken'"
+                    [class.text-red-800]="perf.security === 'Broken'"
+                    [class.bg-yellow-100]="perf.security === 'Deprecated'"
+                    [class.text-yellow-800]="perf.security === 'Deprecated'"
+                    [class.bg-green-100]="perf.security === 'Secure'"
+                    [class.text-green-800]="perf.security === 'Secure'"
+                  >
+                    {{ perf.security }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">Modern Alternatives</h3>
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <span class="text-green-600 mr-2">•</span>
+              <span><strong>AES (Rijndael):</strong> 128-bit block, 128/192/256-bit keys, robust against known attacks</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-600 mr-2">•</span>
+              <span><strong>Lightweight Ciphers:</strong> e.g., PRESENT, SIMON/SPECK for IoT</span>
+            </li>
+            <li class="flex items-start">
+              <span class="text-green-600 mr-2">•</span>
+              <span><strong>Authenticated Encryption:</strong> GCM, ChaCha20-Poly1305 combine confidentiality & integrity</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 9: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 9" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning & Exercises</h2>
+
+        <div class="space-y-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Task 1: Implement a Mini Feistel Cipher</h3>
+            <p class="text-gray-700 mb-4">
+              Write a Python script for a 4-round Feistel network using simple XOR round functions. Verify that decryption inverts encryption.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Python Template</h4>
+              <pre class="bg-gray-900 text-green-400 p-4 rounded text-sm overflow-x-auto">
+def feistel_round(left, right, round_key):
+    """Perform one round of Feistel encryption"""
+    # F function: simple XOR for demonstration
+    f_output = right ^ round_key
+    new_left = right
+    new_right = left ^ f_output
+    return new_left, new_right
+
+def feistel_encrypt(plaintext, keys):
+    """Encrypt using 4-round Feistel network"""
+    left = (plaintext >> 16) & 0xFFFF
+    right = plaintext & 0xFFFF
+
+    for i in range(4):
+        left, right = feistel_round(left, right, keys[i])
+
+    return (left << 16) | right
+
+def feistel_decrypt(ciphertext, keys):
+    """Decrypt using same structure, reversed keys"""
+    return feistel_encrypt(ciphertext, keys[::-1])
+
+# Test the implementation
+plaintext = 0x12345678
+keys = [0x1111, 0x2222, 0x3333, 0x4444]
+ciphertext = feistel_encrypt(plaintext, keys)
+decrypted = feistel_decrypt(ciphertext, keys)
+print(f"Original: &#123;plaintext:08x&#125;")
+print(f"Encrypted: &#123;ciphertext:08x&#125;")
+print(f"Decrypted: &#123;decrypted:08x&#125;")
+print(f"Match: &#123;plaintext == decrypted&#125;")
+              </pre>
+            </div>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Task 2: S-Box Differential Distribution</h3>
+            <p class="text-gray-700 mb-4">
+              Given a 4×4 toy S-box, compute its differential distribution table and identify any high‐probability differentials.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Analysis Steps</h4>
+              <ol class="list-decimal list-inside space-y-2 text-sm text-gray-600">
+                <li>Create a 16×16 difference distribution table</li>
+                <li>For each input difference Δx (0-15)</li>
+                <li>For each input value x (0-15)</li>
+                <li>Compute S(x) ⊕ S(x ⊕ Δx) = Δy</li>
+                <li>Increment count for (Δx, Δy) pair</li>
+                <li>Identify highest probability differentials</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">Task 3: Meet-in-the-Middle Demo</h3>
+            <p class="text-gray-700 mb-4">
+              Using two independent DES keys, show that double DES can be broken in ≈2¹¹² work by intersecting intermediate encryptions.
+            </p>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Attack Simulation</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="text-sm font-medium text-gray-700 mb-2">Forward Table</h5>
+                  <div class="text-xs font-mono space-y-1">
+                    <div>K1=0x01: E(P)=0xABCD</div>
+                    <div>K1=0x02: E(P)=0x1234</div>
+                    <div>K1=0x03: E(P)=0x5678</div>
+                    <div class="text-green-600">K1=0x04: E(P)=0x9ABC</div>
+                  </div>
+                </div>
+                <div>
+                  <h5 class="text-sm font-medium text-gray-700 mb-2">Backward Table</h5>
+                  <div class="text-xs font-mono space-y-1">
+                    <div>K2=0x10: D(C)=0xDEF0</div>
+                    <div class="text-green-600">K2=0x20: D(C)=0x9ABC</div>
+                    <div>K2=0x30: D(C)=0x2468</div>
+                    <div>K2=0x40: D(C)=0x1357</div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-sm text-green-600 mt-2">
+                <strong>Match found:</strong> K1=0x04, K2=0x20 both produce 0x9ABC
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+        <button
+          (click)="previousSection()"
+          [disabled]="currentSection === 1"
+          class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="flex space-x-2">
+          <button
+            *ngFor="let section of getSectionArray(); let i = index"
+            (click)="goToSection(i + 1)"
+            class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
+            [class.bg-purple-600]="currentSection === i + 1"
+            [class.text-white]="currentSection === i + 1"
+            [class.bg-gray-200]="currentSection !== i + 1"
+            [class.text-gray-700]="currentSection !== i + 1"
+            [class.hover:bg-gray-300]="currentSection !== i + 1"
+          >
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <button
+          (click)="nextSection()"
+          [disabled]="currentSection === totalSections"
+          class="flex items-center px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>

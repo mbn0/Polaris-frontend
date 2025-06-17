@@ -1,0 +1,1181 @@
+<div class="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100">
+  <!-- Header -->
+  <header class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center">
+          <button
+            (click)="backToDashboard()"
+            class="mr-4 p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">🔐 Chapter 11: Message Integrity</h1>
+            <p class="text-sm text-gray-600">Hash Functions, MACs, and Digital Signatures</p>
+          </div>
+        </div>
+        <div class="text-sm text-gray-600">
+          Section {{ currentSection }} of {{ totalSections }}
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-2">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div
+            class="bg-cyan-600 h-2 rounded-full transition-all duration-300"
+            [style.width.%]="(currentSection / totalSections) * 100"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+
+      <!-- Section 1: Why Integrity Matters -->
+      <div *ngIf="currentSection === 1" class="p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-6">Why Integrity Matters</h2>
+
+        <div class="bg-cyan-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Message Integrity vs. Confidentiality</h3>
+          <p class="text-gray-700 text-lg leading-relaxed">
+            Until now, cryptography has focused on keeping data secret. But many applications—software updates, financial transactions, log files—require integrity more than confidentiality. Integrity ensures data hasn't been altered, whether accidentally or by an attacker.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Confidentiality Focus</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Encryption hides content from eavesdroppers</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Protects against passive attacks</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Examples: Private messages, medical records</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Integrity Focus</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Detects unauthorized modifications</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Protects against active attacks</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-600 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Examples: Software updates, financial transactions</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-yellow-50 rounded-lg p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Real-World Scenarios</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">Software Updates</h4>
+              <p class="text-sm text-gray-600 mt-1">Users need to verify that downloaded software hasn't been tampered with by malware</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">Financial Transactions</h4>
+              <p class="text-sm text-gray-600 mt-1">Banks must ensure transaction amounts and recipient details remain unaltered</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-yellow-500">
+              <h4 class="font-semibold text-gray-900">Log Files</h4>
+              <p class="text-sm text-gray-600 mt-1">System administrators need to detect if audit logs have been modified by attackers</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: From Fingerprints to Digests -->
+      <div *ngIf="currentSection === 2" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">From Fingerprints to Digests</h2>
+
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Document & Fingerprint Analogy</h3>
+          <p class="text-gray-700 mb-4">
+            In the physical world, you might sign or fingerprint a paper document to detect tampering. Digitally, we separate the message from its digest (a fixed-length "fingerprint") so that any change to the message produces a different digest.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Physical vs Digital Comparison</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aspect</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document / Fingerprint</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message / Message Digest</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Linkage</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Physically linked together</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Transmitted separately</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Forgery Protection</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Fingerprint forgery requires skill</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Digest must be protected by cryptography</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Verification</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Visual inspection</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mathematical computation</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Hash Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Input Message</label>
+                <textarea
+                  [(ngModel)]="hashInput"
+                  (ngModelChange)="onHashInputChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  rows="3"
+                  placeholder="Enter any message..."
+                ></textarea>
+              </div>
+
+              <div class="bg-cyan-50 p-4 rounded">
+                <h4 class="font-semibold text-cyan-800 mb-2">Key Properties</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Fixed output size regardless of input length</li>
+                  <li>• Deterministic: same input → same output</li>
+                  <li>• Avalanche effect: small change → completely different output</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="font-semibold text-gray-900">Hash Results</h4>
+              <div *ngFor="let result of hashResults" class="bg-gray-50 p-3 rounded">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-semibold text-sm">{{ result.algorithm }}</span>
+                  <span class="text-xs" [class]="getSecurityColor(result.algorithm)">
+                    {{ getSecurityLevel(result.algorithm) }}
+                  </span>
+                </div>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ result.output }}
+                </div>
+                <div class="text-xs text-gray-600 mt-1">
+                  {{ result.length }} bits • {{ result.time.toFixed(2) }}ms
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Checking Integrity -->
+      <div *ngIf="currentSection === 3" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Simple Digest Verification</h2>
+
+        <div class="bg-green-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            Sender computes a digest D = H(M) and sends both M and D.
+          </p>
+          <p class="text-gray-700 mb-4">
+            Receiver recomputes D' = H(M) and checks D' =? D.
+          </p>
+          <p class="text-gray-700">
+            If they match, the message is intact; otherwise, it's been altered.
+          </p>
+        </div>
+
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-yellow-700">
+                <strong>Important:</strong> A bare digest (Modification Detection Code) proves integrity but not who created it.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Integrity Test</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Original Message</label>
+                <textarea
+                  [(ngModel)]="originalMessage"
+                  (ngModelChange)="onIntegrityTestChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  rows="2"
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modified Message</label>
+                <textarea
+                  [(ngModel)]="modifiedMessage"
+                  (ngModelChange)="onIntegrityTestChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  rows="2"
+                ></textarea>
+              </div>
+            </div>
+
+            <div *ngIf="integrityTest" class="space-y-4">
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Original Hash</h4>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ integrityTest.originalHash }}
+                </div>
+              </div>
+
+              <div class="bg-red-50 p-4 rounded">
+                <h4 class="font-semibold text-red-800 mb-2">Modified Hash</h4>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ integrityTest.modifiedHash }}
+                </div>
+              </div>
+
+              <div class="p-4 rounded"
+                   [class.bg-red-100]="integrityTest.tampered"
+                   [class.bg-green-100]="!integrityTest.tampered">
+                <h4 class="font-semibold mb-2"
+                    [class.text-red-800]="integrityTest.tampered"
+                    [class.text-green-800]="!integrityTest.tampered">
+                  Integrity Check
+                </h4>
+                <div class="text-sm">
+                  {{ integrityTest.tampered ? '❌ Message has been tampered with!' : '✅ Message integrity verified' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Verification Process</h3>
+          <div class="grid md:grid-cols-4 gap-4">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">1</div>
+              <h4 class="font-semibold text-gray-900">Send</h4>
+              <p class="text-sm text-gray-600">Sender computes H(M) and transmits M + digest</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">2</div>
+              <h4 class="font-semibold text-gray-900">Receive</h4>
+              <p class="text-sm text-gray-600">Receiver gets message M and digest D</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">3</div>
+              <h4 class="font-semibold text-gray-900">Compute</h4>
+              <p class="text-sm text-gray-600">Receiver computes H(M) = D'</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">4</div>
+              <h4 class="font-semibold text-gray-900">Verify</h4>
+              <p class="text-sm text-gray-600">Check if D' = D</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Cryptographic Hash Function Criteria -->
+      <div *ngIf="currentSection === 4" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Security Properties</h2>
+
+        <div class="bg-purple-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            Together, these properties ensure a hash functions as a one-way "fingerprint": unique, non-reversible, and tamper-evident.
+          </p>
+        </div>
+
+        <div class="space-y-6">
+          <div *ngFor="let property of hashProperties; let i = index"
+               class="bg-white rounded-lg border p-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold"
+                     [class.bg-blue-500]="i === 0"
+                     [class.bg-green-500]="i === 1"
+                     [class.bg-purple-500]="i === 2">
+                  {{ i + 1 }}
+                </div>
+              </div>
+              <div class="ml-4 flex-1">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ property.property }}</h3>
+                <p class="text-gray-700 mb-3">{{ property.description }}</p>
+                <div class="bg-gray-50 p-3 rounded">
+                  <span class="text-sm font-medium text-gray-600">Also known as: </span>
+                  <span class="text-sm text-gray-800">{{ property.strength }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Security Implications</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-blue-50 p-4 rounded">
+              <h4 class="font-semibold text-blue-800 mb-2">Preimage Resistance</h4>
+              <p class="text-sm text-gray-600">Prevents attackers from finding a message that produces a specific hash value</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded">
+              <h4 class="font-semibold text-green-800 mb-2">Second-Preimage Resistance</h4>
+              <p class="text-sm text-gray-600">Prevents attackers from finding an alternative message with the same hash</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded">
+              <h4 class="font-semibold text-purple-800 mb-2">Collision Resistance</h4>
+              <p class="text-sm text-gray-600">Prevents attackers from finding any two different messages with the same hash</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continue with remaining sections... -->
+      <!-- For brevity, I'll include the navigation section -->
+
+      <!-- Section 5: Modification Detection Codes (MDCs) -->
+      <div *ngIf="currentSection === 5" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Modification Detection Codes (MDCs)</h2>
+
+        <div class="bg-orange-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Integrity Without Authentication</h3>
+          <p class="text-gray-700 mb-4">
+            An MDC is simply a cryptographic hash. If Alice and Bob share no secret, an attacker can recompute a valid MDC on a forged message—so MDCs alone don't prove authenticity.
+          </p>
+        </div>
+
+        <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">Security Warning</h3>
+              <div class="mt-2 text-sm text-red-700">
+                <p>MDCs provide integrity checking but no authentication. An attacker can modify both the message and recompute a valid MDC.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">MDC Attack Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Original Message</label>
+                <input
+                  [(ngModel)]="attackMessage"
+                  (ngModelChange)="onAttackParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Enter original message..."
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Attacker's Modified Message</label>
+                <input
+                  [(ngModel)]="attackModified"
+                  (ngModelChange)="onAttackParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Enter modified message..."
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Original MDC</h4>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ attackResults.originalMDC }}
+                </div>
+              </div>
+
+              <div class="bg-red-50 p-4 rounded">
+                <h4 class="font-semibold text-red-800 mb-2">Attacker's New MDC</h4>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ attackResults.modifiedMDC }}
+                </div>
+              </div>
+
+              <div class="bg-red-100 p-4 rounded border-2 border-red-300">
+                <h4 class="font-semibold text-red-800 mb-2">Attack Result</h4>
+                <div class="text-sm text-red-700">
+                  ❌ Attacker successfully created valid MDC for forged message!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Why MDCs Fail Against Active Attacks</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded border-l-4 border-red-500">
+              <h4 class="font-semibold text-gray-900">Step 1: Intercept</h4>
+              <p class="text-sm text-gray-600 mt-1">Attacker intercepts message M and MDC H(M)</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-red-500">
+              <h4 class="font-semibold text-gray-900">Step 2: Modify</h4>
+              <p class="text-sm text-gray-600 mt-1">Attacker creates malicious message M'</p>
+            </div>
+            <div class="bg-white p-4 rounded border-l-4 border-red-500">
+              <h4 class="font-semibold text-gray-900">Step 3: Recompute</h4>
+              <p class="text-sm text-gray-600 mt-1">Attacker computes new MDC H(M') and sends M' + H(M')</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Message Authentication Codes (MACs) -->
+      <div *ngIf="currentSection === 6" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Message Authentication Codes (MACs)</h2>
+
+        <div class="bg-green-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Integrity + Authentication</h3>
+          <p class="text-gray-700 mb-4">
+            A MAC combines a secret key K with the message, e.g. MAC = H(K ∥ M), so only someone with K can produce a valid tag. MACs thwart forgery—even if the attacker sees many (M, MAC) pairs, they can't compute a new valid MAC without K.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">MAC vs MDC Comparison</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MDC (Hash Only)</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MAC (Keyed Hash)</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Integrity</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ Detects modifications</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ Detects modifications</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Authentication</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ No proof of origin</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ Proves knowledge of key</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Forgery Resistance</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Attacker can recompute</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ Requires secret key</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive MAC Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                <textarea
+                  [(ngModel)]="macMessage"
+                  (ngModelChange)="onMACParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  rows="2"
+                  placeholder="Enter message to authenticate..."
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                <input
+                  [(ngModel)]="macKey"
+                  (ngModelChange)="onMACParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter secret key..."
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="font-semibold text-gray-900">MAC Results</h4>
+              <div *ngFor="let result of macResults" class="bg-gray-50 p-3 rounded">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="font-semibold text-sm">{{ result.algorithm }}</span>
+                  <span class="text-xs text-green-600">✓ Verified</span>
+                </div>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ result.tag }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">MAC Attack Resistance</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-red-50 p-4 rounded">
+              <h4 class="font-semibold text-red-800 mb-2">Without Secret Key</h4>
+              <div class="text-sm text-red-700 space-y-2">
+                <p>Original: "{{ attackMessage }}"</p>
+                <p>MAC: {{ attackResults.originalMAC }}</p>
+                <p>Modified: "{{ attackModified }}"</p>
+                <p>Attempted MAC: {{ attackResults.modifiedMAC }}</p>
+                <div class="bg-red-100 p-2 rounded mt-2">
+                  <strong>Result: ❌ Attack Failed!</strong><br>
+                  Attacker cannot forge valid MAC without the secret key.
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded">
+              <h4 class="font-semibold text-green-800 mb-2">With Secret Key</h4>
+              <div class="text-sm text-green-700 space-y-2">
+                <p>Message: "{{ macMessage }}"</p>
+                <p>Key: "{{ macKey }}"</p>
+                <p>Valid MAC: {{ macResults[0]?.tag || 'Computing...' }}</p>
+                <div class="bg-green-100 p-2 rounded mt-2">
+                  <strong>Result: ✓ Authentication Successful!</strong><br>
+                  Only parties with the secret key can generate valid MACs.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: Common MAC Constructions -->
+      <div *ngIf="currentSection === 7" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Common MAC Constructions</h2>
+
+        <!-- HMAC Subsection -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">7.1 HMAC Structure</h3>
+
+          <div class="bg-purple-50 rounded-lg p-6 mb-6">
+            <div class="font-mono text-center text-lg mb-4 bg-white p-3 rounded border">
+              HMAC(K,M) = H( (K⊕opad) ∥ H((K⊕ipad) ∥ M) )
+            </div>
+            <p class="text-gray-700">
+              By XOR-mixing the key with two distinct pads (ipad, opad), HMAC preserves hash security properties, even if the underlying hash has weaknesses.
+            </p>
+          </div>
+
+          <div class="bg-white rounded-lg border p-6 mb-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">Interactive HMAC Computation</h4>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <input
+                    [(ngModel)]="hmacMessage"
+                    (ngModelChange)="computeHMAC()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter message..."
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Secret Key</label>
+                  <input
+                    [(ngModel)]="hmacKey"
+                    (ngModelChange)="computeHMAC()"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter secret key..."
+                  />
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded">
+                  <h5 class="font-semibold text-purple-800 mb-2">Final HMAC Result</h5>
+                  <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                    {{ hmacResult }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <h5 class="font-semibold text-gray-900">HMAC Computation Steps</h5>
+                <div *ngFor="let step of hmacSteps; let i = index"
+                     class="bg-gray-50 p-3 rounded border-l-4"
+                     [class.border-purple-500]="i < 3"
+                     [class.border-green-500]="i >= 3">
+                  <div class="font-mono text-sm">{{ step }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CMAC Subsection -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">7.2 CMAC from a Block Cipher</h3>
+
+          <div class="bg-blue-50 rounded-lg p-6 mb-6">
+            <p class="text-gray-700 mb-4">
+              CMAC uses AES (or another cipher) in CBC-MAC mode with special "subkeys" and padding rules to handle variable-length messages securely. It's standardized in NIST SP 800-38B.
+            </p>
+          </div>
+
+          <div class="bg-white rounded-lg border p-6 mb-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">CMAC Process Visualization</h4>
+            <div class="grid md:grid-cols-4 gap-4">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold mx-auto mb-2">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <h5 class="font-semibold text-gray-900">Key Setup</h5>
+                <p class="text-sm text-gray-600">Generate subkeys K1, K2 from main key</p>
+              </div>
+              <div class="text-center">
+                <div class="w-16 h-16 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold mx-auto mb-2">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"></path>
+                  </svg>
+                </div>
+                <h5 class="font-semibold text-gray-900">Block Processing</h5>
+                <p class="text-sm text-gray-600">Process message blocks with AES in CBC mode</p>
+              </div>
+              <div class="text-center">
+                <div class="w-16 h-16 bg-yellow-500 rounded-lg flex items-center justify-center text-white font-bold mx-auto mb-2">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                  </svg>
+                </div>
+                <h5 class="font-semibold text-gray-900">Final Block</h5>
+                <p class="text-sm text-gray-600">Apply subkey based on message length</p>
+              </div>
+              <div class="text-center">
+                <div class="w-16 h-16 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold mx-auto mb-2">
+                  <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 2a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <h5 class="font-semibold text-gray-900">MAC Output</h5>
+                <p class="text-sm text-gray-600">Final AES output is the CMAC tag</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nested & Truncated MACs -->
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">7.3 Nested & Truncated MACs</h3>
+
+          <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-3">Performance & Size Trade-Offs</h4>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <h5 class="font-semibold text-gray-900 mb-2">Nested MAC</h5>
+                <p class="text-gray-700 text-sm mb-2">Apply MAC twice with different keys to amortize cost over streaming data.</p>
+                <div class="font-mono text-xs bg-white p-2 rounded border">
+                  MAC₁ = HMAC(K₁, M)<br>
+                  MAC₂ = HMAC(K₂, MAC₁)
+                </div>
+              </div>
+              <div>
+                <h5 class="font-semibold text-gray-900 mb-2">Truncated MAC</h5>
+                <p class="text-gray-700 text-sm mb-2">Send only the first t bits of the tag to reduce bandwidth—security degrades by at most 2ᵗ factor.</p>
+                <div class="font-mono text-xs bg-white p-2 rounded border">
+                  Truncated_MAC = MAC[0:t]
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg border p-6">
+            <h4 class="text-lg font-semibold text-gray-900 mb-4">MAC Performance Comparison</h4>
+            <div class="space-y-4">
+              <div *ngFor="let alg of ['HMAC-SHA256', 'CMAC-AES', 'Truncated-MAC']; let i = index"
+                   class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <div class="flex items-center">
+                  <div class="w-3 h-3 rounded-full mr-3"
+                       [class.bg-blue-500]="i === 0"
+                       [class.bg-green-500]="i === 1"
+                       [class.bg-yellow-500]="i === 2"></div>
+                  <span class="font-semibold">{{ alg }}</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <div class="text-sm text-gray-600">
+                    {{ i === 0 ? '256 bits' : i === 1 ? '128 bits' : '64 bits' }}
+                  </div>
+                  <div class="w-32 bg-gray-200 rounded-full h-2">
+                    <div class="h-2 rounded-full transition-all duration-1000"
+                         [class.bg-blue-500]="i === 0"
+                         [class.bg-green-500]="i === 1"
+                         [class.bg-yellow-500]="i === 2"
+                         [style.width.%]="i === 0 ? 85 : i === 1 ? 95 : 100"></div>
+                  </div>
+                  <div class="text-sm font-semibold">
+                    {{ i === 0 ? '2.1ms' : i === 1 ? '1.8ms' : '0.9ms' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8: Beyond MACs—Digital Signatures -->
+      <div *ngIf="currentSection === 8" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Beyond MACs—Digital Signatures</h2>
+
+        <div class="bg-indigo-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">Public-Key Authentication</h3>
+          <p class="text-gray-700 mb-4">
+            To prove who created a message, use a digital signature: the sender signs a hash of the message with her private key, and anyone verifies with the public key. Signatures provide integrity, authentication, and non-repudiation in one package.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">MAC vs Digital Signature Comparison</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">MAC</th>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Digital Signature</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Key Type</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Symmetric (shared secret)</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Asymmetric (public/private)</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Verification</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Only parties with shared key</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Anyone with public key</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Non-repudiation</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Both parties can create MAC</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ Only private key holder can sign</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Performance</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">Fast</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">Slower</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Interactive Digital Signature Demo</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Message to Sign</label>
+                <textarea
+                  [(ngModel)]="signatureMessage"
+                  (ngModelChange)="onSignatureParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows="3"
+                  placeholder="Enter message to sign..."
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Private Key (Alice)</label>
+                <input
+                  [(ngModel)]="signaturePrivateKey"
+                  (ngModelChange)="onSignatureParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Alice's private key..."
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Public Key (Alice)</label>
+                <input
+                  [(ngModel)]="signaturePublicKey"
+                  (ngModelChange)="onSignatureParameterChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Alice's public key..."
+                />
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-indigo-50 p-4 rounded">
+                <h4 class="font-semibold text-indigo-800 mb-2">Digital Signature</h4>
+                <div class="font-mono text-xs break-all bg-white p-2 rounded border">
+                  {{ digitalSignature }}
+                </div>
+              </div>
+
+              <button
+                (click)="verifyDigitalSignature()"
+                class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+              >
+                Verify Signature
+              </button>
+
+              <div class="p-4 rounded"
+                   [class.bg-green-100]="signatureVerified"
+                   [class.bg-red-100]="!signatureVerified">
+                <h4 class="font-semibold mb-2"
+                    [class.text-green-800]="signatureVerified"
+                    [class.text-red-800]="!signatureVerified">
+                  Signature Verification
+                </h4>
+                <div class="text-sm">
+                  {{ signatureVerified ? '✅ Signature is valid - message authenticated!' : '❌ Signature verification failed' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Digital Signature Process</h3>
+          <div class="grid md:grid-cols-4 gap-4">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">1</div>
+              <h4 class="font-semibold text-gray-900">Hash</h4>
+              <p class="text-sm text-gray-600">Compute H(M) of the message</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">2</div>
+              <h4 class="font-semibold text-gray-900">Sign</h4>
+              <p class="text-sm text-gray-600">Encrypt hash with private key</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">3</div>
+              <h4 class="font-semibold text-gray-900">Send</h4>
+              <p class="text-sm text-gray-600">Transmit M + signature</p>
+            </div>
+            <div class="text-center">
+              <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">4</div>
+              <h4 class="font-semibold text-gray-900">Verify</h4>
+              <p class="text-sm text-gray-600">Decrypt signature with public key, compare hashes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 9: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 9" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning & Exercises</h2>
+
+        <div class="space-y-8">
+          <!-- Exercise 1: Hash Function Comparison -->
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Exercise 1: Hash Function Comparison</h3>
+            <p class="text-gray-700 mb-4">
+              Compute MD5, SHA-1, and SHA-256 digests of the same input. Observe how collision resistance and output size differ.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Test Input</label>
+                <input
+                  [(ngModel)]="hashInput"
+                  (ngModelChange)="onHashInputChange()"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter test string..."
+                />
+              </div>
+              <div class="space-y-2">
+                <div *ngFor="let result of hashResults" class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                  <span class="font-semibold text-sm">{{ result.algorithm }}</span>
+                  <span class="text-xs" [class]="getSecurityColor(result.algorithm)">
+                    {{ getSecurityLevel(result.algorithm) }}
+                  </span>
+                  <span class="text-xs text-gray-600">{{ result.length }} bits</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exercise 2: Brute-Force Collision Demo -->
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Exercise 2: Brute-Force Collision Demo</h3>
+            <p class="text-gray-700 mb-4">
+              Use a scripting approach to find two distinct strings with the same hash prefix (demonstrating birthday paradox).
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Input 1</label>
+                  <input
+                    [(ngModel)]="collisionInput1"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="First input..."
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Input 2</label>
+                  <input
+                    [(ngModel)]="collisionInput2"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Second input..."
+                  />
+                </div>
+                <button
+                  (click)="searchCollisions()"
+                  [disabled]="collisionSearching"
+                  class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                >
+                  {{ collisionSearching ? 'Searching...' : 'Search for Collisions' }}
+                </button>
+              </div>
+
+              <div *ngIf="collisionDemo" class="space-y-4">
+                <div class="bg-gray-50 p-4 rounded">
+                  <h4 class="font-semibold text-gray-900 mb-2">Collision Search Results</h4>
+                  <div class="space-y-2 text-sm">
+                    <div>Input 1: "{{ collisionDemo.input1 }}"</div>
+                    <div>Hash 1: {{ truncateHash(collisionDemo.hash1, 16) }}</div>
+                    <div>Input 2: "{{ collisionDemo.input2 }}"</div>
+                    <div>Hash 2: {{ truncateHash(collisionDemo.hash2, 16) }}</div>
+                    <div>Attempts: {{ collisionDemo.attempts.toLocaleString() }}</div>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded"
+                     [class.bg-red-100]="collisionDemo.collision"
+                     [class.bg-green-100]="!collisionDemo.collision">
+                  <div class="text-sm font-semibold">
+                    {{ collisionDemo.collision ? '⚠️ Partial collision found!' : '✅ No collision detected' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exercise 3: Implement HMAC -->
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Exercise 3: Implement HMAC</h3>
+            <p class="text-gray-700 mb-4">
+              Write an HMAC routine step-by-step; verify interoperability with standard libraries.
+            </p>
+
+            <div class="bg-purple-50 p-4 rounded mb-4">
+              <h4 class="font-semibold text-purple-800 mb-2">HMAC Implementation Steps</h4>
+              <div class="space-y-2 text-sm">
+                <div *ngFor="let step of hmacSteps; let i = index"
+                     class="flex items-start">
+                  <div class="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5">
+                    {{ i + 1 }}
+                  </div>
+                  <div class="font-mono">{{ step }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white border rounded p-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Your HMAC Result</h4>
+              <div class="font-mono text-sm bg-gray-50 p-2 rounded border">
+                {{ hmacResult }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Exercise 4: CMAC Practice -->
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Exercise 4: CMAC Practice</h3>
+            <p class="text-gray-700 mb-4">
+              Use a cryptographic library to compute AES-CMAC on variable-length messages; test tag truncation effects.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Message Length</label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>16 bytes (1 block)</option>
+                    <option>32 bytes (2 blocks)</option>
+                    <option>15 bytes (partial block)</option>
+                    <option>33 bytes (2+ blocks)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tag Length</label>
+                  <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>128 bits (full)</option>
+                    <option>96 bits</option>
+                    <option>64 bits</option>
+                    <option>32 bits</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">CMAC Security Analysis</h4>
+                <div class="text-sm space-y-2">
+                  <div>• Full 128-bit tag: 2¹²⁸ security</div>
+                  <div>• 96-bit truncated: 2⁹⁶ security</div>
+                  <div>• 64-bit truncated: 2⁶⁴ security</div>
+                  <div>• 32-bit truncated: 2³² security (weak)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exercise 5: MDC vs MAC Attack -->
+          <div class="bg-white rounded-lg border p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Exercise 5: MDC vs MAC Attack</h3>
+            <p class="text-gray-700 mb-4">
+              Show how an attacker can forge a valid MDC on a modified message but fails to forge a MAC without the key.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="bg-red-50 p-4 rounded">
+                <h4 class="font-semibold text-red-800 mb-2">MDC Attack (Successful)</h4>
+                <div class="text-sm space-y-2">
+                  <div>Original: "{{ attackMessage }}"</div>
+                  <div>MDC: {{ attackResults.originalMDC }}</div>
+                  <div class="border-t pt-2">
+                    <strong>Attacker modifies message:</strong>
+                  </div>
+                  <div>Modified: "{{ attackModified }}"</div>
+                  <div>New MDC: {{ attackResults.modifiedMDC }}</div>
+                  <div class="bg-red-100 p-2 rounded">
+                    <strong>Result: ❌ Attack Successful!</strong><br>
+                    Attacker can compute valid MDC for any message.
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">MAC Attack (Failed)</h4>
+                <div class="text-sm space-y-2">
+                  <div>Original: "{{ attackMessage }}"</div>
+                  <div>MAC: {{ attackResults.originalMAC }}</div>
+                  <div class="border-t pt-2">
+                    <strong>Attacker tries to modify:</strong>
+                  </div>
+                  <div>Modified: "{{ attackModified }}"</div>
+                  <div>Invalid MAC: {{ attackResults.modifiedMAC }}</div>
+                  <div class="bg-green-100 p-2 rounded">
+                    <strong>Result: ✅ Attack Failed!</strong><br>
+                    Attacker cannot forge MAC without secret key.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Summary -->
+        <div class="bg-gray-50 rounded-lg p-6 mt-8">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Summary</h3>
+          <div class="grid md:grid-cols-5 gap-4">
+            <div *ngFor="let alg of ['MD5', 'SHA1', 'SHA256', 'HMAC', 'CMAC']; let i = index"
+                 class="text-center">
+              <div class="text-2xl font-bold text-gray-900">
+                {{ getPerformanceValue(i) }}ms
+              </div>
+              <div class="text-sm text-gray-600">{{ alg }}</div>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div class="bg-blue-500 h-2 rounded-full transition-all duration-1000"
+                     [style.width.%]="getPerformancePercentage(i)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+        <button
+          (click)="previousSection()"
+          [disabled]="currentSection === 1"
+          class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Previous
+        </button>
+
+        <div class="flex space-x-2">
+          <button
+            *ngFor="let section of [].constructor(totalSections); let i = index"
+            (click)="goToSection(i + 1)"
+            class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
+            [class.bg-cyan-600]="currentSection === i + 1"
+            [class.text-white]="currentSection === i + 1"
+            [class.bg-gray-200]="currentSection !== i + 1"
+            [class.text-gray-700]="currentSection !== i + 1"
+            [class.hover:bg-gray-300]="currentSection !== i + 1"
+          >
+            {{ i + 1 }}
+          </button>
+        </div>
+
+        <button
+          (click)="nextSection()"
+          [disabled]="currentSection === totalSections"
+          class="flex items-center px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+

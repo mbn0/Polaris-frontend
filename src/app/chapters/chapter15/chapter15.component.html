@@ -1,0 +1,812 @@
+<div class="chapter-container">
+    <!-- Header -->
+    <div class="chapter-header">
+      <div class="chapter-nav">
+        <button (click)="goToDashboard()" class="back-btn">
+          ← Back to Dashboard
+        </button>
+        <div class="chapter-info">
+          <h1>Chapter 15: Key Management</h1>
+          <p>Authentication factors, protocols, and biometric systems</p>
+        </div>
+      </div>
+      
+      <div class="progress-section">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="sectionProgress"></div>
+        </div>
+        <span class="progress-text">Section {{ currentSection }} of {{ totalSections }}</span>
+      </div>
+    </div>
+  
+    <!-- Navigation -->
+    <div class="section-nav">
+      <button 
+        *ngFor="let i of [].constructor(totalSections); let idx = index"
+        (click)="goToSection(idx + 1)"
+        [class.active]="currentSection === idx + 1"
+        class="section-btn">
+        {{ idx + 1 }}
+      </button>
+    </div>
+  
+    <!-- Section 1: Why Key Management Matters -->
+    <div *ngIf="currentSection === 1" class="section">
+      <h2>1. Why Key Management Matters</h2>
+      <div class="content-grid">
+        <div class="concept-card">
+          <h3>🔐 Securing the Keys That Secure Everything</h3>
+          <p>
+            Cryptographic algorithms are only as strong as the secrecy of their keys. 
+            Efficient symmetric-key ciphers can encrypt large data quickly, but distributing 
+            those shared secrets over insecure channels is a fundamental challenge.
+          </p>
+          <div class="key-challenges">
+            <div class="challenge-item">
+              <strong>Symmetric Keys:</strong> Fast encryption but distribution problem
+            </div>
+            <div class="challenge-item">
+              <strong>Public Keys:</strong> Easy distribution but slower performance
+            </div>
+            <div class="challenge-item">
+              <strong>Hybrid Approach:</strong> Combines best of both worlds
+            </div>
+          </div>
+        </div>
+  
+        <div class="security-metrics">
+          <h3>Key Management Security Factors</h3>
+          <div class="metric-item">
+            <span class="metric-label">Key Generation</span>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 95%"></div>
+            </div>
+            <span class="metric-value">95%</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Key Distribution</span>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 78%"></div>
+            </div>
+            <span class="metric-value">78%</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Key Storage</span>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 88%"></div>
+            </div>
+            <span class="metric-value">88%</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Key Revocation</span>
+            <div class="metric-bar">
+              <div class="metric-fill" style="width: 72%"></div>
+            </div>
+            <span class="metric-value">72%</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="nextSection()" class="next-btn">Next: KDC →</button>
+      </div>
+    </div>
+  
+    <!-- Section 2: Symmetric-Key Distribution with KDC -->
+    <div *ngIf="currentSection === 2" class="section">
+      <h2>2. Symmetric-Key Distribution with a KDC</h2>
+      
+      <div class="kdc-explanation">
+        <h3>Key-Distribution Center (KDC)</h3>
+        <p>
+          A KDC is a trusted server that shares a unique long-term secret key with each principal. 
+          When two parties wish to communicate, they ask the KDC for a fresh session key, 
+          encrypted under their individual long-term keys.
+        </p>
+        
+        <div class="kdc-definitions">
+          <div class="definition-item">
+            <strong>Long-Term Key:</strong> Secret master key K<sub>A</sub> known only to principal A and the KDC
+          </div>
+          <div class="definition-item">
+            <strong>Session Key:</strong> A one-time symmetric key K<sub>AB</sub> for securing a single conversation
+          </div>
+          <div class="definition-item">
+            <strong>Ticket:</strong> KDC's encrypted blob containing K<sub>AB</sub> and metadata
+          </div>
+        </div>
+      </div>
+  
+      <div class="kdc-demo">
+        <h3>🔄 Interactive KDC Protocol Demo</h3>
+        <div class="protocol-controls">
+          <button (click)="runKDCStep()" [disabled]="kdcStep >= 5" class="step-btn">
+            {{ kdcStep === 0 ? 'Start Protocol' : 'Next Step' }}
+          </button>
+          <button (click)="resetKDC()" class="reset-btn">Reset</button>
+        </div>
+  
+        <div class="protocol-flow">
+          <div class="participants">
+            <div class="participant alice">{{ principalA }}</div>
+            <div class="participant kdc">KDC</div>
+            <div class="participant bob">{{ principalB }}</div>
+          </div>
+  
+          <div class="messages-container">
+            <div *ngFor="let message of kdcMessages" class="message-flow">
+              <div class="message-step">Step {{ message.step }}</div>
+              <div class="message-arrow" [attr.data-direction]="message.from + '-' + message.to">
+                <span class="arrow-label">{{ message.from }} → {{ message.to }}</span>
+              </div>
+              <div class="message-content" [class.encrypted]="message.encrypted">
+                {{ message.content }}
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="protocol-explanation" *ngIf="kdcStep > 0">
+          <h4>Protocol Steps:</h4>
+          <ol>
+            <li>A→KDC: A, B, nonce N<sub>A</sub></li>
+            <li>KDC→A: {{ '{' }}K<sub>AB</sub>, B, N<sub>A</sub>{{ '}' }}<sub>K<sub>A</sub></sub> ∥ Ticket<sub>B</sub></li>
+            <li>A→B: Ticket<sub>B</sub> ∥ {{ '{' }}N<sub>A</sub> – 1{{ '}' }}<sub>K<sub>AB</sub></sub></li>
+            <li>B→A: {{ '{' }}N<sub>B</sub>{{ '}' }}<sub>K<sub>AB</sub></sub></li>
+            <li>A→B: {{ '{' }}N<sub>B</sub> – 1{{ '}' }}<sub>K<sub>AB</sub></sub></li>
+          </ol>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: Key Transport →</button>
+      </div>
+    </div>
+  
+    <!-- Section 3: Key-Transport Protocols -->
+    <div *ngIf="currentSection === 3" class="section">
+      <h2>3. Key-Transport Protocols</h2>
+      
+      <div class="protocol-comparison">
+        <div class="protocol-card">
+          <h3>Needham–Schroeder Symmetric Protocol</h3>
+          <p>A classic three-party protocol for securely transporting a session key from a trusted server to two principals, using nonces to prevent replay.</p>
+          
+          <button (click)="runNeedhamSchroeder()" class="demo-btn">Run Demo</button>
+          
+          <div *ngIf="nsMessages.length > 0" class="protocol-steps">
+            <table class="protocol-table">
+              <thead>
+                <tr>
+                  <th>Message</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let msg of nsMessages">
+                  <td>{{ msg.step }}. {{ msg.from }} → {{ msg.to }}</td>
+                  <td class="message-content">{{ msg.content }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+        <div class="protocol-card">
+          <h3>Otway–Rees Protocol</h3>
+          <p>A variation that sends fewer encrypted blocks and resists known-key compromise by including all identities in each message.</p>
+          
+          <div class="protocol-advantages">
+            <h4>Advantages:</h4>
+            <ul>
+              <li>Fewer encrypted messages</li>
+              <li>Resistance to known-key attacks</li>
+              <li>Identity binding in each message</li>
+              <li>Simplified verification</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  
+      <div class="security-analysis">
+        <h3>🛡️ Security Analysis</h3>
+        <div class="analysis-grid">
+          <div class="analysis-item">
+            <h4>Replay Protection</h4>
+            <p>Nonces ensure freshness and prevent replay attacks</p>
+            <div class="security-level high">High</div>
+          </div>
+          <div class="analysis-item">
+            <h4>Forward Secrecy</h4>
+            <p>Session keys are independent of long-term keys</p>
+            <div class="security-level medium">Medium</div>
+          </div>
+          <div class="analysis-item">
+            <h4>Key Compromise</h4>
+            <p>Long-term key compromise affects all sessions</p>
+            <div class="security-level low">Risk</div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: Kerberos →</button>
+      </div>
+    </div>
+  
+    <!-- Section 4: Kerberos -->
+    <div *ngIf="currentSection === 4" class="section">
+      <h2>4. Kerberos Authentication Service</h2>
+      
+      <div class="kerberos-overview">
+        <h3>🎫 Kerberos Architecture</h3>
+        <p>
+          Kerberos combines a KDC with an Authentication Server (AS) and a Ticket-Granting Server (TGS). 
+          Users authenticate once to the AS to obtain a Ticket-Granting Ticket (TGT), then request 
+          service tickets from the TGS without re-entering credentials.
+        </p>
+      </div>
+  
+      <div class="kerberos-demo">
+        <div class="kerberos-flow">
+          <div class="flow-diagram">
+            <div class="flow-step" [class.active]="kerberosStep >= 1">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>AS Exchange</h4>
+                <p>User ↔ AS ⇄ obtains TGT</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" [class.active]="kerberosStep >= 2">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>TGS Exchange</h4>
+                <p>User ↔ TGS using TGT ⇄ obtains service ticket</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" [class.active]="kerberosStep >= 3">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Client–Server</h4>
+                <p>User ↔ Application Server using service ticket</p>
+              </div>
+            </div>
+          </div>
+  
+          <div class="kerberos-controls">
+            <button (click)="runKerberosStep()" [disabled]="kerberosStep >= 3" class="step-btn">
+              {{ kerberosStep === 0 ? 'Start Kerberos' : 'Next Exchange' }}
+            </button>
+            <button (click)="resetKerberos()" class="reset-btn">Reset</button>
+          </div>
+        </div>
+  
+        <div class="kerberos-messages" *ngIf="kerberosMessages.length > 0">
+          <h4>Protocol Messages:</h4>
+          <div *ngFor="let msg of kerberosMessages" class="kerberos-message">
+            <div class="message-phase">{{ msg.phase }}</div>
+            <div class="message-details">
+              <div class="message-request">
+                <strong>Request:</strong> {{ msg.content }}
+              </div>
+              <div class="message-response">
+                <strong>Response:</strong> {{ msg.response }}
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="kerberos-features">
+          <h4>Kerberos v5 Features:</h4>
+          <div class="feature-grid">
+            <div class="feature-item">
+              <span class="feature-icon">🔄</span>
+              <span>Renewable tickets</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🌐</span>
+              <span>Cross-realm support</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🔒</span>
+              <span>Stronger encryption</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⏰</span>
+              <span>Timestamp validation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: Diffie-Hellman →</button>
+      </div>
+    </div>
+  
+    <!-- Section 5: Symmetric-Key Agreement -->
+    <div *ngIf="currentSection === 5" class="section">
+      <h2>5. Symmetric-Key Agreement</h2>
+      
+      <div class="dh-explanation">
+        <h3>🔑 Diffie–Hellman Key Exchange</h3>
+        <p>
+          Two parties derive a shared secret over an insecure channel by exploiting the discrete-log trapdoor. 
+          Even if an eavesdropper sees all exchanged values, recovering the secret is infeasible without 
+          solving a discrete-log problem.
+        </p>
+      </div>
+  
+      <div class="dh-demo">
+        <h4>Interactive Diffie-Hellman Demo</h4>
+        <div class="dh-parameters">
+          <div class="param-display">
+            <strong>Public Parameters:</strong> p = {{ '{' }} dhParams.p {{ '}' }}, g = {{ '{' }} dhParams.g {{ '}' }}
+          </div>
+          <div class="private-keys">
+            <div class="key-pair">
+              <strong>Alice:</strong> private key x = {{ dhParams.privateA }}
+            </div>
+            <div class="key-pair">
+              <strong>Bob:</strong> private key y = {{ dhParams.privateB }}
+            </div>
+          </div>
+        </div>
+  
+        <div class="dh-exchange">
+          <button (click)="runDHExchange()" class="demo-btn">Start Key Exchange</button>
+          <button (click)="generateDHKeys()" class="reset-btn">Generate New Keys</button>
+  
+          <div class="exchange-steps">
+            <div class="exchange-step" [class.active]="dhParams.step >= 1">
+              <div class="step-label">Step 1:</div>
+              <div class="step-content">Alice sends X = g<sup>x</sup> mod p = {{ dhParams.publicA }}</div>
+            </div>
+            <div class="exchange-step" [class.active]="dhParams.step >= 2">
+              <div class="step-label">Step 2:</div>
+              <div class="step-content">Bob sends Y = g<sup>y</sup> mod p = {{ dhParams.publicB }}</div>
+            </div>
+            <div class="exchange-step" [class.active]="dhParams.step >= 3">
+              <div class="step-label">Step 3:</div>
+              <div class="step-content">Alice computes K = Y<sup>x</sup> mod p = {{ dhParams.sharedSecret }}</div>
+            </div>
+            <div class="exchange-step" [class.active]="dhParams.step >= 4">
+              <div class="step-label">Step 4:</div>
+              <div class="step-content">Bob computes K = X<sup>y</sup> mod p = {{ dhParams.sharedSecret }}</div>
+            </div>
+          </div>
+  
+          <div *ngIf="dhParams.step >= 4" class="shared-secret">
+            <h4>🎉 Shared Secret Established!</h4>
+            <div class="secret-value">K = {{ dhParams.sharedSecret }}</div>
+          </div>
+        </div>
+  
+        <div class="custom-dh">
+          <h4>Custom DH Calculation</h4>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Prime p:</label>
+              <input type="number" [(ngModel)]="dhCustomP" min="2">
+            </div>
+            <div class="input-group">
+              <label>Generator g:</label>
+              <input type="number" [(ngModel)]="dhCustomG" min="2">
+            </div>
+            <div class="input-group">
+              <label>Alice's x:</label>
+              <input type="number" [(ngModel)]="dhCustomX" min="1">
+            </div>
+            <div class="input-group">
+              <label>Bob's y:</label>
+              <input type="number" [(ngModel)]="dhCustomY" min="1">
+            </div>
+          </div>
+  
+          <div class="calculation-result">
+            <ng-container *ngIf="customDHCalculation() as result">
+              <div class="result-item">X = g<sup>x</sup> mod p = {{ result.publicA }}</div>
+              <div class="result-item">Y = g<sup>y</sup> mod p = {{ result.publicB }}</div>
+              <div class="result-item">K<sub>A</sub> = Y<sup>x</sup> mod p = {{ result.secretA }}</div>
+              <div class="result-item">K<sub>B</sub> = X<sup>y</sup> mod p = {{ result.secretB }}</div>
+              <div class="result-match" [class.success]="result.match" [class.error]="!result.match">
+                {{ result.match ? '✓ Secrets match!' : '✗ Secrets don\'t match' }}
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+  
+      <div class="sts-protocol">
+        <h4>🔐 Station-to-Station (STS) Protocol</h4>
+        <p>Adds mutual authentication via digital signatures on the exchanged Diffie–Hellman values to defeat man-in-the-middle attacks.</p>
+        
+        <button (click)="runSTSProtocol()" class="demo-btn">Run STS Demo</button>
+        
+        <div *ngIf="stsMessages.length > 0" class="sts-messages">
+          <div *ngFor="let msg of stsMessages" class="sts-message">
+            <div class="message-step">Step {{ msg.step }}:</div>
+            <div class="message-flow">{{ msg.from }} → {{ msg.to }}</div>
+            <div class="message-content">{{ msg.content }}</div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: PKI →</button>
+      </div>
+    </div>
+  
+    <!-- Section 6: Public-Key Distribution -->
+    <div *ngIf="currentSection === 6" class="section">
+      <h2>6. Public-Key Distribution</h2>
+      
+      <div class="pki-overview">
+        <h3>📜 From Broadcast to PKI</h3>
+        <p>
+          While anyone can announce a public key, trusted management demands Certification Authorities (CAs) 
+          issuing X.509 certificates to bind identities to keys. A Public-Key Infrastructure (PKI) comprises 
+          CAs, registration authorities, repositories, and revocation services.
+        </p>
+      </div>
+  
+      <div class="distribution-methods">
+        <div class="method-grid">
+          <div class="method-card">
+            <h4>Public Announcement</h4>
+            <p>Naïve publishing of a key, vulnerable to spoofing</p>
+            <div class="security-level low">Low Security</div>
+          </div>
+          <div class="method-card">
+            <h4>Trusted Center</h4>
+            <p>Centralized server that vouches for keys under a shared secret</p>
+            <div class="security-level medium">Medium Security</div>
+          </div>
+          <div class="method-card">
+            <h4>Controlled Trusted Center</h4>
+            <p>Adds access control and auditing to key publication</p>
+            <div class="security-level high">High Security</div>
+          </div>
+          <div class="method-card">
+            <h4>Certification Authority (CA)</h4>
+            <p>Issues signed certificates: Cert = Sign<sub>CA</sub>(Subject‖PubKey‖Validity)</p>
+            <div class="security-level highest">Highest Security</div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="certificate-demo">
+        <h4>📋 X.509 Certificate Structure</h4>
+        <div class="certificate-viewer">
+          <div *ngFor="let cert of certificates; let i = index" class="certificate-card">
+            <div class="cert-header">
+              <h5>Certificate {{ i + 1 }}</h5>
+              <div class="cert-status" [class]="cert.status">{{ cert.status }}</div>
+            </div>
+            <div class="cert-details">
+              <div class="cert-field">
+                <strong>Version:</strong> {{ cert.version }}
+              </div>
+              <div class="cert-field">
+                <strong>Serial Number:</strong> {{ cert.serialNumber }}
+              </div>
+              <div class="cert-field">
+                <strong>Issuer:</strong> {{ cert.issuer }}
+              </div>
+              <div class="cert-field">
+                <strong>Subject:</strong> {{ cert.subject }}
+              </div>
+              <div class="cert-field">
+                <strong>Public Key:</strong> {{ cert.publicKey }}
+              </div>
+              <div class="cert-field">
+                <strong>Validity:</strong> {{ cert.validity }}
+              </div>
+              <div class="cert-field">
+                <strong>Signature:</strong> {{ cert.signature }}
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="chain-validation">
+          <h4>🔗 Certificate Chain Validation</h4>
+          <button (click)="validateCertificateChain()" class="validate-btn">Validate Chain</button>
+          
+          <div class="validation-result">
+            <ng-container *ngIf="validateCertificateChain() as validation">
+              <div class="validation-status" [class.valid]="validation.valid" [class.invalid]="!validation.valid">
+                {{ validation.valid ? '✓ Chain Valid' : '✗ Chain Invalid' }}
+              </div>
+              <div class="validation-issues">
+                <div *ngFor="let issue of validation.issues" class="issue-item">
+                  {{ issue }}
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+  
+      <div class="revocation-methods">
+        <h4>🚫 Certificate Revocation</h4>
+        <div class="revocation-comparison">
+          <div class="revocation-method">
+            <h5>Certificate Revocation Lists (CRLs)</h5>
+            <ul>
+              <li>Periodic publication of revoked certificates</li>
+              <li>Simple to implement</li>
+              <li>Can be large and outdated</li>
+              <li>Suitable for batch processing</li>
+            </ul>
+          </div>
+          <div class="revocation-method">
+            <h5>Online Certificate Status Protocol (OCSP)</h5>
+            <ul>
+              <li>Real-time certificate status checking</li>
+              <li>Smaller network overhead</li>
+              <li>Requires online connectivity</li>
+              <li>Better for real-time applications</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: Trust Models →</button>
+      </div>
+    </div>
+  
+    <!-- Section 7: Trust Models & PKI Architectures -->
+    <div *ngIf="currentSection === 7" class="section">
+      <h2>7. Trust Models & PKI Architectures</h2>
+      
+      <div class="trust-models">
+        <h3>🏗️ Hierarchical vs. Mesh</h3>
+        <p>
+          In a hierarchical PKI, a root CA signs intermediate CAs in a tree structure. 
+          In a mesh, multiple CAs cross-certify each other for greater resilience but increased complexity.
+        </p>
+  
+        <div class="models-grid">
+          <div *ngFor="let model of trustModels" class="model-card">
+            <div class="model-header">
+              <h4>{{ model.name }}</h4>
+              <div class="model-structure">{{ model.structure }}</div>
+            </div>
+            <p>{{ model.description }}</p>
+            
+            <div class="model-details">
+              <div class="advantages">
+                <h5>✅ Advantages:</h5>
+                <ul>
+                  <li *ngFor="let advantage of model.advantages">{{ advantage }}</li>
+                </ul>
+              </div>
+              <div class="disadvantages">
+                <h5>❌ Disadvantages:</h5>
+                <ul>
+                  <li *ngFor="let disadvantage of model.disadvantages">{{ disadvantage }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="browser-trust">
+        <div class="trust-callout">
+          <h4>🌐 Browser Trust Stores</h4>
+          <p>
+            Browsers embed dozens of root CA certificates—users must trust these implicitly 
+            or manage their own trust stores.
+          </p>
+          <div class="trust-stats">
+            <div class="stat-item">
+              <span class="stat-number">150+</span>
+              <span class="stat-label">Root CAs in major browsers</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">99.9%</span>
+              <span class="stat-label">Websites use CA certificates</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">30 days</span>
+              <span class="stat-label">Average certificate lifetime</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="architecture-comparison">
+        <h4>📊 Architecture Comparison</h4>
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Hierarchical</th>
+              <th>Mesh</th>
+              <th>Web of Trust</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Scalability</td>
+              <td class="rating high">High</td>
+              <td class="rating medium">Medium</td>
+              <td class="rating low">Low</td>
+            </tr>
+            <tr>
+              <td>Single Point of Failure</td>
+              <td class="rating low">Yes</td>
+              <td class="rating high">No</td>
+              <td class="rating high">No</td>
+            </tr>
+            <tr>
+              <td>Management Complexity</td>
+              <td class="rating high">Low</td>
+              <td class="rating medium">Medium</td>
+              <td class="rating low">High</td>
+            </tr>
+            <tr>
+              <td>Trust Path Length</td>
+              <td class="rating high">Short</td>
+              <td class="rating medium">Variable</td>
+              <td class="rating low">Long</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="nextSection()" class="next-btn">Next: Exercises →</button>
+      </div>
+    </div>
+  
+    <!-- Section 8: Active Learning & Exercises -->
+    <div *ngIf="currentSection === 8" class="section">
+      <h2>8. Active Learning & Exercises</h2>
+      
+      <div class="exercises-grid">
+        <div *ngFor="let exercise of exercises" class="exercise-card">
+          <div class="exercise-header">
+            <h4>{{ exercise.title }}</h4>
+            <div class="exercise-status" [class.completed]="exercise.completed">
+              {{ exercise.completed ? '✓ Completed' : 'Pending' }}
+            </div>
+          </div>
+          
+          <div class="exercise-content">
+            <div *ngIf="exercise.id === 1">
+              <p>Draw the complete ticket-granting exchange for Kerberos, labeling all encrypted fields.</p>
+              <div class="exercise-hint">
+                💡 Include AS exchange, TGS exchange, and client-server authentication
+              </div>
+            </div>
+            
+            <div *ngIf="exercise.id === 2">
+              <p>Code a Diffie–Hellman key exchange with small primes; verify both sides derive the same secret.</p>
+              <div class="exercise-hint">
+                💡 Use the interactive demo above as a reference for implementation
+              </div>
+            </div>
+            
+            <div *ngIf="exercise.id === 3">
+              <p>Extend your DH code to sign and verify the exchanged values, preventing a man-in-the-middle.</p>
+              <div class="exercise-hint">
+                💡 Add digital signatures to the DH public key exchanges
+              </div>
+            </div>
+            
+            <div *ngIf="exercise.id === 4">
+              <p>Given three X.509 certificates (root → intermediate → end-entity), write pseudocode to validate the chain.</p>
+              <div class="exercise-hint">
+                💡 Check signatures, validity periods, and certificate chain integrity
+              </div>
+            </div>
+            
+            <div *ngIf="exercise.id === 5">
+              <p>Compare CRL vs. OCSP in terms of timeliness and network overhead; propose when to use each.</p>
+              <div class="exercise-hint">
+                💡 Consider real-time requirements vs. bandwidth constraints
+              </div>
+            </div>
+          </div>
+          
+          <div class="exercise-actions">
+            <button 
+              (click)="completeExercise(exercise.id, 85)" 
+              [disabled]="exercise.completed"
+              class="complete-btn">
+              Mark Complete
+            </button>
+            <div *ngIf="exercise.completed" class="exercise-score">
+              Score: {{ exercise.score }}%
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="quiz-section">
+        <h3>📝 Knowledge Check Quiz</h3>
+        <div class="quiz-container">
+          <div class="quiz-progress">
+            Question {{ currentQuiz + 1 }} of {{ quizQuestions.length }}
+          </div>
+          
+          <div class="quiz-question">
+            <h4>{{ quizQuestions[currentQuiz].question }}</h4>
+            <div class="quiz-options">
+              <div 
+                *ngFor="let option of quizQuestions[currentQuiz].options; let i = index"
+                class="quiz-option"
+                [class.selected]="selectedAnswer === i"
+                [class.correct]="showQuizResult && i === quizQuestions[currentQuiz].correct"
+                [class.incorrect]="showQuizResult && selectedAnswer === i && i !== quizQuestions[currentQuiz].correct"
+                (click)="selectAnswer(i)">
+                {{ option }}
+              </div>
+            </div>
+            
+            <div class="quiz-actions">
+              <button 
+                (click)="submitQuiz()" 
+                [disabled]="selectedAnswer === -1 || showQuizResult"
+                class="submit-btn">
+                Submit Answer
+              </button>
+              <button 
+                *ngIf="showQuizResult && currentQuiz < quizQuestions.length - 1"
+                (click)="nextQuiz()"
+                class="next-btn">
+                Next Question
+              </button>
+            </div>
+            
+            <div *ngIf="showQuizResult" class="quiz-explanation">
+              <p><strong>Explanation:</strong> {{ quizQuestions[currentQuiz].explanation }}</p>
+            </div>
+          </div>
+          
+          <div *ngIf="currentQuiz === quizQuestions.length - 1 && showQuizResult" class="quiz-results">
+            <h4>Quiz Complete!</h4>
+            <div class="final-score">
+              Score: {{ quizScore }} / {{ quizQuestions.length }} ({{ (quizScore / quizQuestions.length * 100) | number:'1.0-0' }}%)
+            </div>
+            <button (click)="resetQuiz()" class="reset-btn">Retake Quiz</button>
+          </div>
+        </div>
+      </div>
+  
+      <div class="chapter-summary">
+        <h3>📊 Chapter Summary</h3>
+        <div class="summary-stats">
+          <div class="stat-card">
+            <div class="stat-number">{{ getCompletedExercisesCount() }}</div>
+            <div class="stat-label">Exercises Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ getOverallScore() }}%</div>
+            <div class="stat-label">Overall Score</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Sections Covered</div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="navigation-buttons">
+        <button (click)="prevSection()" class="prev-btn">← Previous</button>
+        <button (click)="goToDashboard()" class="dashboard-btn">Complete Chapter</button>
+      </div>
+    </div>
+  </div>

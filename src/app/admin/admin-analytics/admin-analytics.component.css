@@ -1,0 +1,28 @@
+.chart-bar {
+  transition: height 0.5s ease-in-out;
+}
+
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
+
+.activity-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+}
+
+.trend-up {
+  color: #10b981;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.trend-stable {
+  color: #6b7280;
+}
+

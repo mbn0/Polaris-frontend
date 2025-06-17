@@ -1,0 +1,450 @@
+/* Chapter 8: Encipherment Using Modern Symmetric-Key Ciphers - Comprehensive Styling */
+
+/* Base styling */
+.chapter-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+}
+
+/* Mode demonstration styling */
+.mode-demo {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #3b82f6;
+}
+
+.mode-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.mode-block {
+  background: white;
+  border: 2px solid #3b82f6;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+.mode-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+}
+
+.mode-block.ecb {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
+}
+
+.mode-block.cbc {
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+}
+
+.mode-block.cfb {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+}
+
+.mode-block.ofb {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+}
+
+.mode-block.ctr {
+  border-color: #8b5cf6;
+  background: linear-gradient(135deg, #f5f3ff, #e9d5ff);
+}
+
+/* Stream cipher styling */
+.stream-cipher-demo {
+  background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #f59e0b;
+}
+
+.rc4-state {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 0.25rem;
+  max-width: 400px;
+  margin: 1rem 0;
+}
+
+.rc4-byte {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  text-align: center;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.rc4-byte:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+/* A5/1 LFSR visualization */
+.a51-demo {
+  background: linear-gradient(135deg, #e0e7ff 0%, #6366f1 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #6366f1;
+  color: white;
+}
+
+.lfsr-register {
+  display: flex;
+  gap: 0.25rem;
+  margin: 0.5rem 0;
+  justify-content: center;
+}
+
+.lfsr-bit {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.lfsr-bit.active {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+/* Error propagation visualization */
+.error-demo {
+  background: linear-gradient(135deg, #fef2f2 0%, #ef4444 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #ef4444;
+  color: white;
+}
+
+.error-block {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 0.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.error-block.corrupted {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #dc2626;
+  animation: pulse 2s infinite;
+}
+
+.error-block.affected {
+  background: rgba(251, 146, 60, 0.3);
+  border-color: #ea580c;
+}
+
+/* Comparison table styling */
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.comparison-table th {
+  background: linear-gradient(135deg, #374151, #1f2937);
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.comparison-table td {
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.comparison-table tr:hover td {
+  background: #f9fafb;
+}
+
+.comparison-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Pattern analysis */
+.pattern-analysis {
+  background: linear-gradient(135deg, #f0f9ff 0%, #0ea5e9 100%);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 2px solid #0ea5e9;
+  color: white;
+}
+
+.pattern-block {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  margin: 0.25rem;
+  display: inline-block;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 0.75rem;
+}
+
+.pattern-block.repeated {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: #dc2626;
+}
+
+/* Mathematical formulas */
+.formula-box {
+  background: rgba(99, 102, 241, 0.1);
+  border: 2px solid #6366f1;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.formula {
+  font-family: "Times New Roman", serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: #1f2937;
+}
+
+.formula sub {
+  font-size: 0.75em;
+  vertical-align: sub;
+}
+
+/* Interactive controls */
+.controls-section {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border: 1px solid #e5e7eb;
+}
+
+.control-group {
+  margin-bottom: 1.5rem;
+}
+
+.control-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.control-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.control-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.control-button {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.control-button:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Animation classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .mode-flow {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rc4-state {
+    grid-template-columns: repeat(8, 1fr);
+  }
+
+  .lfsr-register {
+    flex-wrap: wrap;
+  }
+
+  .comparison-table {
+    font-size: 0.75rem;
+  }
+
+  .comparison-table th,
+  .comparison-table td {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .rc4-state {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .control-button {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+/* Print styles */
+@media print {
+  .controls-section {
+    display: none;
+  }
+
+  .chapter-container {
+    background: white;
+  }
+
+  .mode-demo,
+  .stream-cipher-demo,
+  .a51-demo,
+  .error-demo,
+  .pattern-analysis {
+    background: white !important;
+    border: 1px solid #000 !important;
+    color: #000 !important;
+  }
+}
+
+/* Accessibility improvements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.focus-visible:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mode-block,
+  .rc4-byte,
+  .lfsr-bit,
+  .error-block {
+    border-width: 2px;
+    border-color: #000;
+  }
+
+  .control-button {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

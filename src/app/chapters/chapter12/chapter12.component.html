@@ -1,0 +1,646 @@
+<div class="chapter-container">
+  <!-- Chapter Header -->
+  <header class="chapter-header">
+    <h1>Chapter 12: Cryptographic Hash Functions</h1>
+    <p class="chapter-subtitle">Deep Dive into Hash Function Design and Implementation</p>
+  </header>
+
+  <!-- Section Navigation -->
+  <nav class="section-nav">
+    <div class="section-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(currentSection / totalSections) * 100"></div>
+      </div>
+      <span class="progress-text">Section {{currentSection}} of {{totalSections}}</span>
+    </div>
+
+    <div class="section-tabs">
+      <button
+        *ngFor="let section of sections"
+        class="section-tab"
+        [class.active]="section.id === currentSection"
+        [class.completed]="section.completed"
+        (click)="goToSection(section.id)">
+        <span class="section-number">{{section.id}}</span>
+        <span class="section-title">{{section.title}}</span>
+        <span *ngIf="section.completed" class="checkmark">✓</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Section Content -->
+  <main class="section-content">
+
+    <!-- Section 1: Introduction to Hash Functions -->
+    <section *ngIf="currentSection === 1" class="content-section">
+      <h2>1. Introduction to Cryptographic Hash Functions</h2>
+
+      <div class="concept-box">
+        <h3>What Is a Cryptographic Hash Function?</h3>
+        <p>A cryptographic hash function maps an input message of arbitrary length to a fixed-size output (the digest), acting as a digital fingerprint. It must be easy to compute <code>h = H(m)</code> for any <code>m</code>, yet computationally infeasible to recover <code>m</code> from <code>h</code>, or to find two distinct messages with the same <code>h</code>.</p>
+      </div>
+
+      <div class="security-properties">
+        <h4>Security Properties</h4>
+        <div class="property-grid">
+          <div class="property-card">
+            <h5>Preimage Resistance</h5>
+            <p>Given a digest <code>h</code>, infeasible to find any message <code>m</code> such that <code>H(m) = h</code>.</p>
+            <div class="security-level high">One-way function</div>
+          </div>
+          <div class="property-card">
+            <h5>Second-Preimage Resistance</h5>
+            <p>Given <code>m₁</code>, infeasible to find <code>m₂ ≠ m₁</code> with <code>H(m₂) = H(m₁)</code>.</p>
+            <div class="security-level high">Weak collision resistance</div>
+          </div>
+          <div class="property-card">
+            <h5>Collision Resistance</h5>
+            <p>Infeasible to find any two distinct messages <code>m₁, m₂</code> such that <code>H(m₁) = H(m₂)</code>.</p>
+            <div class="security-level high">Strong collision resistance</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="interactive-demo">
+        <h4>Hash Function Comparison</h4>
+        <div class="input-group">
+          <label for="hashInput">Input Message:</label>
+          <input type="text" id="hashInput" [(ngModel)]="hashInput" (input)="onHashInputChange()" class="demo-input">
+        </div>
+
+        <div class="hash-results">
+          <div *ngFor="let result of hashResults" class="hash-result-card">
+            <div class="algorithm-header">
+              <span class="algorithm-name">{{result.algorithm}}</span>
+              <span class="hash-bits">{{result.bits}} bits</span>
+              <span class="computation-time">{{result.time.toFixed(2)}}ms</span>
+            </div>
+            <div class="hash-output">{{result.output}}</div>
+            <div class="security-status" [ngClass]="getSecurityClass(result.algorithm)">
+              {{getSecurityStatus(result.algorithm)}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="avalanche-demo">
+        <h4>Avalanche Effect Demonstration</h4>
+        <div class="avalanche-inputs">
+          <div class="input-group">
+            <label>Input 1:</label>
+            <input type="text" [(ngModel)]="avalancheInput1" (input)="onAvalancheInputChange()" class="demo-input">
+          </div>
+          <div class="input-group">
+            <label>Input 2:</label>
+            <input type="text" [(ngModel)]="avalancheInput2" (input)="onAvalancheInputChange()" class="demo-input">
+          </div>
+        </div>
+
+        <div class="avalanche-results" *ngIf="avalancheResults.hash1">
+          <div class="hash-comparison">
+            <div class="hash-line">
+              <span class="label">Hash 1:</span>
+              <span class="hash-value">{{avalancheResults.hash1}}</span>
+            </div>
+            <div class="hash-line">
+              <span class="label">Hash 2:</span>
+              <span class="hash-value">{{avalancheResults.hash2}}</span>
+            </div>
+          </div>
+          <div class="avalanche-stats">
+            <div class="stat">
+              <span class="stat-label">Different Bits:</span>
+              <span class="stat-value">{{avalancheResults.differentBits}}/{{avalancheResults.totalBits}}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Percentage:</span>
+              <span class="stat-value">{{avalancheResults.percentage}}%</span>
+            </div>
+            <div class="avalanche-quality" [ngClass]="getAvalancheQuality(avalancheResults.percentage)">
+              {{getAvalancheDescription(avalancheResults.percentage)}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Merkle-Damgård Construction -->
+    <section *ngIf="currentSection === 2" class="content-section">
+      <h2>2. Iterated Hash Functions & the Merkle-Damgård Scheme</h2>
+
+      <div class="concept-box">
+        <h3>Building Hashes by Iteration</h3>
+        <p>Most unkeyed hashes use the Merkle-Damgård design:</p>
+        <ol>
+          <li>Pad the message (append "1" bit, zeros, and length field)</li>
+          <li>Break into <code>r</code>-bit blocks <code>x₁, …, xₜ</code></li>
+          <li>Initialize <code>H₀</code> to a fixed IV, then for <code>i = 1…t</code>:</li>
+          <li><code>Hᵢ = f(Hᵢ₋₁, xᵢ)</code></li>
+          <li>Optionally apply an output transform <code>g</code> to <code>Hₜ</code></li>
+        </ol>
+      </div>
+
+      <div class="interactive-demo">
+        <h4>Message Padding Demonstration</h4>
+        <div class="input-group">
+          <label for="mdInput">Input Message:</label>
+          <input type="text" id="mdInput" [(ngModel)]="mdInput" (input)="onMDInputChange()" class="demo-input">
+        </div>
+
+        <div class="padding-demo" *ngIf="paddingDemo">
+          <div class="padding-step">
+            <h5>Original Message</h5>
+            <div class="message-info">
+              <span class="message-text">{{paddingDemo.original}}</span>
+              <span class="bit-count">{{paddingDemo.originalBits}} bits</span>
+            </div>
+          </div>
+
+          <div class="padding-step">
+            <h5>After Padding</h5>
+            <div class="padding-breakdown">
+              <div class="padding-part original">Original: {{paddingDemo.originalBits}} bits</div>
+              <div class="padding-part separator">+ "1" bit</div>
+              <div class="padding-part zeros">+ {{paddingDemo.paddingAdded}} zero bits</div>
+              <div class="padding-part length">+ 64 length bits</div>
+              <div class="padding-part total">= {{paddingDemo.finalLength}} bits total</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="md-iteration" *ngIf="mdSteps.length > 0">
+          <h5>Merkle-Damgård Iteration</h5>
+          <div class="md-steps">
+            <div *ngFor="let step of mdSteps" class="md-step">
+              <div class="step-header">Round {{step.round}}</div>
+              <div class="step-operation">
+                <span class="input-hash">H{{step.round - 1}}: {{step.input.substr(0, 16)}}...</span>
+                <span class="operation">⊕</span>
+                <span class="block">Block: {{step.block.substr(0, 16)}}...</span>
+                <span class="arrow">→</span>
+                <span class="output-hash">H{{step.round}}: {{step.output.substr(0, 16)}}...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <h4>Security Note</h4>
+        <p>Length-padding prevents simple collisions and length-extension attacks; the final length field ties the digest uniquely to the original bit-count.</p>
+      </div>
+    </section>
+
+    <!-- Section 3: Compression Functions -->
+    <section *ngIf="currentSection === 3" class="content-section">
+      <h2>3. Compression-Function Constructions</h2>
+
+      <div class="concept-box">
+        <h3>Key Iteration Models</h3>
+        <p>Different schemes for building compression functions from block ciphers:</p>
+      </div>
+
+      <div class="interactive-demo">
+        <h4>Compression Function Schemes</h4>
+        <div class="scheme-selector">
+          <label for="compressionScheme">Select Scheme:</label>
+          <select id="compressionScheme" [(ngModel)]="selectedScheme" (change)="onCompressionSchemeChange()" class="demo-select">
+            <option value="rabin">Rabin Scheme</option>
+            <option value="davies-meyer">Davies-Meyer Scheme</option>
+            <option value="miyaguchi-preneel">Miyaguchi-Preneel Scheme</option>
+          </select>
+        </div>
+
+        <div class="compression-inputs">
+          <div class="input-group">
+            <label>Hash State (H):</label>
+            <input type="text" [(ngModel)]="compressionInput" (input)="onCompressionInputChange()" class="demo-input">
+          </div>
+          <div class="input-group">
+            <label>Message Block (x):</label>
+            <input type="text" [(ngModel)]="compressionKey" (input)="onCompressionInputChange()" class="demo-input">
+          </div>
+        </div>
+
+        <div class="scheme-visualization">
+          <div class="scheme-card" [ngClass]="selectedScheme">
+            <h5>{{getSchemeTitle(selectedScheme)}}</h5>
+            <div class="scheme-formula">{{getSchemeFormula(selectedScheme)}}</div>
+            <div class="scheme-result">
+              <span class="label">Result:</span>
+              <span class="value">{{compressionResult}}</span>
+            </div>
+            <div class="scheme-properties">
+              <div class="property">Security: {{getSchemeProperty(selectedScheme, 'security')}}</div>
+              <div class="property">Performance: {{getSchemeProperty(selectedScheme, 'performance')}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: SHA-512 Deep Dive -->
+    <section *ngIf="currentSection === 4" class="content-section">
+      <h2>4. SHA-512 in Detail</h2>
+
+      <div class="interactive-demo">
+        <h4>SHA-512 Deep Dive</h4>
+        <div class="input-group">
+          <label for="sha512Input">Input Message:</label>
+          <input type="text" id="sha512Input" [(ngModel)]="sha512Input" (input)="onSHA512InputChange()" class="demo-input">
+        </div>
+
+        <div class="sha512-demo">
+          <div class="word-schedule">
+            <h5>Word Schedule (W₀ - W₇₉)</h5>
+            <div class="word-grid">
+              <div *ngFor="let word of wordSchedule.slice(0, 16)" class="word-item initial">
+                {{word}}
+              </div>
+              <div *ngFor="let word of wordSchedule.slice(16, 24)" class="word-item generated">
+                {{word}}
+              </div>
+            </div>
+            <div class="word-legend">
+              <span class="legend-item initial">Initial 16 words from message</span>
+              <span class="legend-item generated">Generated using σ₀, σ₁ functions</span>
+            </div>
+          </div>
+
+          <div class="compression-rounds">
+            <h5>Compression Rounds</h5>
+            <div class="round-controls">
+              <button (click)="stepThroughSHA512()" class="step-button">Step Forward</button>
+              <button (click)="resetSHA512Demo()" class="reset-button">Reset</button>
+              <span class="round-counter">Round: {{currentRound + 1}}/{{sha512Steps.length}}</span>
+            </div>
+
+            <div class="current-round" *ngIf="sha512Steps[currentRound]">
+              <div class="round-state">
+                <div class="state-registers">
+                  <div class="register">A: {{sha512Steps[currentRound].A}}</div>
+                  <div class="register">B: {{sha512Steps[currentRound].B}}</div>
+                  <div class="register">C: {{sha512Steps[currentRound].C}}</div>
+                  <div class="register">D: {{sha512Steps[currentRound].D}}</div>
+                  <div class="register">E: {{sha512Steps[currentRound].E}}</div>
+                  <div class="register">F: {{sha512Steps[currentRound].F}}</div>
+                  <div class="register">G: {{sha512Steps[currentRound].G}}</div>
+                  <div class="register">H: {{sha512Steps[currentRound].H}}</div>
+                </div>
+
+                <div class="round-computation">
+                  <div class="computation-step">
+                    <span class="label">W[{{currentRound}}]:</span>
+                    <span class="value">{{sha512Steps[currentRound].W}}</span>
+                  </div>
+                  <div class="computation-step">
+                    <span class="label">K[{{currentRound}}]:</span>
+                    <span class="value">{{sha512Steps[currentRound].K}}</span>
+                  </div>
+                  <div class="computation-step">
+                    <span class="label">T1:</span>
+                    <span class="value">{{sha512Steps[currentRound].T1}}</span>
+                  </div>
+                  <div class="computation-step">
+                    <span class="label">T2:</span>
+                    <span class="value">{{sha512Steps[currentRound].T2}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sha512-details">
+        <h4>SHA-512 Components</h4>
+        <div class="component-grid">
+          <div class="component-card">
+            <h5>Message Preparation</h5>
+            <p>Pad message to multiple of 1024 bits with "1" bit, zeros, and 128-bit length field.</p>
+          </div>
+          <div class="component-card">
+            <h5>Word Expansion</h5>
+            <p>Generate 80 words from 16 initial words using σ₀ and σ₁ functions with rotations and shifts.</p>
+          </div>
+          <div class="component-card">
+            <h5>Compression Function</h5>
+            <p>80 rounds updating 8 state variables using majority, choice, and Σ functions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Modern Hash Functions -->
+    <section *ngIf="currentSection === 5" class="content-section">
+      <h2>5. Modern Trends & Alternatives</h2>
+
+      <div class="concept-box">
+        <h3>Beyond Merkle-Damgård</h3>
+        <p>SHA-3 (Keccak) adopted in 2015 uses a sponge construction, absorbing input into a large state and squeezing out the digest. Unlike Merkle-Damgård, it resists length-extension attacks by design and supports variable-length outputs.</p>
+      </div>
+
+      <div class="interactive-demo">
+        <h4>Modern Hash Functions</h4>
+        <div class="input-group">
+          <label for="modernInput">Input Message:</label>
+          <input type="text" id="modernInput" [(ngModel)]="modernInput" (input)="onModernInputChange()" class="demo-input">
+        </div>
+
+        <div class="modern-results" *ngIf="modernResults.sha3_256">
+          <div class="hash-comparison-modern">
+            <div class="modern-hash-card">
+              <h5>SHA-3 (Keccak)</h5>
+              <div class="hash-output">{{modernResults.sha3_256}}</div>
+              <div class="hash-features">
+                <span class="feature">Sponge Construction</span>
+                <span class="feature">Length-Extension Resistant</span>
+              </div>
+            </div>
+
+            <div class="modern-hash-card">
+              <h5>BLAKE2b</h5>
+              <div class="hash-output">{{modernResults.blake2b}}</div>
+              <div class="hash-features">
+                <span class="feature">High Speed</span>
+                <span class="feature">Tree Hashing</span>
+              </div>
+            </div>
+
+            <div class="modern-hash-card">
+              <h5>SHAKE-128</h5>
+              <div class="input-group inline">
+                <label>Output Length (bits):</label>
+                <input type="number" [(ngModel)]="shakeLength" (input)="onShakeLengthChange()" min="128" max="1024" step="128" class="demo-input small">
+              </div>
+              <div class="hash-output">{{modernResults.shake128}}</div>
+              <div class="hash-features">
+                <span class="feature">Variable Output</span>
+                <span class="feature">Extendable Output Function</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="comparison-table">
+            <h5>Feature Comparison</h5>
+            <table>
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>Speed</th>
+                  <th>Security</th>
+                  <th>Flexibility</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SHA-3</td>
+                  <td>{{modernResults.comparison.speed.sha3}}</td>
+                  <td>{{modernResults.comparison.security.sha3}}</td>
+                  <td>{{modernResults.comparison.flexibility.sha3}}</td>
+                </tr>
+                <tr>
+                  <td>BLAKE2</td>
+                  <td>{{modernResults.comparison.speed.blake2}}</td>
+                  <td>{{modernResults.comparison.security.blake2}}</td>
+                  <td>{{modernResults.comparison.flexibility.blake2}}</td>
+                </tr>
+                <tr>
+                  <td>SHAKE</td>
+                  <td>{{modernResults.comparison.speed.shake}}</td>
+                  <td>{{modernResults.comparison.security.shake}}</td>
+                  <td>{{modernResults.comparison.flexibility.shake}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Applications -->
+    <section *ngIf="currentSection === 6" class="content-section">
+      <h2>6. Applications</h2>
+
+      <div class="applications-grid">
+        <div class="application-demo">
+          <h4>Password Storage</h4>
+          <div class="input-group">
+            <label>Password:</label>
+            <input type="password" [(ngModel)]="passwordInput" (input)="onPasswordInputChange()" class="demo-input">
+          </div>
+          <div class="input-group">
+            <label>Salt:</label>
+            <input type="text" [(ngModel)]="saltValue" (input)="onPasswordInputChange()" class="demo-input">
+          </div>
+          <div class="password-result">
+            <div class="label">PBKDF2 Result:</div>
+            <div class="hash-value">{{hashedPassword}}</div>
+            <div class="security-note">Never store plain passwords - always use key derivation functions!</div>
+          </div>
+        </div>
+
+        <div class="application-demo">
+          <h4>Merkle Tree</h4>
+          <div class="merkle-inputs">
+            <div *ngFor="let leaf of merkleLeaves; let i = index" class="input-group">
+              <label>Transaction {{i + 1}}:</label>
+              <input type="text" [value]="leaf" (input)="onMerkleLeafChange(i, $event)" class="demo-input">
+            </div>
+          </div>
+
+          <div class="merkle-visualization" *ngIf="merkleTree.root">
+            <div class="merkle-level">
+              <div class="merkle-node root">
+                <div class="node-label">Root</div>
+                <div class="node-hash">{{merkleTree.root.substr(0, 16)}}...</div>
+              </div>
+            </div>
+
+            <div class="merkle-level">
+              <div *ngFor="let hash of merkleTree.level1" class="merkle-node intermediate">
+                <div class="node-label">Intermediate</div>
+                <div class="node-hash">{{hash.substr(0, 16)}}...</div>
+              </div>
+            </div>
+
+            <div class="merkle-level">
+              <div *ngFor="let hash of merkleTree.level0; let i = index" class="merkle-node leaf">
+                <div class="node-label">Leaf {{i + 1}}</div>
+                <div class="node-hash">{{hash.substr(0, 16)}}...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Security Analysis -->
+    <section *ngIf="currentSection === 7" class="content-section">
+      <h2>7. Security Considerations</h2>
+
+      <div class="security-demos">
+        <div class="security-demo">
+          <h4>Length-Extension Attack</h4>
+          <div class="input-group">
+            <label>Original Message:</label>
+            <input type="text" [(ngModel)]="attackDemo" (input)="onAttackDemoChange()" class="demo-input">
+          </div>
+
+          <div class="attack-visualization" *ngIf="lengthExtensionDemo.original">
+            <div class="attack-step">
+              <div class="step-label">1. Original Hash</div>
+              <div class="step-content">
+                <div class="message">Message: {{lengthExtensionDemo.original}}</div>
+                <div class="hash">Hash: {{lengthExtensionDemo.originalHash}}</div>
+              </div>
+            </div>
+
+            <div class="attack-step">
+              <div class="step-label">2. Length Extension</div>
+              <div class="step-content">
+                <div class="extension">Extension: {{lengthExtensionDemo.extension}}</div>
+                <div class="vulnerability" [ngClass]="lengthExtensionDemo.vulnerable ? 'vulnerable' : 'secure'">
+                  {{lengthExtensionDemo.vulnerable ? 'VULNERABLE to length extension' : 'SECURE against length extension'}}
+                </div>
+              </div>
+            </div>
+
+            <div class="attack-step">
+              <div class="step-label">3. Mitigation</div>
+              <div class="step-content">
+                <div class="mitigation">{{lengthExtensionDemo.mitigation}}</div>
+                <div class="hmac-result">HMAC: {{lengthExtensionDemo.hmacResult}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-demo">
+          <h4>Collision Resistance Analysis</h4>
+          <div class="collision-analysis">
+            <div *ngFor="let size of collisionDemo.sizes" class="collision-size">
+              <div class="size-header">
+                <span class="bit-size">{{size.bits}}-bit Hash</span>
+                <span class="security-status" [ngClass]="size.security.toLowerCase()">{{size.security}}</span>
+              </div>
+              <div class="collision-stats">
+                <div class="stat">Operations needed: 2^{{size.bits/2}} ≈ {{size.operations.toExponential(2)}}</div>
+                <div class="stat">Estimated time: {{size.timeEstimate}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Performance Benchmarking -->
+    <section *ngIf="currentSection === 8" class="content-section">
+      <h2>8. Performance Benchmarking</h2>
+
+      <div class="benchmark-demo">
+        <div class="benchmark-controls">
+          <button (click)="runPerformanceBenchmark()" [disabled]="benchmarkRunning" class="benchmark-button">
+            {{benchmarkRunning ? 'Running Benchmark...' : 'Run Performance Benchmark'}}
+          </button>
+        </div>
+
+        <div class="benchmark-results" *ngIf="performanceResults.length > 0">
+          <table class="performance-table">
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Data Size</th>
+                <th>Avg Time (ms)</th>
+                <th>Throughput (KB/s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let result of performanceResults">
+                <td>{{result.algorithm}}</td>
+                <td>{{result.dataSize / 1024}}KB</td>
+                <td>{{result.avgTime}}</td>
+                <td>{{result.throughput}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: Exercises & Summary -->
+    <section *ngIf="currentSection === 9" class="content-section">
+      <h2>9. Active Learning & Exercises</h2>
+
+      <div class="exercises-grid">
+        <div class="exercise-card">
+          <h4>Exercise 1: Hash Function Comparison</h4>
+          <p>Compare MD5, SHA-1, and SHA-256 digests of the same input. Observe how collision resistance and output size differ.</p>
+          <div class="exercise-status completed">✓ Completed in Section 1</div>
+        </div>
+
+        <div class="exercise-card">
+          <h4>Exercise 2: Avalanche Effect Analysis</h4>
+          <p>Demonstrate how a single-bit change produces dramatically different hash outputs.</p>
+          <div class="exercise-status completed">✓ Completed in Section 1</div>
+        </div>
+
+        <div class="exercise-card">
+          <h4>Exercise 3: Merkle-Damgård Construction</h4>
+          <p>Visualize the iterative process of hash computation with padding and compression functions.</p>
+          <div class="exercise-status completed">✓ Completed in Section 2</div>
+        </div>
+
+        <div class="exercise-card">
+          <h4>Exercise 4: SHA-512 Deep Dive</h4>
+          <p>Step through SHA-512 word expansion and compression rounds to understand internal mechanics.</p>
+          <div class="exercise-status completed">✓ Completed in Section 4</div>
+        </div>
+
+        <div class="exercise-card">
+          <h4>Exercise 5: Security Attack Analysis</h4>
+          <p>Explore length-extension attacks and collision resistance across different hash sizes.</p>
+          <div class="exercise-status completed">✓ Completed in Section 7</div>
+        </div>
+      </div>
+
+      <div class="chapter-summary">
+        <h4>Chapter Summary</h4>
+        <p>You have completed a comprehensive study of cryptographic hash functions, from basic properties through advanced implementations. You now understand:</p>
+        <ul>
+          <li>The three fundamental security properties of hash functions</li>
+          <li>Merkle-Damgård construction and its security implications</li>
+          <li>Different compression function schemes and their trade-offs</li>
+          <li>SHA-512 internal mechanics and implementation details</li>
+          <li>Modern alternatives like SHA-3, BLAKE2, and extendable output functions</li>
+          <li>Real-world applications in password storage, digital signatures, and blockchain</li>
+          <li>Security considerations including length-extension and collision attacks</li>
+          <li>Performance characteristics across different algorithms and data sizes</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Controls -->
+  <footer class="chapter-navigation">
+    <button
+      class="nav-button prev"
+      [disabled]="currentSection === 1"
+      (click)="previousSection()">
+      ← Previous Section
+    </button>
+
+    <div class="section-indicator">
+      <span class="current-section">{{sections[currentSection - 1]?.title}}</span>
+    </div>
+
+    <button
+      class="nav-button next"
+      [disabled]="currentSection === totalSections"
+      (click)="nextSection()">
+      Next Section →
+    </button>
+  </footer>
+</div>
+

@@ -1,0 +1,212 @@
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h2 class="text-2xl font-bold text-gray-900">Section Management</h2>
+    <button
+      (click)="openCreateModal()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+    >
+      Create New Section
+    </button>
+  </div>
+
+  <!-- Sections Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let section of sections" class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900">Section {{ section.sectionId }}</h3>
+          <p class="text-sm text-gray-600">{{ section.instructorName }}</p>
+        </div>
+        <div class="flex space-x-2">
+          <button
+            (click)="openEditModal(section)"
+            class="text-blue-600 hover:text-blue-800 text-sm"
+          >
+            Edit
+          </button>
+          <button
+            (click)="deleteSection(section.sectionId)"
+            class="text-red-600 hover:text-red-800 text-sm"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-medium text-gray-700">Students ({{ section.students.length }})</span>
+          <button
+            (click)="openStudentModal(section)"
+            class="text-blue-600 hover:text-blue-800 text-sm"
+          >
+            Manage
+          </button>
+        </div>
+        <div class="space-y-1 max-h-32 overflow-y-auto">
+          <div *ngFor="let student of section.students" class="flex justify-between items-center text-sm">
+            <span>{{ student.fullName }}</span>
+            <span class="text-gray-500">{{ student.matricNo }}</span>
+          </div>
+          <div *ngIf="section.students.length === 0" class="text-sm text-gray-500 italic">
+            No students assigned
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Section Modal -->
+  <div *ngIf="showCreateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Create New Section</h3>
+        <!-- Add error message display -->
+        <div *ngIf="error" class="mb-4 p-3 text-sm text-red-600 bg-red-100 rounded-md">
+          {{ error }}
+        </div>
+        <form (ngSubmit)="createSection()" #createForm="ngForm" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
+            <select
+              [(ngModel)]="newSection.instructorUserId"
+              name="instructorUserId"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="error"
+            >
+              <option [ngValue]="''">Select an instructor</option>
+              <option *ngFor="let instructor of instructors" [value]="instructor.userId">
+                {{ instructor.name }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              (click)="closeCreateModal()"
+              [disabled]="isSubmitting"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="isSubmitting || newSection.instructorUserId === ''"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {{ isSubmitting ? 'Creating...' : 'Create Section' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Section Modal -->
+  <div *ngIf="showEditModal && selectedSection" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Edit Section</h3>
+        <form (ngSubmit)="updateSection()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
+            <select
+              [(ngModel)]="selectedSection.instructorId"
+              name="instructorId"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option *ngFor="let instructor of instructors" [value]="instructor.userId">
+                {{ instructor.name }}
+              </option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              (click)="closeEditModal()"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+            >
+              Update Section
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Students Modal -->
+  <div *ngIf="showStudentModal && selectedSection" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 border w-2/3 max-w-4xl shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Manage Students - Section {{ selectedSection.sectionId }}
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Current Students -->
+          <div>
+            <h4 class="text-md font-medium text-gray-900 mb-3">Current Students ({{ selectedSection.students.length }})</h4>
+            <div class="border rounded-md p-4 max-h-64 overflow-y-auto">
+              <div *ngFor="let student of selectedSection.students" class="flex justify-between items-center py-2 border-b last:border-b-0">
+                <div>
+                  <div class="font-medium">{{ student.fullName }}</div>
+                  <div class="text-sm text-gray-500">{{ student.matricNo }}</div>
+                </div>
+                <button
+                  (click)="removeStudentFromSection(student.studentId)"
+                  class="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+              <div *ngIf="selectedSection.students.length === 0" class="text-gray-500 italic text-center py-4">
+                No students assigned
+              </div>
+            </div>
+          </div>
+
+          <!-- Available Students -->
+          <div>
+            <h4 class="text-md font-medium text-gray-900 mb-3">Available Students</h4>
+            <div class="border rounded-md p-4 max-h-64 overflow-y-auto">
+              <div *ngFor="let student of getUnassignedStudents()" class="flex justify-between items-center py-2 border-b last:border-b-0">
+                <div>
+                  <div class="font-medium">{{ student.fullName }}</div>
+                  <div class="text-sm text-gray-500">{{ student.matricNo }}</div>
+                </div>
+                <button
+                  (click)="addStudentToSection(student.studentId)"
+                  class="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Add
+                </button>
+              </div>
+              <div *ngIf="getUnassignedStudents().length === 0" class="text-gray-500 italic text-center py-4">
+                No unassigned students
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-6">
+          <button
+            (click)="closeStudentModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

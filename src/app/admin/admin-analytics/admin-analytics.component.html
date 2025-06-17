@@ -1,0 +1,106 @@
+<div class="space-y-6">
+  <h2 class="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+
+  <!-- User Growth Chart -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">User Growth Over Time</h3>
+    <div class="flex items-end space-x-4 h-64">
+      <div *ngFor="let item of analytics.userGrowth" class="flex flex-col items-center flex-1">
+        <div class="w-full bg-blue-200 rounded-t-md flex items-end justify-center relative">
+          <div
+            class="w-full bg-blue-500 rounded-t-md transition-all duration-500 flex items-end justify-center text-white text-sm font-medium pb-2"
+            [style.height]="getBarHeight(item.users)"
+          >
+            {{ item.users }}
+          </div>
+        </div>
+        <div class="mt-2 text-sm text-gray-600">{{ item.month }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Distribution -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">User Role Distribution</h3>
+    <div class="space-y-4">
+      <div *ngFor="let role of analytics.roleDistribution" class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-4 h-4 rounded-full mr-3"
+               [class]="role.role === 'Students' ? 'bg-green-500' :
+                        role.role === 'Instructors' ? 'bg-blue-500' : 'bg-red-500'">
+          </div>
+          <span class="text-sm font-medium text-gray-900">{{ role.role }}</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="w-32 bg-gray-200 rounded-full h-2">
+            <div class="h-2 rounded-full transition-all duration-500"
+                 [class]="role.role === 'Students' ? 'bg-green-500' :
+                          role.role === 'Instructors' ? 'bg-blue-500' : 'bg-red-500'"
+                 [style.width]="role.percentage + '%'">
+            </div>
+          </div>
+          <span class="text-sm text-gray-600 w-12">{{ role.count }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Statistics -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Section Statistics</h3>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructor</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let section of analytics.sectionStats">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              Section {{ section.sectionId }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ section.instructor }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ section.studentCount }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center">
+                <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                  <div class="h-2 bg-blue-500 rounded-full"
+                       [style.width]="(section.studentCount / 30 * 100) + '%'">
+                  </div>
+                </div>
+                <span class="text-sm text-gray-600">{{ section.studentCount }}/30</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Activity Summary -->
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity Summary</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div *ngFor="let activity of analytics.recentActivity"
+           class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium text-gray-900">{{ activity.action }}</span>
+          <span class="text-lg" [class]="getTrendColor(activity.trend)">
+            {{ getTrendIcon(activity.trend) }}
+          </span>
+        </div>
+        <div class="text-2xl font-bold text-gray-900">{{ activity.count }}</div>
+        <div class="text-sm text-gray-500 capitalize">{{ activity.trend }} trend</div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,523 @@
+<div class="chapter-container">
+    <!-- Header -->
+    <div class="chapter-header">
+      <h1>Chapter 13: Digital Signatures</h1>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="getProgress()"></div>
+      </div>
+      <p class="section-info">Section {{currentSection}} of {{totalSections}}: {{getSectionTitle()}}</p>
+    </div>
+  
+    <!-- Navigation -->
+    <div class="section-nav">
+      <button (click)="previousSection()" [disabled]="currentSection === 1" class="nav-btn">
+        ← Previous
+      </button>
+      <div class="section-dots">
+        <span *ngFor="let section of [].constructor(totalSections); let i = index" 
+              class="dot" 
+              [class.active]="currentSection === i + 1"
+              (click)="goToSection(i + 1)">
+          {{i + 1}}
+        </span>
+      </div>
+      <button (click)="nextSection()" [disabled]="currentSection === totalSections" class="nav-btn">
+        Next →
+      </button>
+    </div>
+  
+    <!-- Section 1: Defining Digital Signatures -->
+    <div *ngIf="currentSection === 1" class="section">
+      <h2>What Is a Digital Signature?</h2>
+      <div class="concept-box">
+        <p>A digital signature is a cryptographic construct that binds a signer's identity to a specific message, providing <strong>message authentication</strong>, <strong>integrity</strong>, and <strong>non-repudiation</strong>.</p>
+      </div>
+  
+      <div class="interactive-demo">
+        <h3>Interactive Digital Signature Demo</h3>
+        <div class="signature-demo">
+          <div class="input-group">
+            <label>Original Message:</label>
+            <input [(ngModel)]="signatureMessage" (input)="simulateSignature()" class="message-input">
+          </div>
+          
+          <div class="signature-status" [class.valid]="signatureValid" [class.invalid]="!signatureValid">
+            <div class="status-icon">{{signatureValid ? '✓' : '✗'}}</div>
+            <div class="status-text">
+              Signature: {{signatureValid ? 'VALID' : 'INVALID'}}
+            </div>
+          </div>
+  
+          <div class="demo-controls">
+            <button (click)="tamperMessage()" class="tamper-btn">Tamper with Message</button>
+            <button (click)="resetMessage()" class="reset-btn">Reset Message</button>
+          </div>
+  
+          <div *ngIf="tamperedMessage" class="tampered-message">
+            <label>Tampered Message:</label>
+            <div class="tampered-text">{{tamperedMessage}}</div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="key-properties">
+        <h3>Key Properties</h3>
+        <div class="properties-grid">
+          <div class="property-card">
+            <h4>Authentication</h4>
+            <p>Verifies the signer's identity</p>
+          </div>
+          <div class="property-card">
+            <h4>Integrity</h4>
+            <p>Detects any message modification</p>
+          </div>
+          <div class="property-card">
+            <h4>Non-repudiation</h4>
+            <p>Signer cannot deny signing</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Section 2: Conventional vs Digital Signatures -->
+    <div *ngIf="currentSection === 2" class="section">
+      <h2>Conventional vs. Digital Signatures</h2>
+      
+      <div class="comparison-table">
+        <div class="comparison-header">
+          <div class="aspect-col">Aspect</div>
+          <div class="conventional-col">Conventional Signature</div>
+          <div class="digital-col">Digital Signature</div>
+        </div>
+        
+        <div *ngFor="let comparison of comparisonAspects" class="comparison-row">
+          <div class="aspect-col">
+            <strong>{{comparison.aspect}}</strong>
+          </div>
+          <div class="conventional-col">
+            {{comparison.conventional}}
+          </div>
+          <div class="digital-col">
+            {{comparison.digital}}
+          </div>
+        </div>
+      </div>
+  
+      <div class="insight-box">
+        <h3>Key Insight</h3>
+        <p>Digital signatures provide <strong>message-specific authentication</strong> - each signature is unique to its message and cannot be reused, unlike conventional signatures that remain the same across documents.</p>
+      </div>
+    </div>
+  
+    <!-- Section 3: The Digital Signature Process -->
+    <div *ngIf="currentSection === 3" class="section">
+      <h2>The Digital Signature Process</h2>
+      
+      <div class="process-demo">
+        <h3>Interactive Signing Process</h3>
+        
+        <div class="process-steps">
+          <div class="step" [class.active]="processStep >= 1" [class.completed]="processStep > 1">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Hash Message</h4>
+              <p>Compute secure hash of the message</p>
+              <div *ngIf="processHash" class="step-result">
+                Hash: <code>{{processHash}}</code>
+              </div>
+            </div>
+          </div>
+  
+          <div class="step" [class.active]="processStep >= 2" [class.completed]="processStep > 2">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Generate Signature</h4>
+              <p>Apply signing algorithm with private key</p>
+              <div *ngIf="processSignature" class="step-result">
+                Signature: <code>{{processSignature}}</code>
+              </div>
+            </div>
+          </div>
+  
+          <div class="step" [class.active]="processStep >= 3" [class.completed]="processStep > 3">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Verify Signature</h4>
+              <p>Use public key to verify authenticity</p>
+              <div *ngIf="processStep > 3" class="step-result">
+                Result: <span [class.valid]="processVerified" [class.invalid]="!processVerified">
+                  {{processVerified ? 'VERIFIED' : 'FAILED'}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="process-controls">
+          <div class="input-group">
+            <label>Message to Sign:</label>
+            <input [(ngModel)]="processMessage" class="message-input">
+          </div>
+          <button (click)="executeProcessStep()" class="process-btn">
+            {{processStep === 1 ? 'Hash Message' : 
+              processStep === 2 ? 'Generate Signature' : 
+              processStep === 3 ? 'Verify Signature' : 'Reset Process'}}
+          </button>
+        </div>
+      </div>
+  
+      <div class="security-note">
+        <h3>Why Hash First?</h3>
+        <p>Signing the digest (hash) rather than the full message dramatically reduces computational effort and ties security to the strength of the hash function.</p>
+      </div>
+    </div>
+  
+    <!-- Section 4: Security Services Provided -->
+    <div *ngIf="currentSection === 4" class="section">
+      <h2>Security Services Provided</h2>
+      
+      <div class="services-grid">
+        <div *ngFor="let service of securityServices; let i = index" 
+             class="service-card" 
+             [class.active]="service.active"
+             (click)="toggleSecurityService(i)">
+          <h3>{{service.name}}</h3>
+          <p>{{service.description}}</p>
+          <div class="service-example">
+            <strong>Example:</strong> {{service.example}}
+          </div>
+          <div class="service-status">
+            {{service.active ? 'ENABLED' : 'DISABLED'}}
+          </div>
+        </div>
+      </div>
+  
+      <div class="layered-security">
+        <h3>Layered Security</h3>
+        <p>Digital signatures can be combined with encryption to provide both <strong>confidentiality</strong> and <strong>authentication</strong>:</p>
+        <div class="security-layers">
+          <div class="layer">Sign-then-Encrypt: Sign(message) → Encrypt(signed_message)</div>
+          <div class="layer">Encrypt-then-Sign: Encrypt(message) → Sign(encrypted_message)</div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Section 5: Digital Signature Schemes -->
+    <div *ngIf="currentSection === 5" class="section">
+      <h2>Digital Signature Schemes</h2>
+      
+      <div class="scheme-selector">
+        <div class="scheme-tabs">
+          <button *ngFor="let scheme of signatureSchemes" 
+                  (click)="selectScheme(scheme)"
+                  [class.active]="selectedScheme === scheme"
+                  class="scheme-tab">
+            {{scheme.name}}
+          </button>
+        </div>
+      </div>
+  
+      <div class="scheme-details">
+        <h3>{{selectedScheme.name}} Signature Scheme</h3>
+        <p>{{selectedScheme.description}}</p>
+        
+        <div class="scheme-properties">
+          <div class="property">
+            <strong>Security Basis:</strong> {{selectedScheme.securityBasis}}
+          </div>
+          <div class="property">
+            <strong>Signature Size:</strong> {{selectedScheme.signatureSize}}
+          </div>
+          <div class="property">
+            <strong>Performance:</strong> {{selectedScheme.performance}}
+          </div>
+          <div class="property">
+            <strong>Key Size:</strong> {{selectedScheme.keySize}} bits
+          </div>
+        </div>
+      </div>
+  
+      <!-- RSA Implementation Demo -->
+      <div *ngIf="selectedScheme.name === 'RSA'" class="implementation-demo">
+        <h4>RSA Signature Implementation</h4>
+        
+        <div class="rsa-demo">
+          <div class="key-generation">
+            <button (click)="generateRSAKeys()" [disabled]="rsaGenerating" class="generate-btn">
+              {{rsaGenerating ? 'Generating...' : 'Generate RSA Keys'}}
+            </button>
+            
+            <div *ngIf="rsaKeyPair" class="key-display">
+              <div class="key-pair">
+                <div><strong>n:</strong> {{rsaKeyPair.n.toString()}}</div>
+                <div><strong>e:</strong> {{rsaKeyPair.e.toString()}}</div>
+                <div><strong>d:</strong> {{rsaKeyPair.d.toString()}}</div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="rsaKeyPair" class="signing-demo">
+            <div class="input-group">
+              <label>Message to Sign:</label>
+              <input [(ngModel)]="rsaMessage" class="message-input">
+            </div>
+            
+            <div class="demo-controls">
+              <button (click)="signRSAMessage()" class="sign-btn">Sign Message</button>
+              <button (click)="verifyRSASignature()" [disabled]="!rsaSignature" class="verify-btn">Verify Signature</button>
+            </div>
+  
+            <div *ngIf="rsaSignature" class="signature-result">
+              <div><strong>Signature:</strong> <code>{{rsaSignature}}</code></div>
+            </div>
+  
+            <div *ngIf="rsaVerificationResult" class="verification-result" 
+                 [class.valid]="rsaVerificationResult === 'Valid'"
+                 [class.invalid]="rsaVerificationResult === 'Invalid'">
+              <strong>Verification:</strong> {{rsaVerificationResult}}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- ElGamal Implementation Demo -->
+      <div *ngIf="selectedScheme.name === 'ElGamal'" class="implementation-demo">
+        <h4>ElGamal Signature Implementation</h4>
+        
+        <div class="elgamal-demo">
+          <div class="parameters">
+            <h5>Parameters:</h5>
+            <div class="param-display">
+              <div><strong>p:</strong> {{elGamalP.toString()}} (prime)</div>
+              <div><strong>g:</strong> {{elGamalG.toString()}} (generator)</div>
+              <div><strong>x:</strong> {{elGamalX.toString()}} (private key)</div>
+              <div><strong>h:</strong> {{elGamalH.toString()}} (public key = g^x mod p)</div>
+            </div>
+          </div>
+  
+          <div class="signing-demo">
+            <div class="input-group">
+              <label>Message to Sign:</label>
+              <input [(ngModel)]="elGamalMessage" class="message-input">
+            </div>
+            
+            <button (click)="signElGamalMessage()" class="sign-btn">Generate ElGamal Signature</button>
+  
+            <div *ngIf="elGamalR > 0 && elGamalS > 0" class="signature-result">
+              <div><strong>Signature (r, s):</strong></div>
+              <div>r = {{elGamalR.toString()}}</div>
+              <div>s = {{elGamalS.toString()}}</div>
+              <div class="verification-status" [class.valid]="verifyElGamalSignature()">
+                Verification: {{verifyElGamalSignature() ? 'VALID' : 'INVALID'}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Section 6: Scheme Comparison -->
+    <div *ngIf="currentSection === 6" class="section">
+      <h2>Signature Scheme Comparison</h2>
+      
+      <div class="comparison-controls">
+        <button (click)="toggleSchemeComparison()" class="comparison-btn">
+          {{schemeComparison ? 'Hide' : 'Show'}} Detailed Comparison
+        </button>
+        <button (click)="runPerformanceBenchmark()" [disabled]="benchmarkRunning" class="benchmark-btn">
+          {{benchmarkRunning ? 'Running...' : 'Run Performance Benchmark'}}
+        </button>
+      </div>
+  
+      <div *ngIf="schemeComparison" class="detailed-comparison">
+        <table class="comparison-table-detailed">
+          <thead>
+            <tr>
+              <th>Scheme</th>
+              <th>Security Basis</th>
+              <th>Signature Size</th>
+              <th>Performance</th>
+              <th>Key Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let scheme of signatureSchemes">
+              <td><strong>{{scheme.name}}</strong></td>
+              <td>{{scheme.securityBasis}}</td>
+              <td>{{scheme.signatureSize}}</td>
+              <td>{{scheme.performance}}</td>
+              <td>{{scheme.keySize}} bits</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div *ngIf="performanceResults.length > 0" class="performance-results">
+        <h3>Performance Benchmark Results</h3>
+        <div class="results-grid">
+          <div *ngFor="let result of performanceResults" class="result-card">
+            <h4>{{result.scheme}}</h4>
+            <div class="metric">
+              <span class="label">Signing:</span>
+              <span class="value">{{result.signingTime}}ms</span>
+            </div>
+            <div class="metric">
+              <span class="label">Verification:</span>
+              <span class="value">{{result.verificationTime}}ms</span>
+            </div>
+            <div class="metric">
+              <span class="label">Key Size:</span>
+              <span class="value">{{result.keySize}} bits</span>
+            </div>
+            <div class="metric">
+              <span class="label">Signature Size:</span>
+              <span class="value">{{result.signatureSize}} bits</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="recommendation-engine">
+        <h3>Scheme Recommendations</h3>
+        <div class="recommendations">
+          <div class="recommendation">
+            <strong>High Security, Large Keys OK:</strong> RSA-4096
+          </div>
+          <div class="recommendation">
+            <strong>Balanced Security & Performance:</strong> ECDSA P-256
+          </div>
+          <div class="recommendation">
+            <strong>Compact Signatures:</strong> Schnorr or EdDSA
+          </div>
+          <div class="recommendation">
+            <strong>Government/FIPS Compliance:</strong> DSS/DSA
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Section 7: Variations & Applications -->
+    <div *ngIf="currentSection === 7" class="section">
+      <h2>Variations & Applications</h2>
+      
+      <div class="applications-selector">
+        <div class="app-tabs">
+          <button *ngFor="let app of applications" 
+                  (click)="selectApplication(app)"
+                  [class.active]="selectedApplication === app"
+                  class="app-tab">
+            {{app.name}}
+          </button>
+        </div>
+      </div>
+  
+      <div class="application-details">
+        <h3>{{selectedApplication.name}}</h3>
+        <p>{{selectedApplication.description}}</p>
+        
+        <div class="app-example">
+          <strong>Examples:</strong> {{selectedApplication.example}}
+        </div>
+  
+        <div class="app-benefits">
+          <h4>Key Benefits:</h4>
+          <ul>
+            <li *ngFor="let benefit of selectedApplication.benefits">{{benefit}}</li>
+          </ul>
+        </div>
+      </div>
+  
+      <div class="special-variants">
+        <h3>Special Signature Variants</h3>
+        
+        <div class="variant-cards">
+          <div class="variant-card">
+            <h4>Blind Signatures</h4>
+            <p>Enable signing without revealing message content - used in e-cash and anonymous voting systems.</p>
+            <div class="variant-formula">
+              Blind: m' = m · r^e mod n<br>
+              Sign: s' = (m')^d mod n<br>
+              Unblind: s = s' · r^(-1) mod n
+            </div>
+          </div>
+  
+          <div class="variant-card">
+            <h4>Time-Stamped Signatures</h4>
+            <p>Include trusted timestamps to prove signature existed at specific time - prevents replay attacks.</p>
+            <div class="variant-example">
+              Signature + RFC 3161 Timestamp = Legal proof of signing time
+            </div>
+          </div>
+  
+          <div class="variant-card">
+            <h4>Multi-Signatures</h4>
+            <p>Multiple parties sign the same message - used in blockchain consensus and multi-party authorization.</p>
+            <div class="variant-example">
+              Threshold: k-of-n signatures required for validity
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Section 8: Active Learning & Exercises -->
+    <div *ngIf="currentSection === 8" class="section">
+      <h2>Active Learning & Exercises</h2>
+      
+      <div class="exercises-grid">
+        <div *ngFor="let exercise of exercises" class="exercise-card" [class.completed]="exercise.completed">
+          <div class="exercise-header">
+            <h3>{{exercise.name}}</h3>
+            <span class="difficulty-badge" [class]="'difficulty-' + exercise.difficulty.toLowerCase()">
+              {{exercise.difficulty}}
+            </span>
+          </div>
+          
+          <p>{{exercise.description}}</p>
+          
+          <div class="exercise-controls">
+            <button (click)="startExercise(exercise)" class="exercise-btn">
+              {{exercise.completed ? 'Reset Exercise' : 'Start Exercise'}}
+            </button>
+          </div>
+          
+          <div *ngIf="exercise.completed" class="completion-status">
+            ✓ Exercise Completed
+          </div>
+        </div>
+      </div>
+  
+      <div class="chapter-summary">
+        <h3>Chapter 13 Summary</h3>
+        <div class="summary-points">
+          <div class="summary-point">
+            <strong>Digital Signatures</strong> provide authentication, integrity, and non-repudiation
+          </div>
+          <div class="summary-point">
+            <strong>Hash-then-Sign</strong> approach reduces computational cost and improves security
+          </div>
+          <div class="summary-point">
+            <strong>Multiple Schemes</strong> available: RSA, ElGamal, Schnorr, DSS, ECDSA
+          </div>
+          <div class="summary-point">
+            <strong>Trade-offs</strong> exist between security, performance, and signature size
+          </div>
+          <div class="summary-point">
+            <strong>Applications</strong> span from code signing to blockchain transactions
+          </div>
+        </div>
+      </div>
+  
+      <div class="learning-outcomes">
+        <h3>Learning Outcomes Achieved</h3>
+        <div class="outcomes-checklist">
+          <div class="outcome">✓ Understand digital signature fundamentals</div>
+          <div class="outcome">✓ Compare different signature schemes</div>
+          <div class="outcome">✓ Implement RSA and ElGamal signatures</div>
+          <div class="outcome">✓ Analyze security properties and trade-offs</div>
+          <div class="outcome">✓ Apply signatures to real-world scenarios</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

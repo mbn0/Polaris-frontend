@@ -1,0 +1,505 @@
+<div class="chapter-container">
+  <!-- Header -->
+  <div class="chapter-header">
+    <button class="back-btn" (click)="goToDashboard()">
+      ← Back to Dashboard
+    </button>
+    <div class="chapter-info">
+      <h1>Chapter 14: Entity Authentication</h1>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(currentSection / totalSections) * 100"></div>
+      </div>
+      <p>Section {{ currentSection }} of {{ totalSections }}</p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="section-nav">
+    <button
+      *ngFor="let i of [1,2,3,4,5,6,7]"
+      [class.active]="currentSection === i"
+      (click)="goToSection(i)">
+      {{ i }}
+    </button>
+  </div>
+
+  <!-- Section 1: Introduction to Entity Authentication -->
+  <div *ngIf="currentSection === 1" class="section">
+    <h2>What Is Entity Authentication?</h2>
+
+    <div class="concept-card">
+      <h3>Entity Authentication Definition</h3>
+      <p>Entity authentication lets one party (the <strong>verifier</strong>) confirm the identity of another (the <strong>claimant</strong>) in real time. Unlike message authentication (which merely binds a single message to its origin), entity authentication establishes trust for the entire session or transaction.</p>
+    </div>
+
+    <div class="comparison-grid">
+      <div class="auth-type">
+        <h4>Message Authentication</h4>
+        <ul>
+          <li>Verifies data integrity</li>
+          <li>Confirms message origin</li>
+          <li>Per-message basis</li>
+          <li>Can be offline</li>
+        </ul>
+      </div>
+      <div class="auth-type">
+        <h4>Entity Authentication</h4>
+        <ul>
+          <li>Verifies identity</li>
+          <li>Establishes session trust</li>
+          <li>Real-time interaction</li>
+          <li>Must be online</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="interactive-demo">
+      <h4>Authentication Scenario</h4>
+      <div class="scenario-flow">
+        <div class="entity claimant">
+          <h5>Claimant</h5>
+          <p>"I am Alice"</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="entity verifier">
+          <h5>Verifier</h5>
+          <p>"Prove it!"</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="entity proof">
+          <h5>Proof</h5>
+          <p>Authentication Evidence</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Message vs. Entity Authentication -->
+  <div *ngIf="currentSection === 2" class="section">
+    <h2>Data-Origin vs. Entity Authentication</h2>
+
+    <div class="comparison-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Message Authentication</th>
+            <th>Entity Authentication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Scope</strong></td>
+            <td>One message at a time</td>
+            <td>Entire session or interaction</td>
+          </tr>
+          <tr>
+            <td><strong>Timing</strong></td>
+            <td>Can be offline or asynchronous</td>
+            <td>Must occur in real time</td>
+          </tr>
+          <tr>
+            <td><strong>Goal</strong></td>
+            <td>Bind data to its sender</td>
+            <td>Bind identity to the claimant</td>
+          </tr>
+          <tr>
+            <td><strong>Repeated Checks</strong></td>
+            <td>Yes, per message</td>
+            <td>Typically once per session</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="example-scenarios">
+      <div class="scenario">
+        <h4>Message Authentication Example</h4>
+        <p>Email with digital signature - each email is verified independently</p>
+      </div>
+      <div class="scenario">
+        <h4>Entity Authentication Example</h4>
+        <p>Login to banking system - identity verified once for entire session</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Factors of Verification -->
+  <div *ngIf="currentSection === 3" class="section">
+    <h2>Something You Know, Have, or Are</h2>
+
+    <div class="factors-grid">
+      <div
+        *ngFor="let factor of authFactors"
+        class="factor-card"
+        [class]="factor.type">
+        <div class="factor-header">
+          <h3>{{ factor.name }}</h3>
+          <div class="security-badge" [class]="factor.security.toLowerCase()">
+            {{ factor.security }} Security
+          </div>
+        </div>
+
+        <div class="factor-examples">
+          <h4>Examples:</h4>
+          <ul>
+            <li *ngFor="let example of factor.examples">{{ example }}</li>
+          </ul>
+        </div>
+
+        <div class="factor-metrics">
+          <div class="metric">
+            <span>Security:</span>
+            <div class="meter">
+              <div class="fill" [style.width]="factor.security === 'High' ? '90%' : factor.security === 'Medium' ? '60%' : '30%'"></div>
+            </div>
+          </div>
+          <div class="metric">
+            <span>Usability:</span>
+            <div class="meter">
+              <div class="fill" [style.width]="factor.usability === 'High' ? '90%' : factor.usability === 'Medium' ? '60%' : '30%'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mfa-demo">
+      <h3>Multi-Factor Authentication (MFA)</h3>
+      <p>Strong authentication combines two or more factors:</p>
+      <div class="mfa-combinations">
+        <div class="combination">Password + SMS Code</div>
+        <div class="combination">Smart Card + PIN</div>
+        <div class="combination">Biometric + Hardware Token</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Password-Based Authentication -->
+  <div *ngIf="currentSection === 4" class="section">
+    <h2>Fixed Passwords: The Classic "Something You Know"</h2>
+
+    <div class="password-demo">
+      <h3>Salted Hash Demo</h3>
+      <div class="demo-controls">
+        <div class="input-group">
+          <label>Password:</label>
+          <input type="password" [(ngModel)]="passwordInput" placeholder="Enter password">
+        </div>
+        <div class="input-group">
+          <label>Salt:</label>
+          <input type="text" [(ngModel)]="saltInput" placeholder="Random salt">
+        </div>
+        <button (click)="hashPassword()" [disabled]="!passwordInput || !saltInput">
+          Hash Password
+        </button>
+      </div>
+
+      <div *ngIf="hashedPassword" class="hash-result">
+        <h4>Stored Hash:</h4>
+        <code>{{ storedHash }}</code>
+      </div>
+    </div>
+
+    <div class="login-demo">
+      <h3>Login Verification</h3>
+      <div class="demo-controls">
+        <div class="input-group">
+          <label>Login Attempt:</label>
+          <input type="password" [(ngModel)]="loginAttempt" placeholder="Enter password">
+        </div>
+        <button (click)="verifyLogin()" [disabled]="!loginAttempt || !storedHash">
+          Verify Login
+        </button>
+      </div>
+
+      <div *ngIf="loginResult" class="login-result" [class]="loginResult.toLowerCase()">
+        <strong>{{ loginResult }}</strong>
+      </div>
+    </div>
+
+    <div class="security-note">
+      <h4>⚠️ Security Best Practices</h4>
+      <ul>
+        <li>Always use a unique salt per user</li>
+        <li>Use slow hash functions (bcrypt, PBKDF2, Argon2)</li>
+        <li>Never store passwords in plaintext</li>
+        <li>Implement rate limiting for login attempts</li>
+      </ul>
+    </div>
+
+    <!-- OTP Demo -->
+    <div class="otp-section">
+      <h3>One-Time Passwords (Lamport Hash Chain)</h3>
+      <div class="otp-demo">
+        <div class="otp-state">
+          <h4>Current State:</h4>
+          <p><strong>Counter:</strong> {{ otpState.counter }}</p>
+          <p><strong>Current Hash:</strong> <code>{{ otpState.currentHash }}</code></p>
+        </div>
+
+        <div class="otp-controls">
+          <button (click)="authenticateOTP()" [disabled]="otpState.counter === 0">
+            Authenticate (Use OTP)
+          </button>
+          <button (click)="resetOTP()">Reset Chain</button>
+        </div>
+
+        <div *ngIf="otpState.isValid !== undefined" class="otp-result" [class]="otpState.isValid ? 'success' : 'failure'">
+          {{ otpState.isValid ? 'Authentication Successful' : 'Authentication Failed' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Challenge-Response Protocols -->
+  <div *ngIf="currentSection === 5" class="section">
+    <h2>Proving Knowledge Without Disclosure</h2>
+
+    <div class="challenge-response-demo">
+      <h3>Interactive Challenge-Response</h3>
+
+      <div class="protocol-steps">
+        <div class="step">
+          <h4>1. Challenge Generation</h4>
+          <div class="challenge-display">
+            <strong>Challenge:</strong> <code>{{ challengeResponseDemo.challenge }}</code>
+            <button (click)="generateChallenge()">New Challenge</button>
+          </div>
+        </div>
+
+        <div class="step">
+          <h4>2. Method Selection</h4>
+          <select [(ngModel)]="challengeResponseDemo.method">
+            <option value="AES">Symmetric Encryption (AES)</option>
+            <option value="HMAC">Keyed Hash (HMAC)</option>
+            <option value="RSA">Digital Signature (RSA)</option>
+          </select>
+        </div>
+
+        <div class="step">
+          <h4>3. Response Generation</h4>
+          <button (click)="generateResponse()">Generate Response</button>
+          <div *ngIf="challengeResponseDemo.response" class="response-display">
+            <strong>Response:</strong> <code>{{ challengeResponseDemo.response }}</code>
+          </div>
+        </div>
+
+        <div class="step">
+          <h4>4. Verification</h4>
+          <button (click)="verifyResponse()" [disabled]="!challengeResponseDemo.response">
+            Verify Response
+          </button>
+          <div *ngIf="challengeResponseDemo.verified !== undefined"
+               class="verification-result"
+               [class]="challengeResponseDemo.verified ? 'success' : 'failure'">
+            {{ challengeResponseDemo.verified ? 'Verification Successful' : 'Verification Failed' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="protocol-comparison">
+      <h3>Protocol Comparison</h3>
+      <div class="protocols-grid">
+        <div class="protocol">
+          <h4>Symmetric Key</h4>
+          <p>Fast, requires shared secret</p>
+          <code>R = E_K(challenge)</code>
+        </div>
+        <div class="protocol">
+          <h4>HMAC</h4>
+          <p>Simpler, standardized</p>
+          <code>R = HMAC_K(challenge)</code>
+        </div>
+        <div class="protocol">
+          <h4>Digital Signature</h4>
+          <p>Non-repudiation, public key</p>
+          <code>R = Sign_sk(challenge)</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Biometric Authentication -->
+  <div *ngIf="currentSection === 6" class="section">
+    <h2>Something You Are: Inherent Traits</h2>
+
+    <div class="biometric-overview">
+      <h3>Biometric System Components</h3>
+      <div class="components-flow">
+        <div class="component">
+          <h4>Capture Device</h4>
+          <p>Scanner, camera, microphone</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="component">
+          <h4>Feature Extractor</h4>
+          <p>Converts raw data to template</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="component">
+          <h4>Template Database</h4>
+          <p>Securely stores templates</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="biometric-metrics">
+      <h3>Accuracy Metrics Comparison</h3>
+      <div class="metrics-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>False Accept Rate (FAR)</th>
+              <th>False Reject Rate (FRR)</th>
+              <th>Overall Accuracy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let metric of biometricData">
+              <td>{{ metric.technique }}</td>
+              <td>{{ (metric.far * 100).toFixed(3) }}%</td>
+              <td>{{ (metric.frr * 100).toFixed(1) }}%</td>
+              <td>
+                <span [style.color]="getBiometricColor(metric.accuracy)">
+                  {{ metric.accuracy }}%
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="biometric-types">
+      <h3>Biometric Categories</h3>
+      <div class="types-grid">
+        <div class="type-card physiological">
+          <h4>Physiological</h4>
+          <ul>
+            <li>Fingerprint</li>
+            <li>Iris/Retina</li>
+            <li>Face</li>
+            <li>Hand Geometry</li>
+            <li>DNA</li>
+          </ul>
+        </div>
+        <div class="type-card behavioral">
+          <h4>Behavioral</h4>
+          <ul>
+            <li>Signature Dynamics</li>
+            <li>Keystroke Timing</li>
+            <li>Gait Analysis</li>
+            <li>Voice Patterns</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="roc-analysis">
+      <h3>ROC Curve Analysis</h3>
+      <p>The Receiver Operating Characteristic (ROC) curve shows the trade-off between False Accept Rate (FAR) and False Reject Rate (FRR). The optimal operating point depends on the application's security requirements.</p>
+    </div>
+  </div>
+
+  <!-- Section 7: Active Learning & Exercises -->
+  <div *ngIf="currentSection === 7" class="section">
+    <h2>Active Learning & Exercises</h2>
+
+    <div class="progress-overview">
+      <h3>Overall Progress</h3>
+      <div class="progress-bar large">
+        <div class="progress-fill" [style.width.%]="getOverallProgress()"></div>
+      </div>
+      <p>{{ getOverallProgress().toFixed(0) }}% Complete</p>
+    </div>
+
+    <div class="exercises-grid">
+      <div class="exercise-card" [class.completed]="exerciseResults.saltedHash.completed">
+        <h4>1. Design a Salted-Hash Scheme</h4>
+        <p>Sketch database tables and hashing workflow using per-user salts and a slow KDF.</p>
+        <div class="difficulty">Difficulty: ⭐⭐⭐</div>
+        <button (click)="completeExercise('saltedHash')" [disabled]="exerciseResults.saltedHash.completed">
+          {{ exerciseResults.saltedHash.completed ? 'Completed' : 'Start Exercise' }}
+        </button>
+        <div *ngIf="exerciseResults.saltedHash.completed" class="score">
+          Score: {{ exerciseResults.saltedHash.score }}/100
+        </div>
+      </div>
+
+      <div class="exercise-card" [class.completed]="exerciseResults.lamportOTP.completed">
+        <h4>2. Implement a Lamport OTP Login</h4>
+        <p>Simulate a hash-chain for t=10 and demonstrate one authentication step.</p>
+        <div class="difficulty">Difficulty: ⭐⭐⭐⭐</div>
+        <button (click)="completeExercise('lamportOTP')" [disabled]="exerciseResults.lamportOTP.completed">
+          {{ exerciseResults.lamportOTP.completed ? 'Completed' : 'Start Exercise' }}
+        </button>
+        <div *ngIf="exerciseResults.lamportOTP.completed" class="score">
+          Score: {{ exerciseResults.lamportOTP.score }}/100
+        </div>
+      </div>
+
+      <div class="exercise-card" [class.completed]="exerciseResults.challengeResponse.completed">
+        <h4>3. Build a Challenge-Response Demo</h4>
+        <p>Use a shared AES key to authenticate a "client" to a "server" ensuring freshness.</p>
+        <div class="difficulty">Difficulty: ⭐⭐⭐⭐</div>
+        <button (click)="completeExercise('challengeResponse')" [disabled]="exerciseResults.challengeResponse.completed">
+          {{ exerciseResults.challengeResponse.completed ? 'Completed' : 'Start Exercise' }}
+        </button>
+        <div *ngIf="exerciseResults.challengeResponse.completed" class="score">
+          Score: {{ exerciseResults.challengeResponse.score }}/100
+        </div>
+      </div>
+
+      <div class="exercise-card" [class.completed]="exerciseResults.biometricEval.completed">
+        <h4>4. Evaluate Biometric Metrics</h4>
+        <p>Given sample FRR/FAR data, plot an ROC curve and choose an operating point for banking.</p>
+        <div class="difficulty">Difficulty: ⭐⭐⭐</div>
+        <button (click)="completeExercise('biometricEval')" [disabled]="exerciseResults.biometricEval.completed">
+          {{ exerciseResults.biometricEval.completed ? 'Completed' : 'Start Exercise' }}
+        </button>
+        <div *ngIf="exerciseResults.biometricEval.completed" class="score">
+          Score: {{ exerciseResults.biometricEval.score }}/100
+        </div>
+      </div>
+
+      <div class="exercise-card" [class.completed]="exerciseResults.multiFactor.completed">
+        <h4>5. Multi-Factor Prototype</h4>
+        <p>Combine password + TOTP using a standard library and discuss threat mitigations.</p>
+        <div class="difficulty">Difficulty: ⭐⭐⭐⭐⭐</div>
+        <button (click)="completeExercise('multiFactor')" [disabled]="exerciseResults.multiFactor.completed">
+          {{ exerciseResults.multiFactor.completed ? 'Completed' : 'Start Exercise' }}
+        </button>
+        <div *ngIf="exerciseResults.multiFactor.completed" class="score">
+          Score: {{ exerciseResults.multiFactor.score }}/100
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter-summary">
+      <h3>Chapter Summary</h3>
+      <div class="summary-points">
+        <div class="point">✓ Entity vs. Message Authentication</div>
+        <div class="point">✓ Three Authentication Factors</div>
+        <div class="point">✓ Password-Based Systems</div>
+        <div class="point">✓ Challenge-Response Protocols</div>
+        <div class="point">✓ Biometric Authentication</div>
+        <div class="point">✓ Multi-Factor Authentication</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Controls -->
+  <div class="navigation-controls">
+    <button (click)="prevSection()" [disabled]="currentSection === 1">
+      ← Previous
+    </button>
+    <span>{{ currentSection }} / {{ totalSections }}</span>
+    <button (click)="nextSection()" [disabled]="currentSection === totalSections">
+      Next →
+    </button>
+  </div>
+</div>
+

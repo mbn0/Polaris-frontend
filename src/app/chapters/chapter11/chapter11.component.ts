@@ -1,6 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterLink, Router } from "@angular/router"
+import { Router } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 
 interface HashResult {
@@ -39,7 +39,7 @@ interface CollisionDemo {
 @Component({
   selector: "app-chapter11",
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./chapter11.component.html",
   styleUrls: ["./chapter11.component.css"],
 })

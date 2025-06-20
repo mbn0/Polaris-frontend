@@ -1,0 +1,63 @@
+/* Additional custom styles */
+.whitespace-pre-line {
+    white-space: pre-line;
+  }
+  
+  .break-all {
+    word-break: break-all;
+  }
+  
+  /* Ensure proper spacing for hex displays */
+  code {
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  
+  /* Animation for step transitions */
+  .transition-colors {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+  
+  /* Scrollable step navigation */
+  .max-h-32 {
+    max-height: 8rem;
+  }
+  
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  
+  /* Grid responsiveness */
+  @media (max-width: 768px) {
+    .grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  /* Ensure proper text wrapping in small containers */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  
+  /* Custom scrollbar for step navigation */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
+  

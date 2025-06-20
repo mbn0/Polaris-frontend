@@ -46,6 +46,104 @@
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
 
+/* Update the main container background */
+.min-h-screen {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* Alternative: If you prefer a solid color, use this instead */
+.bg-gradient-alternative {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+}
+
+/* Another beautiful option */
+.bg-gradient-ocean {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+}
+
+/* Professional blue gradient */
+.bg-gradient-professional {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+/* Soft purple gradient */
+.bg-soft-purple {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+/* Modern dark theme */
+.bg-dark-modern {
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+}
+
+/* Warm sunset */
+.bg-warm-sunset {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+/* Enhanced tab styling for better contrast */
+.bg-white\/90 {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.bg-gray-800\/90 {
+  background-color: rgba(31, 41, 55, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+/* Tab button improvements */
+.tab-button {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button.active {
+  background: rgba(31, 41, 55, 0.95);
+  color: white;
+  backdrop-filter: blur(12px);
+}
+
+/* Filter button improvements */
+.filter-button {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.filter-button:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+}
+
+.filter-button.active {
+  background: rgba(31, 41, 55, 0.95);
+  color: white;
+  border-color: rgba(31, 41, 55, 0.3);
+}
+
+/* Card improvements for better contrast */
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from {
@@ -69,12 +167,17 @@
 
 /* Card hover effects */
 .chapter-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .chapter-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.15), 0 10px 10px -5px rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 /* Status indicators */
@@ -92,19 +195,19 @@
 
 /* Difficulty colors */
 .difficulty-beginner {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 }
 
 .difficulty-intermediate {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
 }
 
 .difficulty-advanced {
-  background: linear-gradient(135deg, #f97316, #ea580c);
+  background: linear-gradient(135deg, #ec4899, #db2777);
 }
 
 .difficulty-expert {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 /* Filter tabs */
@@ -187,3 +290,327 @@ button:focus,
   }
 }
 
+/* Update the chapter card colors to match the purple theme: */
+
+/* 2. Update the chapter card styling to use purple-themed colors: */
+
+/* Enhanced Chapter Card Styling */
+.chapter-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.chapter-card:hover::before {
+  left: 100%;
+}
+
+.chapter-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15), 0 15px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+/* Chapter Number Enhancements */
+.chapter-card .w-14.h-14 {
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-card .w-14.h-14::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: rotate(45deg);
+  transition: all 0.3s;
+  opacity: 0;
+}
+
+.chapter-card:hover .w-14.h-14::before {
+  opacity: 1;
+  animation: shimmer 1.5s ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* Difficulty Badge Enhancements */
+.chapter-card .inline-flex.items-center.px-3.py-1 {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+/* Topic Tags Enhancements */
+.chapter-card .inline-flex.items-center.px-2\.5.py-1 {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.chapter-card .inline-flex.items-center.px-2\.5.py-1:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.2);
+}
+
+/* Footer Button Enhancements */
+.chapter-card button {
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-card button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.3s;
+}
+
+.chapter-card button:hover::before {
+  left: 100%;
+}
+
+/* Completion Badge Animation */
+.chapter-card .absolute.-top-1.-right-1 {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Difficulty Stars Animation */
+.chapter-card .w-2.h-2.rounded-full {
+  transition: all 0.2s ease;
+}
+
+.chapter-card:hover .w-2.h-2.rounded-full {
+  transform: scale(1.2);
+}
+
+/* Lock Icon Styling */
+.chapter-card .w-6.h-6.text-gray-400 {
+  transition: all 0.3s ease;
+}
+
+.chapter-card:hover .w-6.h-6.text-gray-400 {
+  transform: rotate(10deg);
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .chapter-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .chapter-card .w-14.h-14 {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .chapter-card .text-lg {
+    font-size: 1rem;
+  }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .chapter-card {
+    background: rgba(31, 41, 55, 0.95);
+    border-color: rgba(75, 85, 99, 0.3);
+  }
+
+  .chapter-card:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Loading State for Chapters */
+.chapter-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+/* Focus States for Accessibility */
+.chapter-card:focus-within {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Smooth Transitions for All Elements */
+.chapter-card * {
+  transition: all 0.2s ease;
+}
+
+/* Gradient Text Effect */
+.chapter-card h3:hover {
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 3. Add purple-themed accent colors for the chapter numbers: */
+
+.chapter-number-1 {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.chapter-number-2 {
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.chapter-number-3 {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.chapter-number-4 {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Crypto tools card styling */
+.crypto-tool-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crypto-tool-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Gradient backgrounds for crypto tools */
+.from-blue-500 {
+  --tw-gradient-from: #3b82f6;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(59, 130, 246, 0));
+}
+
+.to-indigo-600 {
+  --tw-gradient-to: #4f46e5;
+}
+
+.from-purple-500 {
+  --tw-gradient-from: #8b5cf6;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(139, 92, 246, 0));
+}
+
+.to-pink-600 {
+  --tw-gradient-to: #db2777;
+}
+
+.from-green-500 {
+  --tw-gradient-from: #10b981;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(16, 185, 129, 0));
+}
+
+.to-teal-600 {
+  --tw-gradient-to: #0d9488;
+}
+
+/* Enhanced hover animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.crypto-tool-card:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Backdrop blur support */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+/* Grid improvements for crypto tools */
+@media (max-width: 768px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Feature list styling */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+}
+
+/* Info section enhancements */
+.info-section {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-all {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus states for accessibility */
+.crypto-tool-card:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Loading state for crypto tools */
+.crypto-tool-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}

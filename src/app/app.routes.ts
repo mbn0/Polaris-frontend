@@ -107,6 +107,21 @@ export const routes: Routes = [
     title: 'Chapter 16 - Homomorphic Encryption'
   },
   {
+    path: 'DES',
+    loadComponent: () => import('./crypto-tools/des-tool/des-tool.component').then(m => m.DesToolComponent),
+    title: 'DES Tool - Data Encryption Standard'
+  },
+  {
+    path: 'RSA',
+    loadComponent: () => import('./crypto-tools/rsa/rsa.component').then(m => m.RSAComponent),
+    title: 'RSA Tool - RSA Encryption'
+  },
+  {
+    path: 'SHA256',
+    loadComponent: () => import('./crypto-tools/sha256/sha256.component').then(m => m.Sha256Component),
+    title: 'SHA256 Tool - SHA256 Hashing'
+  },
+  {
     path: 'admin',
     loadComponent: () => import('./admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
     canActivate: [adminGuard],

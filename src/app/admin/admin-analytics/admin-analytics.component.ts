@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { AdminService } from "../../admin.service"
+import { AdminService } from "../../core/services/admin/admin.service"
 
 interface AnalyticsData {
   userGrowth: Array<{ month: string; users: number }>

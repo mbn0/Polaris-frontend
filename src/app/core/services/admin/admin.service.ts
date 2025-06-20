@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core"
 import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http"
 import { Observable, throwError } from "rxjs"
 import { catchError, tap } from "rxjs/operators"
-import { environment } from "../environments/environment"
+import { environment } from "../../../../environments/environment"
 
 export interface User {
   id: string
@@ -15,7 +15,11 @@ export interface Section {
   sectionId: number
   instructorId: string
   instructorName: string
-  students: StudentBrief[]
+  students: {
+    userId: string
+    fullName: string
+    matricNo: string
+  }[]
 }
 
 export interface StudentBrief {
@@ -156,14 +160,14 @@ export class AdminService {
     )
   }
 
-  addStudentToSection(sectionId: number, studentId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/sections/${sectionId}/students/${studentId}`, {}).pipe(
+  addStudentToSection(sectionId: number, userId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/sections/${sectionId}/students/${userId}`, {}).pipe(
       catchError(this.handleError)
     )
   }
 
-  removeStudentFromSection(sectionId: number, studentId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/sections/${sectionId}/students/${studentId}`).pipe(
+  removeStudentFromSection(sectionId: number, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/sections/${sectionId}/students/${userId}`).pipe(
       catchError(this.handleError)
     )
   }

@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
-import { AdminService, Section, User, InstructorDto } from "../../admin.service"
+import { AdminService, Section, User, InstructorDto } from "../../core/services/admin/admin.service"
 
 interface StudentBrief {
-  studentId: number
+  userId: string
   fullName: string
   matricNo: string
 }
@@ -69,7 +69,7 @@ export class SectionManagementComponent implements OnInit {
         this.availableStudents = users
           .filter((user) => user.roles.includes("Student"))
           .map((user) => ({
-            studentId: Number.parseInt(user.id),
+            userId: user.id,
             fullName: user.fullName,
             matricNo: user.email,
           }))
@@ -175,9 +175,9 @@ export class SectionManagementComponent implements OnInit {
     }
   }
 
-  addStudentToSection(studentId: number) {
+  addStudentToSection(userId: string) {
     if (this.selectedSection) {
-      this.adminService.addStudentToSection(this.selectedSection.sectionId, studentId).subscribe({
+      this.adminService.addStudentToSection(this.selectedSection.sectionId, userId).subscribe({
         next: () => {
           this.loadSections()
           this.closeStudentModal()
@@ -187,9 +187,9 @@ export class SectionManagementComponent implements OnInit {
     }
   }
 
-  removeStudentFromSection(studentId: number) {
+  removeStudentFromSection(userId: string) {
     if (this.selectedSection) {
-      this.adminService.removeStudentFromSection(this.selectedSection.sectionId, studentId).subscribe({
+      this.adminService.removeStudentFromSection(this.selectedSection.sectionId, userId).subscribe({
         next: () => {
           this.loadSections()
         },
@@ -204,7 +204,7 @@ export class SectionManagementComponent implements OnInit {
   }
 
   getUnassignedStudents(): StudentBrief[] {
-    const assignedStudentIds = this.sections.flatMap((s) => s.students.map((st) => st.studentId))
-    return this.availableStudents.filter((student) => !assignedStudentIds.includes(student.studentId))
+    const assignedUserIds = this.sections.flatMap((s) => s.students.map((st) => st.userId))
+    return this.availableStudents.filter((student) => !assignedUserIds.includes(student.userId))
   }
 }

@@ -1,6 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterLink, Router } from "@angular/router"
+import { Router } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 
 interface PrimalityTest {
@@ -35,7 +35,7 @@ interface ExtendedEuclideanResult {
 @Component({
   selector: "app-chapter9",
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./chapter9.component.html",
   styleUrls: ["./chapter9.component.css"],
 })

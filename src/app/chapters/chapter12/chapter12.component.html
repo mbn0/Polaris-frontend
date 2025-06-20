@@ -632,7 +632,7 @@
     </button>
 
     <div class="section-indicator">
-      <span class="current-section">{{sections[currentSection - 1]?.title}}</span>
+      <span class="current-section">{{sections[currentSection - 1] && sections[currentSection - 1].title}}</span>
     </div>
 
     <button

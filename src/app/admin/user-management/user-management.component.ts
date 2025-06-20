@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
-import { AdminService, User, CreateUserDto, UpdateUserDto } from "../../admin.service"
+import { AdminService, type User, type CreateUserDto, type UpdateUserDto } from "../../core/services/admin/admin.service"
 
 @Component({
   selector: "app-user-management",
@@ -29,6 +29,9 @@ export class UserManagementComponent implements OnInit {
     roles: [],
     matricNo: "",
   }
+
+  selectedNewRole = "" // For create modal
+  selectedEditRole = "" // For edit modal
 
   constructor(private adminService: AdminService) { }
 
@@ -83,36 +86,41 @@ export class UserManagementComponent implements OnInit {
       roles: [],
       matricNo: "",
     }
+    this.selectedNewRole = ""
     this.showCreateModal = true
   }
 
   closeCreateModal() {
     this.showCreateModal = false
+    this.selectedNewRole = ""
   }
 
   openEditModal(user: User) {
     this.selectedUser = { ...user }
+    this.selectedEditRole = user.roles[0] || "" // Take the first role as the selected one
     this.showEditModal = true
   }
 
   closeEditModal() {
     this.showEditModal = false
     this.selectedUser = null
+    this.selectedEditRole = ""
   }
 
   hasRole(role: string, isNewUser = false): boolean {
-    const targetRoles = isNewUser ? this.newUser.roles : this.selectedUser?.roles || []
-    return targetRoles.includes(role)
+    if (isNewUser) {
+      return this.selectedNewRole === role
+    }
+    return this.selectedEditRole === role
   }
 
-  toggleRole(role: string, isNewUser = false) {
-    const targetRoles = isNewUser ? this.newUser.roles : this.selectedUser?.roles || []
-    const index = targetRoles.indexOf(role)
-
-    if (index > -1) {
-      targetRoles.splice(index, 1)
-    } else {
-      targetRoles.push(role)
+  setRole(role: string, isNewUser = false) {
+    if (isNewUser) {
+      this.selectedNewRole = role
+      this.newUser.roles = [role]
+    } else if (this.selectedUser) {
+      this.selectedEditRole = role
+      this.selectedUser.roles = [role]
     }
   }
 
@@ -130,9 +138,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   createUser() {
-    if (this.newUser.email && this.newUser.fullName && this.newUser.password && this.newUser.roles.length > 0) {
+    if (this.newUser.email && this.newUser.fullName && this.newUser.password && this.selectedNewRole) {
       this.loading = true
       this.error = null
+
+      // Ensure roles array contains only the selected role
+      this.newUser.roles = [this.selectedNewRole]
 
       this.adminService.createUser(this.newUser).subscribe({
         next: () => {
@@ -149,14 +160,14 @@ export class UserManagementComponent implements OnInit {
   }
 
   updateUser() {
-    if (this.selectedUser) {
+    if (this.selectedUser && this.selectedEditRole) {
       this.loading = true
       this.error = null
 
       const updateData: UpdateUserDto = {
         email: this.selectedUser.email,
         fullName: this.selectedUser.fullName,
-        roles: this.selectedUser.roles,
+        roles: [this.selectedEditRole], // Ensure roles array contains only the selected role
       }
 
       this.adminService.updateUser(this.selectedUser.id, updateData).subscribe({

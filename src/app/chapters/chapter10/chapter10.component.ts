@@ -1,7 +1,7 @@
 import { Component, type OnInit } from "@angular/core"
 import { FormsModule } from "@angular/forms"
 import { CommonModule } from '@angular/common'
-import { RouterModule, RouterLink, Router } from '@angular/router'
+import { Router } from '@angular/router'
 
 interface KeyPair {
   publicKey: { e: number; n: number }
@@ -29,7 +29,7 @@ interface CryptosystemComparison {
 @Component({
   selector: "app-chapter10",
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./chapter10.component.html",
   styleUrls: ["./chapter10.component.css"],
 })

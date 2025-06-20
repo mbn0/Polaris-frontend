@@ -3,11 +3,11 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http"
 import { BehaviorSubject, Observable, throwError } from "rxjs"
 import { map, catchError } from "rxjs/operators"
 import { Router } from "@angular/router"
-import { environment } from "../environments/environment"
+import { environment } from "../../../../environments/environment"
 import { isPlatformBrowser } from "@angular/common"
 
 export interface LoginRequest {
-  email: string
+  email: string 
   password: string
 }
 
@@ -40,11 +40,13 @@ export class AuthService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     const storedUser = isPlatformBrowser(this.platformId) ? localStorage.getItem("currentUser") : null
+    console.log('Constructor - Stored user from localStorage:', storedUser)
     this.currentUserSubject = new BehaviorSubject<RegisterResponse | null>(storedUser ? JSON.parse(storedUser) : null)
     this.currentUser = this.currentUserSubject.asObservable()
   }
 
   private handleError(error: HttpErrorResponse) {
+    console.error('Auth Service Error:', error)
     let errorMessage = "An error occurred"
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Error: ${error.error.message}`
@@ -55,14 +57,19 @@ export class AuthService {
   }
 
   public get currentUserValue(): RegisterResponse | null {
-    return this.currentUserSubject.value
+    const value = this.currentUserSubject.value
+    console.log('Getting current user value:', value)
+    return value
   }
 
   login(credentials: LoginRequest): Observable<RegisterResponse> {
+    console.log('Login attempt with email:', credentials.email)
     return this.http.post<RegisterResponse>(`${this.apiUrl}/login`, credentials).pipe(
       map((user) => {
+        console.log('Login response:', user)
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem("currentUser", JSON.stringify(user))
+          console.log('User stored in localStorage:', localStorage.getItem("currentUser"))
         }
         this.currentUserSubject.next(user)
         return user
@@ -72,10 +79,13 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<RegisterResponse> {
+    console.log('Register attempt:', userData)
     return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, userData).pipe(
       map((user) => {
+        console.log('Register response:', user)
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem("currentUser", JSON.stringify(user))
+          console.log('User stored in localStorage after registration:', localStorage.getItem("currentUser"))
         }
         this.currentUserSubject.next(user)
         return user
@@ -85,6 +95,7 @@ export class AuthService {
   }
 
   logout(): void {
+    console.log('Logging out')
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem("currentUser")
     }
@@ -93,16 +104,22 @@ export class AuthService {
   }
 
   getCurrentUser(): RegisterResponse | null {
-    return this.currentUserValue
+    const user = this.currentUserValue
+    console.log('Getting current user:', user)
+    return user
   }
 
   isLoggedIn(): boolean {
-    return !!this.currentUserValue
+    const isLoggedIn = !!this.currentUserValue
+    console.log('Checking if logged in:', isLoggedIn)
+    return isLoggedIn
   }
 
   hasRole(role: string): boolean {
     const user = this.currentUserValue
-    return user ? user.roles.includes(role) : false
+    const hasRole = user ? user.roles.includes(role) : false
+    console.log(`Checking role ${role}:`, hasRole)
+    return hasRole
   }
 
   isAdmin(): boolean {

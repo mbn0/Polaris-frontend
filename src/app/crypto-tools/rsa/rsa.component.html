@@ -1,0 +1,259 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center space-x-4 mb-4">
+          <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">RSA Encryption Tool</h1>
+            <p class="text-gray-600">Step-by-step RSA algorithm visualization</p>
+          </div>
+        </div>
+  
+        <!-- Input Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Prime p</label>
+            <input
+              type="text"
+              [(ngModel)]="inputP"
+              placeholder="Enter prime number p"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <p class="mt-1 text-xs text-gray-500">Should be at least {{MIN_PRIME_LENGTH}} bits for security</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Prime q</label>
+            <input
+              type="text"
+              [(ngModel)]="inputQ"
+              placeholder="Enter prime number q"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <p class="mt-1 text-xs text-gray-500">Should be at least {{MIN_PRIME_LENGTH}} bits for security</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Public Exponent (e)</label>
+            <input
+              type="text"
+              [(ngModel)]="inputE"
+              placeholder="Enter public exponent e"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <p class="mt-1 text-xs text-gray-500">Common value is 65537 (F4)</p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+            <input
+              type="text"
+              [(ngModel)]="inputMessage"
+              placeholder="Enter message to encrypt"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <p class="mt-1 text-xs text-gray-500">Must be less than n (p × q)</p>
+          </div>
+        </div>
+  
+        <!-- Controls -->
+        <div class="flex flex-wrap gap-3">
+          <button
+            (click)="processInput()"
+            [disabled]="isProcessing"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50">
+            {{isProcessing ? 'Processing...' : 'Generate & Encrypt'}}
+          </button>
+          <button
+            (click)="reset()"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200">
+            Reset
+          </button>
+        </div>
+      </div>
+  
+      <!-- Steps Navigation -->
+      <div *ngIf="steps.length > 0" class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">RSA Steps</h2>
+  
+        <!-- Step Progress -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button
+            *ngFor="let step of steps; let i = index"
+            (click)="goToStep(i)"
+            [class]="i === currentStep ?
+              'bg-purple-600 text-white' :
+              'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+            class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200">
+            {{step.stepNumber}}
+          </button>
+        </div>
+  
+        <!-- Navigation Controls -->
+        <div class="flex justify-between items-center">
+          <button
+            (click)="prevStep()"
+            [disabled]="currentStep === 0"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Previous
+          </button>
+  
+          <span class="text-sm text-gray-600">
+            Step {{currentStep + 1}} of {{steps.length}}
+          </span>
+  
+          <button
+            (click)="nextStep()"
+            [disabled]="currentStep === steps.length - 1"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+          </button>
+        </div>
+      </div>
+  
+      <!-- Current Step Display -->
+      <div *ngIf="steps.length > 0 && steps[currentStep]" class="bg-white rounded-xl shadow-lg p-6">
+        <div class="mb-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+              {{steps[currentStep].stepNumber}}
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">{{steps[currentStep].title}}</h3>
+          </div>
+          <p class="text-gray-600 mb-4">{{steps[currentStep].description}}</p>
+          <div *ngIf="steps[currentStep].details" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+            <p class="text-blue-800 text-sm whitespace-pre-line">{{steps[currentStep].details}}</p>
+          </div>
+        </div>
+  
+        <!-- Input/Output Display -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Input -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+              <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+              </svg>
+              Input
+            </h4>
+            <div class="bg-white rounded border p-3">
+              <code class="text-sm font-mono break-all">{{steps[currentStep].input}}</code>
+            </div>
+          </div>
+  
+          <!-- Output -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+              <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+              Output
+            </h4>
+            <div class="bg-white rounded border p-3">
+              <code class="text-sm font-mono break-all">{{steps[currentStep].output}}</code>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Key Display for Key Generation Step -->
+        <div *ngIf="steps[currentStep].stepNumber === 6 && keyPair" class="mt-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+          <h4 class="font-semibold text-gray-900 mb-4">Generated Key Pair</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg p-4 border-2 border-green-300">
+              <h5 class="font-medium text-green-800 mb-2">Public Key</h5>
+              <div class="text-sm font-mono">
+                <div>e = {{keyPair.e}}</div>
+                <div>n = {{keyPair.n}}</div>
+                <div class="text-xs text-gray-600 mt-1">(e, n) = {{getKeyDisplay(true)}}</div>
+              </div>
+            </div>
+            <div class="bg-white rounded-lg p-4 border-2 border-red-300">
+              <h5 class="font-medium text-red-800 mb-2">Private Key</h5>
+              <div class="text-sm font-mono">
+                <div>d = {{keyPair.d}}</div>
+                <div>n = {{keyPair.n}}</div>
+                <div class="text-xs text-gray-600 mt-1">(d, n) = {{getKeyDisplay(false)}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Modular Exponentiation Visualization -->
+        <div *ngIf="(steps[currentStep].stepNumber === 7 || steps[currentStep].stepNumber === 8)" class="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6">
+          <h4 class="font-semibold text-gray-900 mb-4">
+            {{steps[currentStep].stepNumber === 7 ? 'Encryption Process' : 'Decryption Process'}}
+          </h4>
+          <div class="flex flex-col items-center space-y-4">
+            <!-- Formula Display -->
+            <div class="bg-white rounded-lg p-4 border-2 border-purple-300 text-center">
+              <div class="text-lg font-mono">{{getModularExponentiation(steps[currentStep])}}</div>
+            </div>
+            
+            <!-- Visual Flow -->
+            <div class="flex items-center space-x-8">
+              <div class="text-center">
+                <div class="w-20 h-20 bg-blue-200 border-2 border-blue-400 rounded-lg flex items-center justify-center mb-2">
+                  <div class="text-sm font-mono">
+                    {{steps[currentStep].stepNumber === 7 ? 'm' : 'c'}}
+                    <div class="text-xs">{{steps[currentStep].stepNumber === 7 ? inputMessage : steps[currentStep].data?.ciphertext}}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+              
+              <div class="text-center">
+                <div class="w-20 h-20 bg-purple-200 border-2 border-purple-400 rounded-lg flex items-center justify-center mb-2">
+                  <div class="text-sm font-mono">
+                    {{steps[currentStep].stepNumber === 7 ? 'e' : 'd'}}
+                    <div class="text-xs">{{steps[currentStep].stepNumber === 7 ? keyPair?.e : keyPair?.d}}</div>
+                  </div>
+                </div>
+              </div>
+              
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+              
+              <div class="text-center">
+                <div class="w-20 h-20 bg-green-200 border-2 border-green-400 rounded-lg flex items-center justify-center mb-2">
+                  <div class="text-sm font-mono">
+                    {{steps[currentStep].stepNumber === 7 ? 'c' : 'm'}}
+                    <div class="text-xs">{{steps[currentStep].stepNumber === 7 ? steps[currentStep].data?.ciphertext : steps[currentStep].data?.decrypted}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-sm text-gray-600 text-center">
+              {{steps[currentStep].stepNumber === 7 ? 'Encryption using public key' : 'Decryption using private key'}}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Algorithm Overview -->
+      <div *ngIf="steps.length === 0" class="bg-white rounded-xl shadow-lg p-6 mt-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">How RSA Works</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+            <h3 class="font-semibold text-purple-900 mb-2">1. Key Generation</h3>
+            <p class="text-sm text-purple-700">Choose two large primes p and q, compute n = p×q and φ(n) = (p-1)(q-1).</p>
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+            <h3 class="font-semibold text-blue-900 mb-2">2. Public Key</h3>
+            <p class="text-sm text-blue-700">Select e such that gcd(e, φ(n)) = 1. Public key is (e, n).</p>
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+            <h3 class="font-semibold text-green-900 mb-2">3. Private Key</h3>
+            <p class="text-sm text-green-700">Compute d = e⁻¹ mod φ(n). Private key is (d, n).</p>
+          </div>
+          <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+            <h3 class="font-semibold text-orange-900 mb-2">4. Encrypt/Decrypt</h3>
+            <p class="text-sm text-orange-700">Encrypt: c = m^e mod n. Decrypt: m = c^d mod n.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 interface CipherMode {
@@ -21,7 +21,7 @@ interface CipherCase {
 @Component({
   selector: 'app-chapter3',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './chapter5.component.html',
   styleUrls: ['./chapter5.component.css']
 })

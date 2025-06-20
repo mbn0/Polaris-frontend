@@ -1,0 +1,303 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center space-x-4 mb-4">
+          <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">SHA-256 Hash Tool</h1>
+            <p class="text-gray-600">Step-by-step SHA-256 hashing algorithm visualization</p>
+          </div>
+        </div>
+  
+        <!-- Input Section -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Message to Hash</label>
+          <input
+            type="text"
+            [(ngModel)]="inputMessage"
+            placeholder="Enter message to hash"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          <!-- Error Message -->
+          <div *ngIf="inputError" class="mt-2 text-sm text-red-600">
+            {{ inputError }}
+          </div>
+        </div>
+  
+        <!-- Controls -->
+        <div class="flex flex-wrap gap-3">
+          <button
+            (click)="processInput()"
+            [disabled]="isProcessing"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50">
+            {{isProcessing ? 'Processing...' : 'Generate Hash'}}
+          </button>
+          <button
+            (click)="reset()"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200">
+            Reset
+          </button>
+        </div>
+  
+        <!-- Final Hash Display -->
+        <div *ngIf="finalHash" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-sm font-medium text-green-800 mb-2">SHA-256 Hash:</h3>
+              <code class="text-sm font-mono text-green-700 break-all">{{finalHash}}</code>
+            </div>
+            <button
+              (click)="copyToClipboard()"
+              class="ml-4 px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded transition-colors duration-200 flex items-center"
+              [class.bg-green-700]="copySuccess">
+              <svg *ngIf="!copySuccess" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+              </svg>
+              <svg *ngIf="copySuccess" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              {{ copySuccess ? 'Copied!' : 'Copy' }}
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Steps Navigation -->
+      <div *ngIf="steps.length > 0" class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">SHA-256 Steps</h2>
+  
+        <!-- Step Progress -->
+        <div class="flex flex-wrap gap-2 mb-4 max-h-32 overflow-y-auto">
+          <button
+            *ngFor="let step of steps; let i = index"
+            (click)="goToStep(i)"
+            [class]="i === currentStep ?
+              'bg-purple-600 text-white' :
+              'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+            class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 whitespace-nowrap">
+            {{step.stepNumber}}
+          </button>
+        </div>
+  
+        <!-- Navigation Controls -->
+        <div class="flex justify-between items-center">
+          <button
+            (click)="prevStep()"
+            [disabled]="currentStep === 0"
+            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Previous
+          </button>
+  
+          <span class="text-sm text-gray-600">
+            Step {{currentStep + 1}} of {{steps.length}}
+          </span>
+  
+          <button
+            (click)="nextStep()"
+            [disabled]="currentStep === steps.length - 1"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Next
+          </button>
+        </div>
+      </div>
+  
+      <!-- Current Step Display -->
+      <div *ngIf="steps.length > 0 && steps[currentStep]" class="bg-white rounded-xl shadow-lg p-6">
+        <div class="mb-6">
+          <div class="flex items-center space-x-3 mb-3">
+            <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+              {{steps[currentStep].stepNumber}}
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">{{steps[currentStep].title}}</h3>
+          </div>
+          <p class="text-gray-600 mb-4">{{steps[currentStep].description}}</p>
+          <div *ngIf="steps[currentStep].details" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+            <p class="text-blue-800 text-sm whitespace-pre-line">{{steps[currentStep].details}}</p>
+          </div>
+        </div>
+  
+        <!-- Input/Output Display -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Input -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+              <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+              </svg>
+              Input
+            </h4>
+            <div class="bg-white rounded border p-3">
+              <code class="text-sm font-mono break-all">{{steps[currentStep].input}}</code>
+            </div>
+          </div>
+  
+          <!-- Output -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+              <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+              Output
+            </h4>
+            <div class="bg-white rounded border p-3">
+              <code class="text-sm font-mono break-all">{{steps[currentStep].output}}</code>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Compression Round Visualization -->
+        <div *ngIf="isCompressionRound()" class="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6">
+          <h4 class="font-semibold text-gray-900 mb-4">Compression Function - Round {{steps[currentStep].data?.round}}</h4>
+          <div class="flex flex-col items-center space-y-4">
+            <!-- Working Variables Before -->
+            <div class="w-full">
+              <h5 class="text-sm font-medium text-gray-700 mb-2">Working Variables (Before)</h5>
+              <div class="grid grid-cols-4 gap-2">
+                <div *ngFor="let workingVar of steps[currentStep].data?.oldVars; let i = index" 
+                     class="bg-blue-100 border border-blue-300 rounded p-2 text-center">
+                  <div class="text-xs font-semibold">{{['a','b','c','d','e','f','g','h'][i]}}</div>
+                  <div class="text-xs font-mono">{{workingVar.toString(16).padStart(8, '0')}}</div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Computation -->
+            <div class="bg-white rounded-lg p-4 border-2 border-purple-300 w-full">
+              <div class="text-sm font-mono space-y-1">
+                <div>
+                  T1 = h + 
+                  <span [matTooltip]="NOTATION_EXPLANATIONS.SIGMA_1" matTooltipPosition="above">Σ₁(e)</span> + 
+                  <span [matTooltip]="NOTATION_EXPLANATIONS.CH" matTooltipPosition="above">Ch(e,f,g)</span> + 
+                  K[{{steps[currentStep].data?.round}}] + W[{{steps[currentStep].data?.round}}]
+                </div>
+                <div>
+                  T2 = 
+                  <span [matTooltip]="NOTATION_EXPLANATIONS.SIGMA_0" matTooltipPosition="above">Σ₀(a)</span> + 
+                  <span [matTooltip]="NOTATION_EXPLANATIONS.MAJ" matTooltipPosition="above">Maj(a,b,c)</span>
+                </div>
+                <div class="text-purple-700 font-semibold">
+                  T1 = {{steps[currentStep].data?.T1?.toString(16).padStart(8, '0')}}
+                </div>
+                <div class="text-purple-700 font-semibold">
+                  T2 = {{steps[currentStep].data?.T2?.toString(16).padStart(8, '0')}}
+                </div>
+              </div>
+            </div>
+  
+            <!-- Binary Operations Visualization -->
+            <div *ngIf="steps[currentStep].binaryVisualizations?.ch && steps[currentStep].binaryVisualizations?.maj" class="w-full mt-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Ch Function Visualization -->
+                <div class="bg-white rounded-lg p-4 border border-blue-200">
+                  <h6 class="text-sm font-medium text-gray-700 mb-2">Choose Function (Ch)</h6>
+                  <div class="space-y-2 font-mono text-xs">
+                    <div *ngFor="let input of steps[currentStep].binaryVisualizations?.ch?.inputs; let i = index" class="flex items-center">
+                      <span class="w-8">{{['e','f','g'][i]}}:</span>
+                      <code class="ml-2 break-all">{{input}}</code>
+                    </div>
+                    <div class="border-t pt-2">
+                      <span class="w-8">→</span>
+                      <code class="ml-2 text-green-600 break-all">{{steps[currentStep].binaryVisualizations?.ch?.result}}</code>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Maj Function Visualization -->
+                <div class="bg-white rounded-lg p-4 border border-blue-200">
+                  <h6 class="text-sm font-medium text-gray-700 mb-2">Majority Function (Maj)</h6>
+                  <div class="space-y-2 font-mono text-xs">
+                    <div *ngFor="let input of steps[currentStep].binaryVisualizations?.maj?.inputs; let i = index" class="flex items-center">
+                      <span class="w-8">{{['a','b','c'][i]}}:</span>
+                      <code class="ml-2 break-all">{{input}}</code>
+                    </div>
+                    <div class="border-t pt-2">
+                      <span class="w-8">→</span>
+                      <code class="ml-2 text-green-600 break-all">{{steps[currentStep].binaryVisualizations?.maj?.result}}</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- Working Variables After -->
+            <div class="w-full">
+              <h5 class="text-sm font-medium text-gray-700 mb-2">Working Variables (After)</h5>
+              <div class="grid grid-cols-4 gap-2">
+                <div *ngFor="let workingVar of steps[currentStep].data?.newVars; let i = index" 
+                     class="bg-green-100 border border-green-300 rounded p-2 text-center">
+                  <div class="text-xs font-semibold">{{['a','b','c','d','e','f','g','h'][i]}}</div>
+                  <div class="text-xs font-mono">{{workingVar.toString(16).padStart(8, '0')}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Block Processing Visualization -->
+        <div *ngIf="isBlockProcessing() && steps[currentStep].data?.W" class="mt-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+          <h4 class="font-semibold text-gray-900 mb-4">Message Schedule (First 16 Words)</h4>
+          <div class="grid grid-cols-4 gap-2">
+            <div *ngFor="let messageWord of steps[currentStep].data.W.slice(0, 16); let i = index" 
+                 class="bg-white border border-gray-300 rounded p-2 text-center">
+              <div class="text-xs font-semibold">W[{{i}}]</div>
+              <div class="text-xs font-mono">{{messageWord.toString(16).padStart(8, '0')}}</div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Final Hash Display -->
+        <div *ngIf="steps[currentStep].title === 'Final Hash Digest'" class="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-6">
+          <h4 class="font-semibold text-gray-900 mb-4">SHA-256 Hash Breakdown</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h5 class="text-sm font-medium text-gray-700 mb-2">Hash Values (H0-H7)</h5>
+              <div class="space-y-1">
+                <div *ngFor="let hashValue of steps[currentStep].data?.H; let i = index" 
+                     class="flex justify-between bg-white rounded p-2 border">
+                  <span class="font-semibold">H{{i}}:</span>
+                  <code class="font-mono">{{hashValue.toString(16).padStart(8, '0')}}</code>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h5 class="text-sm font-medium text-gray-700 mb-2">Final Hash</h5>
+              <div class="bg-white rounded p-4 border-2 border-green-400">
+                <code class="text-sm font-mono break-all text-green-700">{{finalHash}}</code>
+              </div>
+              <div class="mt-2 text-xs text-gray-600">
+                256 bits = 64 hexadecimal characters
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Algorithm Overview -->
+      <div *ngIf="steps.length === 0" class="bg-white rounded-xl shadow-lg p-6 mt-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">How SHA-256 Works</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+            <h3 class="font-semibold text-purple-900 mb-2">1. Preprocessing</h3>
+            <p class="text-sm text-purple-700">Pad message to multiple of 512 bits with length field.</p>
+          </div>
+          <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+            <h3 class="font-semibold text-blue-900 mb-2">2. Parse Message</h3>
+            <p class="text-sm text-blue-700">Split into 512-bit blocks, each containing 16 32-bit words.</p>
+          </div>
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+            <h3 class="font-semibold text-green-900 mb-2">3. Hash Computation</h3>
+            <p class="text-sm text-green-700">64 rounds of compression function per block using constants and schedule.</p>
+          </div>
+          <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+            <h3 class="font-semibold text-orange-900 mb-2">4. Final Hash</h3>
+            <p class="text-sm text-orange-700">Concatenate final hash values to produce 256-bit digest.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

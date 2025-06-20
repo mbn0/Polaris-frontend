@@ -583,7 +583,7 @@
               <div class="text-sm text-green-700 space-y-2">
                 <p>Message: "{{ macMessage }}"</p>
                 <p>Key: "{{ macKey }}"</p>
-                <p>Valid MAC: {{ macResults[0]?.tag || 'Computing...' }}</p>
+                <p>Valid MAC: {{ macResults[0] && macResults[0].tag || 'Computing...' }}</p>
                 <div class="bg-green-100 p-2 rounded mt-2">
                   <strong>Result: ✓ Authentication Successful!</strong><br>
                   Only parties with the secret key can generate valid MACs.

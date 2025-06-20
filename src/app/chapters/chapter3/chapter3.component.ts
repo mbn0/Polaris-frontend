@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 interface AttackModel {
@@ -24,7 +24,7 @@ interface CipherExample {
 @Component({
   selector: 'app-chapter3',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './chapter3.component.html',
   styleUrls: ['./chapter3.component.css']
 })

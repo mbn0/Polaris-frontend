@@ -1,0 +1,17 @@
+/* Additional custom styles if needed */
+.whitespace-pre-line {
+    white-space: pre-line;
+  }
+  
+  /* Ensure proper spacing for mathematical expressions */
+  code {
+    word-break: break-all;
+  }
+  
+  /* Animation for step transitions */
+  .transition-colors {
+    transition-property: color, background-color, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+  

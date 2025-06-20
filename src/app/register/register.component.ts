@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService, RegisterRequest } from '../auth.service';
+import { AuthService, type RegisterRequest } from '../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-registration',

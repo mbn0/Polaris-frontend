@@ -31,8 +31,7 @@
           *ngFor="let tab of [
             { id: 'overview', label: 'Overview', icon: '📊' },
             { id: 'users', label: 'User Management', icon: '👥' },
-            { id: 'sections', label: 'Section Management', icon: '📚' },
-            { id: 'analytics', label: 'Analytics', icon: '📈' }
+            { id: 'sections', label: 'Section Management', icon: '📚' }
           ]"
           (click)="setActiveTab(tab.id)"
           [class]="'flex items-center px-3 py-4 text-sm font-medium border-b-2 transition-colors ' +
@@ -157,9 +156,9 @@
     </div>
 
     <!-- Analytics Tab -->
-    <div *ngIf="activeTab === 'analytics'">
+    <!-- <div *ngIf="activeTab === 'analytics'">
       <app-admin-analytics></app-admin-analytics>
-    </div>
+    </div> -->
   </main>
 </div>
 

@@ -162,7 +162,7 @@
                   <div class="text-sm text-gray-500">{{ student.matricNo }}</div>
                 </div>
                 <button
-                  (click)="removeStudentFromSection(student.studentId)"
+                  (click)="removeStudentFromSection(student.userId)"
                   class="text-red-600 hover:text-red-800 text-sm"
                 >
                   Remove
@@ -184,7 +184,7 @@
                   <div class="text-sm text-gray-500">{{ student.matricNo }}</div>
                 </div>
                 <button
-                  (click)="addStudentToSection(student.studentId)"
+                  (click)="addStudentToSection(student.userId)"
                   class="text-blue-600 hover:text-blue-800 text-sm"
                 >
                   Add

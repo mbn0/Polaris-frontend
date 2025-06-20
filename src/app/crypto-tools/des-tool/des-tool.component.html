@@ -1,0 +1,274 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">DES Encryption Tool</h1>
+          <p class="text-gray-600">Step-by-step Data Encryption Standard visualization</p>
+        </div>
+      </div>
+
+      <!-- Input Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Plaintext (8 characters max)</label>
+          <input
+            type="text"
+            [(ngModel)]="inputText"
+            maxlength="8"
+            placeholder="Enter text to encrypt"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Key (8 characters)</label>
+          <input
+            type="text"
+            [(ngModel)]="inputKey"
+            maxlength="8"
+            placeholder="Enter 8-character key"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex flex-wrap gap-3">
+        <button
+          (click)="processInput()"
+          [disabled]="isProcessing"
+          class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50">
+          {{isProcessing ? 'Processing...' : 'Encrypt'}}
+        </button>
+        <button
+          (click)="reset()"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200">
+          Reset
+        </button>
+        <!-- Temporarily removed until binary view is fixed
+        <button
+          (click)="toggleBinaryView()"
+          *ngIf="steps.length > 0"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-md font-medium transition-colors duration-200">
+          {{showBinaryView ? 'Show Hex' : 'Show Binary'}}
+        </button>
+        -->
+      </div>
+    </div>
+
+    <!-- Steps Navigation -->
+    <div *ngIf="steps.length > 0" class="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Encryption Steps</h2>
+
+      <!-- Step Progress -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button
+          *ngFor="let step of steps; let i = index"
+          (click)="goToStep(i)"
+          [class]="i === currentStep ?
+            'bg-purple-600 text-white' :
+            'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+          class="px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200">
+          {{step.stepNumber}}
+        </button>
+      </div>
+
+      <!-- Navigation Controls -->
+      <div class="flex justify-between items-center">
+        <button
+          (click)="prevStep()"
+          [disabled]="currentStep === 0"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          Previous
+        </button>
+
+        <span class="text-sm text-gray-600">
+          Step {{currentStep + 1}} of {{steps.length}}
+        </span>
+
+        <button
+          (click)="nextStep()"
+          [disabled]="currentStep === steps.length - 1"
+          class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+    </div>
+
+    <!-- Current Step Display -->
+    <div *ngIf="steps.length > 0 && steps[currentStep]" class="bg-white rounded-xl shadow-lg p-6">
+      <div class="mb-6">
+        <div class="flex items-center space-x-3 mb-3">
+          <div class="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+            {{steps[currentStep].stepNumber}}
+          </div>
+          <h3 class="text-xl font-bold text-gray-900">{{steps[currentStep].title}}</h3>
+        </div>
+        <p class="text-gray-600 mb-4">{{steps[currentStep].description}}</p>
+        <div *ngIf="steps[currentStep].details" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+          <p class="text-blue-800 text-sm">{{steps[currentStep].details}}</p>
+        </div>
+      </div>
+
+      <!-- Input/Output Display -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Input -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+            </svg>
+            Input
+          </h4>
+          <div class="bg-white rounded border p-3">
+            <code class="text-sm font-mono break-all">{{steps[currentStep].input}}</code>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+            Output
+          </h4>
+          <div class="bg-white rounded border p-3">
+            <!-- Special handling for final result step -->
+            <ng-container *ngIf="steps[currentStep].stepNumber === 21">
+              <div class="space-y-2">
+                <div class="flex items-center">
+                  <span class="text-sm font-medium text-gray-500 w-20">Hex:</span>
+                  <code class="text-sm font-mono text-purple-700">{{getHexOutput(steps[currentStep].output)}}</code>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-sm font-medium text-gray-500 w-20">Base64:</span>
+                  <code class="text-sm font-mono text-blue-700">{{getBase64Output(steps[currentStep].output)}}</code>
+                </div>
+                <div class="pt-2 mt-2 border-t">
+                  <span class="text-xs text-gray-500">Note: The encrypted result is shown in different encodings for better readability</span>
+                </div>
+              </div>
+            </ng-container>
+            <!-- Default output display for other steps -->
+            <ng-container *ngIf="steps[currentStep].stepNumber !== 21">
+              <code class="text-sm font-mono break-all">{{steps[currentStep].output}}</code>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Representation -->
+      <div *ngIf="currentStep >= 2 && currentStep <= 17 && steps[currentStep]" class="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg p-6">
+        <h4 class="font-semibold text-gray-900 mb-4">Feistel Network Visualization - Round {{currentStep - 2}}</h4>
+        <div class="flex flex-col items-center">
+          <!-- Input Values -->
+          <div class="flex justify-center space-x-12 mb-8">
+            <div class="text-center">
+              <div class="w-32 h-16 bg-green-200 border-2 border-green-400 rounded-lg flex items-center justify-center mb-2">
+                <div class="text-xs font-mono">
+                  <div class="font-semibold mb-1">L{{currentStep - 2}}</div>
+                  <div class="text-gray-600">{{getStepValue(steps[currentStep].input, 0)}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="w-32 h-16 bg-blue-200 border-2 border-blue-400 rounded-lg flex items-center justify-center mb-2">
+                <div class="text-xs font-mono">
+                  <div class="font-semibold mb-1">R{{currentStep - 2}}</div>
+                  <div class="text-gray-600">{{getStepValue(steps[currentStep].input, 1)}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- F-function and XOR -->
+          <div class="flex items-center justify-center space-x-4 mb-8">
+            <div class="text-xs font-mono">
+              <div class="font-semibold mb-1">F-function</div>
+              <div class="text-gray-600">
+                {{getFunctionOutput(steps[currentStep].details)}}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-center items-center space-x-8 mb-8">
+            <!-- Right side going into F-function -->
+            <div class="flex flex-col items-center">
+              <div class="w-32 h-16 bg-purple-200 border-2 border-purple-400 rounded-lg flex items-center justify-center mb-2">
+                <div class="text-xs font-mono">
+                  <div class="font-semibold mb-1">F-function</div>
+                  <div class="text-gray-600">
+                    {{getFunctionOutput(steps[currentStep].details)}}
+                  </div>
+                </div>
+              </div>
+              <svg class="w-6 h-6 text-gray-400 my-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+
+            <!-- XOR operation -->
+            <div class="flex flex-col items-center">
+              <div class="w-12 h-12 bg-yellow-200 border-2 border-yellow-400 rounded-full flex items-center justify-center mb-2">
+                <span class="text-lg font-bold">⊕</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Output Values -->
+          <div class="flex justify-center space-x-12">
+            <div class="text-center">
+              <div class="w-32 h-16 bg-green-200 border-2 border-green-400 rounded-lg flex items-center justify-center mb-2">
+                <div class="text-xs font-mono">
+                  <div class="font-semibold mb-1">L{{currentStep - 1}}</div>
+                  <div class="text-gray-600">{{getStepValue(steps[currentStep].output, 0)}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="w-32 h-16 bg-blue-200 border-2 border-blue-400 rounded-lg flex items-center justify-center mb-2">
+                <div class="text-xs font-mono">
+                  <div class="font-semibold mb-1">R{{currentStep - 1}}</div>
+                  <div class="text-gray-600">{{getStepValue(steps[currentStep].output, 1)}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Round Key -->
+          <div class="mt-6 text-center">
+            <div class="text-sm font-medium text-gray-600">Round Key K{{currentStep - 1}}</div>
+            <div class="text-xs font-mono mt-1 bg-white px-3 py-1 rounded border">
+              {{getRoundKey(currentStep - 2)}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Algorithm Overview -->
+    <div *ngIf="steps.length === 0" class="bg-white rounded-xl shadow-lg p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">How DES Works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
+          <h3 class="font-semibold text-purple-900 mb-2">1. Initial Permutation</h3>
+          <p class="text-sm text-purple-700">Reorders input bits according to a fixed table to prepare for processing.</p>
+        </div>
+        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+          <h3 class="font-semibold text-blue-900 mb-2">2. Feistel Rounds</h3>
+          <p class="text-sm text-blue-700">16 rounds of expansion, key mixing, S-box substitution, and permutation.</p>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+          <h3 class="font-semibold text-green-900 mb-2">3. Final Permutation</h3>
+          <p class="text-sm text-green-700">Applies the inverse of initial permutation to produce ciphertext.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 interface TimelineEvent {
@@ -23,7 +23,7 @@ interface SBoxEntry {
 @Component({
   selector: 'app-chapter6',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './chapter6.component.html',
   styleUrls: ['./chapter6.component.css']
 })

@@ -1,6 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterLink, Router } from "@angular/router"
+import { Router } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 
 interface AESState {
@@ -48,7 +48,7 @@ interface PerformanceMetrics {
 @Component({
   selector: "app-chapter7",
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./chapter7.component.html",
   styleUrls: ["./chapter7.component.css"],
 })

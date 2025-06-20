@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { RouterLink, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 
 interface ModeComparison {
@@ -27,7 +27,7 @@ interface PatternResults {
 @Component({
   selector: "app-chapter8",
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: "./chapter8.component.html",
   styleUrls: ["./chapter8.component.css"],
 })

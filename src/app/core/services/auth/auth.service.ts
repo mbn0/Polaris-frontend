@@ -15,7 +15,7 @@ export interface RegisterRequest {
   email: string
   password: string
   fullName: string
-  matricNo?: string
+  matricNo: string
 }
 
 export interface RegisterResponse {
@@ -24,6 +24,8 @@ export interface RegisterResponse {
   fullName: string
   roles: string[]
   token: string
+  matricNo?: string
+  sectionId?: number
 }
 
 @Injectable({
@@ -83,6 +85,9 @@ export class AuthService {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, userData).pipe(
       map((user) => {
         console.log('Register response:', user)
+        if (!user.token) {
+          throw new Error('Registration successful but no token received');
+        }
         if (isPlatformBrowser(this.platformId)) {
           localStorage.setItem("currentUser", JSON.stringify(user))
           console.log('User stored in localStorage after registration:', localStorage.getItem("currentUser"))
@@ -90,7 +95,15 @@ export class AuthService {
         this.currentUserSubject.next(user)
         return user
       }),
-      catchError(this.handleError)
+      catchError((error: HttpErrorResponse) => {
+        console.error('Registration error:', error);
+        if (error.status === 400) {
+          return throwError(() => new Error(error.error.message || 'Invalid registration data'));
+        } else if (error.status === 409) {
+          return throwError(() => new Error('A user with this email already exists'));
+        }
+        return throwError(() => new Error('Registration failed. Please try again later.'));
+      })
     )
   }
 

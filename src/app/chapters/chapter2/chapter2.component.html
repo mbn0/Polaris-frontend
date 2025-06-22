@@ -261,16 +261,20 @@
             <div class="space-y-3">
               <div class="flex gap-2">
                 <input
-                  type="number"
+                  type="text"
                   [(ngModel)]="gcdCalcA"
                   placeholder="a"
+                  pattern="^[1-9][0-9]*$"
                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  title="Please enter a positive integer"
                 >
                 <input
-                  type="number"
+                  type="text"
                   [(ngModel)]="gcdCalcB"
                   placeholder="b"
+                  pattern="^[1-9][0-9]*$"
                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  title="Please enter a positive integer"
                 >
               </div>
               <button
@@ -279,7 +283,10 @@
               >
                 Calculate GCD
               </button>
-              <div *ngIf="gcdCalcResult" class="bg-white p-3 rounded border font-mono text-center">
+              <div *ngIf="gcdCalcResult" 
+                   [class.bg-red-50]="gcdCalcResult.includes('Invalid') || gcdCalcResult.includes('must')"
+                   [class.text-red-800]="gcdCalcResult.includes('Invalid') || gcdCalcResult.includes('must')"
+                   class="bg-white p-3 rounded border font-mono text-center">
                 {{ gcdCalcResult }}
               </div>
             </div>
@@ -506,10 +513,12 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-4">🧮 Interactive Modular Calculator</h3>
           <div class="grid md:grid-cols-4 gap-4 mb-4">
             <input
-              type="number"
+              type="text"
               [(ngModel)]="modCalcA"
               placeholder="a"
+              pattern="^-?[0-9]+$"
               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              title="Please enter a valid integer"
             >
             <select
               [(ngModel)]="modCalcOperation"
@@ -520,18 +529,22 @@
               <option value="multiply">×</option>
             </select>
             <input
-              type="number"
+              type="text"
               [(ngModel)]="modCalcB"
               placeholder="b"
+              pattern="^-?[0-9]+$"
               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              title="Please enter a valid integer"
             >
             <div class="flex items-center">
               <span class="mr-2">mod</span>
               <input
-                type="number"
+                type="text"
                 [(ngModel)]="modCalcN"
                 placeholder="n"
+                pattern="^[1-9][0-9]*$"
                 class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                title="Please enter a positive integer"
               >
             </div>
           </div>
@@ -542,7 +555,10 @@
             >
               Calculate
             </button>
-            <div *ngIf="modCalcResult" class="bg-white px-4 py-2 rounded border font-mono">
+            <div *ngIf="modCalcResult" 
+                 [class.bg-red-50]="modCalcResult.includes('Invalid') || modCalcResult.includes('must')"
+                 [class.text-red-800]="modCalcResult.includes('Invalid') || modCalcResult.includes('must')"
+                 class="px-4 py-2 rounded border font-mono">
               Result: {{ modCalcResult }}
             </div>
           </div>

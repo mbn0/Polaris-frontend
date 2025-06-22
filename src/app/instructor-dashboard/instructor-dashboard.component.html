@@ -1,0 +1,431 @@
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-6">
+          <div class="flex items-center space-x-4">
+            <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">Instructor Dashboard</h1>
+              <p class="text-sm text-gray-600">Manage sections and student assessments</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-4">
+            <!-- Section Selector -->
+            <div *ngIf="sections.length > 0" class="relative">
+              <select 
+                [(ngModel)]="selectedSection"
+                (ngModelChange)="selectSection($event)"
+                class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <option *ngFor="let section of sections" [ngValue]="section">
+                  Section {{section.sectionId}} ({{section.students?.length || 0}} students)
+                </option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <button
+              (click)="logout()"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Tab Navigation -->
+      <div class="mb-8">
+        <div class="flex space-x-1 bg-white/20 backdrop-blur-md p-1 rounded-lg w-fit border border-white/30">
+          <button
+            [class]="activeTab === 'sections' ?
+              'bg-white text-gray-900 shadow-lg font-semibold' :
+              'text-white hover:text-gray-100 hover:bg-white/10'"
+            class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+            (click)="setActiveTab('sections')">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>My Sections</span>
+          </button>
+          <button
+            [class]="activeTab === 'assessments' ?
+              'bg-white text-gray-900 shadow-lg font-semibold' :
+              'text-white hover:text-gray-100 hover:bg-white/10'"
+            class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+            (click)="setActiveTab('assessments')"
+            [disabled]="!selectedSection">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            <span>Assessment Visibility</span>
+          </button>
+          <button
+            [class]="activeTab === 'results' ?
+              'bg-white text-gray-900 shadow-lg font-semibold' :
+              'text-white hover:text-gray-100 hover:bg-white/10'"
+            class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+            (click)="setActiveTab('results')"
+            [disabled]="!selectedSection">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <span>Student Results</span>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Sections Tab Content -->
+      <div *ngIf="activeTab === 'sections'" class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            <span>My Sections Overview</span>
+          </h2>
+  
+          <!-- Loading State -->
+          <div *ngIf="loadingSections" class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <span class="ml-2 text-gray-600">Loading sections...</span>
+          </div>
+  
+          <!-- Error State -->
+          <div *ngIf="sectionsError" class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-red-700">{{sectionsError}}</span>
+            </div>
+          </div>
+  
+          <!-- Sections Grid -->
+          <div *ngIf="!loadingSections && !sectionsError" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              *ngFor="let section of sections"
+              class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              [class.ring-2]="selectedSection?.sectionId === section.sectionId"
+              [class.ring-purple-500]="selectedSection?.sectionId === section.sectionId"
+              (click)="selectSection(section)">
+              
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                    Section {{section.sectionId}}
+                  </h3>
+                  <p class="text-sm text-gray-600">
+                    {{section.students?.length || 0}} students enrolled
+                  </p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                  </svg>
+                </div>
+              </div>
+  
+              <div class="space-y-3">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Assessments:</span>
+                  <span class="font-medium">{{getTotalAssessmentsCount(section)}}</span>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Visible Assessments:</span>
+                  <span class="font-medium text-green-600">
+                    {{getVisibleAssessmentsCount(section)}}
+                  </span>
+                </div>
+              </div>
+  
+              <div class="mt-4 pt-4 border-t border-purple-200">
+                <div class="flex items-center space-x-2 text-xs text-gray-500">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span>Click to select and manage this section</span>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- No Sections State -->
+          <div *ngIf="!loadingSections && !sectionsError && sections.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Sections Assigned</h3>
+            <p class="text-gray-600">You don't have any sections assigned to you yet.</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Assessment Visibility Tab Content -->
+      <div *ngIf="activeTab === 'assessments'" class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+              <span>Assessment Visibility - Section {{selectedSection?.sectionId}}</span>
+            </h2>
+            
+            <div *ngIf="hasPendingChanges()" class="flex space-x-2">
+              <button
+                (click)="cancelAssessmentChanges()"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200">
+                Cancel
+              </button>
+              <button
+                (click)="saveAssessmentChanges()"
+                [disabled]="loadingAssessments"
+                class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md transition-colors duration-200 disabled:opacity-50">
+                {{loadingAssessments ? 'Saving...' : 'Save Changes'}}
+              </button>
+            </div>
+          </div>
+  
+          <!-- Loading State -->
+          <div *ngIf="loadingAssessments && !hasPendingChanges()" class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <span class="ml-2 text-gray-600">Loading assessments...</span>
+          </div>
+  
+          <!-- Error State -->
+          <div *ngIf="assessmentsError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-red-700">{{assessmentsError}}</span>
+            </div>
+          </div>
+  
+          <!-- Assessment List -->
+          <div *ngIf="!loadingAssessments || hasPendingChanges()" class="space-y-4">
+            <div
+              *ngFor="let visibility of assessmentVisibilities"
+              class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <h3 class="text-lg font-medium text-gray-900 mb-1">
+                    {{visibility.assessment.title}}
+                  </h3>
+                  <p class="text-sm text-gray-600 mb-2">
+                    {{visibility.assessment.description}}
+                  </p>
+                  <div class="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>Max Score: {{visibility.assessment.maxScore}}</span>
+                    <span>Due: {{visibility.assessment.dueDate | date:'short'}}</span>
+                  </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-700">Visible to Students:</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        [checked]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                        (change)="toggleAssessmentVisibility(visibility.assessmentId, visibility.isVisible)"
+                        class="sr-only peer">
+                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    </label>
+                  </div>
+                  
+                  <div class="flex items-center">
+                    <span
+                      [class]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible) 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'"
+                      class="px-2 py-1 text-xs font-medium rounded-full">
+                      {{getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible) ? 'Visible' : 'Hidden'}}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- No Assessments State -->
+          <div *ngIf="!loadingAssessments && assessmentVisibilities.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Assessments Found</h3>
+            <p class="text-gray-600">This section doesn't have any assessments configured yet.</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Student Results Tab Content -->
+      <div *ngIf="activeTab === 'results'" class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+              <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span>Student Results - Section {{selectedSection?.sectionId}}</span>
+            </h2>
+            
+            <div class="flex items-center space-x-4">
+              <!-- Search -->
+              <div class="relative">
+                <input
+                  type="text"
+                  [(ngModel)]="searchTerm"
+                  placeholder="Search students..."
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+              </div>
+              
+              <!-- Export Button -->
+              <button
+                (click)="exportResults()"
+                [disabled]="studentResults.length === 0"
+                class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Export CSV
+              </button>
+            </div>
+          </div>
+  
+          <!-- Loading State -->
+          <div *ngIf="loadingResults" class="flex items-center justify-center py-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <span class="ml-2 text-gray-600">Loading results...</span>
+          </div>
+  
+          <!-- Error State -->
+          <div *ngIf="resultsError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="text-red-700">{{resultsError}}</span>
+            </div>
+          </div>
+  
+          <!-- Results Table -->
+          <div *ngIf="!loadingResults && !resultsError" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    (click)="setSortBy('name')"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    Student Name {{getSortIcon('name')}}
+                  </th>
+                  <th
+                    (click)="setSortBy('matricNo')"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    Matric No {{getSortIcon('matricNo')}}
+                  </th>
+                  <th
+                    (click)="setSortBy('score')"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    Average Score {{getSortIcon('score')}}
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Assessments Completed
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let student of getFilteredStudentResults()" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{student.fullName}}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">{{student.matricNo}}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      {{getAverageScore(student.results) | number:'1.1-1'}}%
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">{{student.results.length}}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button
+                      class="text-purple-600 hover:text-purple-900 mr-3"
+                      (click)="toggleStudentDetails(student)">
+                      {{student.showDetails ? 'Hide' : 'View'}} Details
+                    </button>
+                  </td>
+                </tr>
+                
+                <!-- Expanded Details Row -->
+                <tr *ngFor="let student of getFilteredStudentResults()" 
+                    [style.display]="student.showDetails ? 'table-row' : 'none'"
+                    class="bg-gray-50">
+                  <td colspan="5" class="px-6 py-4">
+                    <div class="space-y-3">
+                      <h4 class="text-sm font-medium text-gray-900">Assessment Results:</h4>
+                      <div *ngIf="student.results.length === 0" class="text-sm text-gray-500">
+                        No assessment results available.
+                      </div>
+                      <div *ngFor="let result of student.results" 
+                           class="bg-white rounded-lg p-3 border border-gray-200">
+                        <div class="flex items-center justify-between">
+                          <div>
+                            <div class="text-sm font-medium text-gray-900">{{result.assessmentTitle}}</div>
+                            <div class="text-xs text-gray-500">Completed: {{result.dateTaken | date:'short'}}</div>
+                          </div>
+                          <div class="text-right">
+                            <div class="text-sm font-medium"
+                                 [class]="result.score >= 70 ? 'text-green-600' : result.score >= 50 ? 'text-yellow-600' : 'text-red-600'">
+                              {{result.score}}%
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+  
+          <!-- No Results State -->
+          <div *ngIf="!loadingResults && !resultsError && studentResults.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Student Results</h3>
+            <p class="text-gray-600">No students have completed any assessments in this section yet.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  

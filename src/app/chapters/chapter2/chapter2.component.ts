@@ -93,73 +93,125 @@ export class Chapter2Component implements OnInit {
 
   ngOnInit() {}
 
+  // Secure modular arithmetic implementation using BigInt
+  private safeMod(a: bigint, n: bigint): bigint {
+    return ((a % n) + n) % n;
+  }
+
+  // Square-and-multiply algorithm for modular exponentiation
+  private modPow(base: bigint, exponent: bigint, modulus: bigint): bigint {
+    if (modulus === 1n) return 0n;
+    let result = 1n;
+    base = this.safeMod(base, modulus);
+    while (exponent > 0n) {
+      if (exponent & 1n) {
+        result = this.safeMod(result * base, modulus);
+      }
+      base = this.safeMod(base * base, modulus);
+      exponent >>= 1n;
+    }
+    return result;
+  }
+
+  // Extended Euclidean Algorithm implementation
+  private extendedGCD(a: bigint, b: bigint): { gcd: bigint, x: bigint, y: bigint } {
+    if (b === 0n) {
+      return { gcd: a, x: 1n, y: 0n };
+    }
+    const { gcd, x, y } = this.extendedGCD(b, a % b);
+    return { gcd, x: y, y: x - (a / b) * y };
+  }
+
+  // Find multiplicative inverse using Extended Euclidean Algorithm
+  private modInverse(a: bigint, n: bigint): bigint | null {
+    const { gcd, x } = this.extendedGCD(a, n);
+    if (gcd !== 1n) return null; // No multiplicative inverse exists
+    return this.safeMod(x, n);
+  }
+
   checkAnswer(example: MathExample) {
     example.showSolution = true;
   }
 
   calculateModular() {
-    const a = parseInt(this.modCalcA);
-    const b = parseInt(this.modCalcB);
-    const n = parseInt(this.modCalcN);
+    try {
+      const a = BigInt(this.modCalcA);
+      const b = BigInt(this.modCalcB);
+      const n = BigInt(this.modCalcN);
 
-    if (isNaN(a) || isNaN(b) || isNaN(n) || n <= 0) {
+      if (n <= 0n) {
+        this.modCalcResult = 'Modulus must be positive';
+        return;
+      }
+
+      let result: bigint;
+      switch (this.modCalcOperation) {
+        case 'add':
+          result = this.safeMod(a + b, n);
+          break;
+        case 'subtract':
+          result = this.safeMod(a - b, n);
+          break;
+        case 'multiply':
+          result = this.safeMod(a * b, n);
+          break;
+        default:
+          this.modCalcResult = 'Invalid operation';
+          return;
+      }
+
+      this.modCalcResult = result.toString();
+    } catch (error) {
       this.modCalcResult = 'Invalid input';
-      return;
     }
-
-    let result: number;
-    switch (this.modCalcOperation) {
-      case 'add':
-        result = (a + b) % n;
-        break;
-      case 'subtract':
-        result = ((a - b) % n + n) % n;
-        break;
-      case 'multiply':
-        result = (a * b) % n;
-        break;
-      default:
-        result = 0;
-    }
-
-    this.modCalcResult = `${result}`;
   }
 
   calculateGCD() {
-    let a = parseInt(this.gcdCalcA);
-    let b = parseInt(this.gcdCalcB);
+    try {
+      let a = BigInt(this.gcdCalcA);
+      let b = BigInt(this.gcdCalcB);
 
-    if (isNaN(a) || isNaN(b) || a <= 0 || b <= 0) {
+      if (a <= 0n || b <= 0n) {
+        this.gcdCalcResult = 'Inputs must be positive';
+        return;
+      }
+
+      // Store original values for display
+      const originalA = a;
+      const originalB = b;
+
+      // Ensure a >= b
+      if (a < b) [a, b] = [b, a];
+
+      this.gcdCalcSteps = [];
+      while (b !== 0n) {
+        const quotient = a / b;
+        const remainder = a % b;
+
+        this.gcdCalcSteps.push({
+          dividend: a.toString(),
+          divisor: b.toString(),
+          quotient: quotient.toString(),
+          remainder: remainder.toString(),
+          equation: `${a} = ${quotient}×${b} + ${remainder}`
+        });
+
+        a = b;
+        b = remainder;
+      }
+
+      this.gcdCalcResult = `gcd(${originalA}, ${originalB}) = ${a}`;
+
+      // Calculate and display Bézout's identity if needed
+      const { x, y } = this.extendedGCD(originalA, originalB);
+      if (this.gcdCalcSteps.length > 0) {
+        this.gcdCalcSteps.push({
+          equation: `Bézout's identity: ${a} = ${x}×${originalA} + ${y}×${originalB}`
+        });
+      }
+    } catch (error) {
       this.gcdCalcResult = 'Invalid input';
-      return;
     }
-
-    this.gcdCalcSteps = [];
-    const originalA = a;
-    const originalB = b;
-
-    // Ensure a >= b
-    if (a < b) {
-      [a, b] = [b, a];
-    }
-
-    while (b !== 0) {
-      const quotient = Math.floor(a / b);
-      const remainder = a % b;
-
-      this.gcdCalcSteps.push({
-        dividend: a,
-        divisor: b,
-        quotient: quotient,
-        remainder: remainder,
-        equation: `${a} = ${quotient}×${b} + ${remainder}`
-      });
-
-      a = b;
-      b = remainder;
-    }
-
-    this.gcdCalcResult = `gcd(${originalA}, ${originalB}) = ${a}`;
   }
 
   nextSection() {

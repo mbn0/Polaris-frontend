@@ -34,6 +34,29 @@
           </div>
         </div>
 
+        <!-- Full Name Field -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700">
+            Full Name
+          </label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            formControlName="fullName"
+            placeholder="Enter your full name"
+            class="mt-1 block w-full px-3 py-2 border rounded-md placeholder-gray-500 text-gray-900
+                   focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            [class.border-red-300]="registrationForm.get('fullName')?.invalid && registrationForm.get('fullName')?.touched"
+            [class.border-gray-300]="!registrationForm.get('fullName')?.invalid || !registrationForm.get('fullName')?.touched"
+          />
+          <div *ngIf="registrationForm.get('fullName')?.invalid && registrationForm.get('fullName')?.touched"
+               class="mt-1 text-sm text-red-600">
+            <span *ngIf="registrationForm.get('fullName')?.errors?.['required']">Full name is required</span>
+            <span *ngIf="registrationForm.get('fullName')?.errors?.['minlength']">Full name must be at least 2 characters</span>
+          </div>
+        </div>
+
         <!-- Matric Number Field -->
         <div>
           <label for="matricNumber" class="block text-sm font-medium text-gray-700">

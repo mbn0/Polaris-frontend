@@ -113,7 +113,7 @@ export class Sha256Component {
     
     // Add 1 bit followed by zeros
     padded[msg.length] = 0x80
-    
+
     // Add length in bits as big-endian 64-bit integer
     const view = new DataView(padded.buffer)
     const lengthInBits = BigInt(len)
@@ -297,18 +297,18 @@ export class Sha256Component {
       const keyRounds = [0, 15, 31, 47, 63]
       for (let t = 0; t < 64; t++) {
         const T1 = (h + this.Σ1(e) + this.Ch(e, f, g) + this.K[t] + W[t]) >>> 0
-        const T2 = (this.Σ0(a) + this.Maj(a, b, c)) >>> 0
+          const T2 = (this.Σ0(a) + this.Maj(a, b, c)) >>> 0
 
-        const oldVars = [a, b, c, d, e, f, g, h]
+          const oldVars = [a, b, c, d, e, f, g, h]
 
-        h = g
-        g = f
-        f = e
-        e = (d + T1) >>> 0
-        d = c
-        c = b
-        b = a
-        a = (T1 + T2) >>> 0
+          h = g
+          g = f
+          f = e
+          e = (d + T1) >>> 0
+          d = c
+          c = b
+          b = a
+          a = (T1 + T2) >>> 0
 
         if (keyRounds.includes(t)) {
           this.steps.push({

@@ -1,457 +1,257 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-  <!-- Header -->
-  <header class="bg-white shadow-lg border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center">
-          <button (click)="backToDashboard()" class="mr-4 p-2 text-gray-600 hover:text-gray-900 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
+<div class="chapter-container">
+  <!-- Chapter Header -->
+  <header class="chapter-header">
+    <h1>Chapter 1: Introduction to Cryptography</h1>
+    <p class="chapter-subtitle">Understanding the Fundamentals of Information Security</p>
+  </header>
+
+  <!-- Section Navigation -->
+  <nav class="section-nav">
+    <div class="section-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="(currentSection / totalSections) * 100"></div>
+      </div>
+      <span class="progress-text">Section {{currentSection}} of {{totalSections}}</span>
+    </div>
+
+    <div class="section-tabs">
+      <button
+        *ngFor="let section of sections"
+        class="section-tab"
+        [class.active]="currentSection === section.id"
+        [class.completed]="section.completed"
+        (click)="goToSection(section.id)"
+      >
+        {{ section.title }}
+        <span class="completion-icon" *ngIf="section.completed">✓</span>
           </button>
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900">🔐 Chapter 1: Introduction to Cryptography</h1>
-            <p class="text-sm text-gray-600">SECR3443 | Session 2023/24 | Sem I</p>
           </div>
-        </div>
-        <div class="text-sm text-gray-600">
-          Section {{ currentSection }} of {{ totalSections }}
+  </nav>
+
+  <!-- Section Content -->
+  <div class="section-content" [ngSwitch]="currentSection">
+    <!-- Section 1: Course Overview -->
+    <div *ngSwitchCase="1" class="section">
+      <h2>Welcome to Cryptography Fundamentals</h2>
+      <div class="content-card">
+        <p>This chapter introduces you to the fundamental concepts of cryptography and its role in information security. We'll explore the basic principles, terminology, and building blocks that form the foundation of modern cryptographic systems.</p>
+        
+        <div class="info-box">
+          <h3>Why Study Cryptography?</h3>
+          <ul>
+            <li>Essential for protecting digital information</li>
+            <li>Fundamental to modern secure communications</li>
+            <li>Critical for privacy and security in the digital age</li>
+            <li>Basis for many security protocols and systems</li>
+          </ul>
         </div>
       </div>
     </div>
-  </header>
 
-  <!-- Progress Bar -->
-  <div class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="py-2">
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            [style.width.%]="(currentSection / totalSections) * 100"></div>
-        </div>
+    <!-- Section 2: Learning Outcomes -->
+    <div *ngSwitchCase="2" class="section">
+      <h2>Learning Outcomes</h2>
+      <div class="interactive-list">
+        <div 
+          *ngFor="let outcome of learningOutcomes"
+          class="outcome-item"
+          [class.completed]="outcome.completed"
+          (click)="toggleLearningOutcome(outcome.id)"
+        >
+          <span class="checkbox">
+            <span class="check" *ngIf="outcome.completed">✓</span>
+          </span>
+          <span class="outcome-text">{{ outcome.text }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-
-      <!-- Section 1: Course Overview -->
-      <div *ngIf="currentSection === 1" class="p-8">
-        <div class="text-center mb-8">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">Introduction to Cryptography</h2>
-          <p class="text-lg text-gray-600 mb-6">SECR3443 | Session 2023/24 | Sem I</p>
-          <div class="bg-blue-50 border-l-4 border-blue-400 p-6 text-left">
-            <p class="text-gray-700">
-              This module lays the groundwork for understanding how modern cryptographic techniques keep data and
-              communications secure.
-              You'll explore the core concepts, threat models, cryptosystem building blocks, and real-world use cases.
-            </p>
+    <!-- Section 3: Information Security Services -->
+    <div *ngSwitchCase="3" class="section">
+      <h2>Core Security Services</h2>
+      <div class="services-grid">
+        <div 
+          *ngFor="let service of securityServices"
+          class="service-card"
+          [class.active]="selectedService === service"
+          (click)="selectService(service)"
+        >
+          <div class="service-icon">{{ service.icon }}</div>
+          <h3>{{ service.term }}</h3>
+          <p>{{ service.definition }}</p>
+          <div class="examples-list" *ngIf="selectedService === service">
+            <h4>Examples:</h4>
+            <ul>
+              <li *ngFor="let example of service.examples">{{ example }}</li>
+            </ul>
           </div>
         </div>
       </div>
-
-      <!-- Section 2: Learning Outcomes -->
-      <div *ngIf="currentSection === 2" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Learning Outcomes</h2>
-        <p class="text-lg text-gray-700 mb-6">By the end of this module you will be able to:</p>
-        <div class="space-y-4">
-          <div *ngFor="let outcome of learningOutcomes"
-            class="flex items-start p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            (click)="toggleLearningOutcome(outcome.id)">
-            <div class="flex-shrink-0 mr-3 mt-1">
-              <div class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
-                [class.bg-green-500]="outcome.completed" [class.border-green-500]="outcome.completed"
-                [class.border-gray-300]="!outcome.completed">
-                <svg *ngIf="outcome.completed" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"></path>
-                </svg>
               </div>
-            </div>
-            <p class="text-gray-700" [class.line-through]="outcome.completed">{{ outcome.text }}</p>
+
+    <!-- Section 4: Types of Security Threats -->
+    <div *ngSwitchCase="4" class="section">
+      <h2>Security Threats</h2>
+      <div class="threats-container">
+        <div class="threat-categories">
+          <div class="category-box passive">
+            <h3>Passive Threats</h3>
+            <p>Threats that monitor but don't modify system resources</p>
+          </div>
+          <div class="category-box active">
+            <h3>Active Threats</h3>
+            <p>Threats that modify system resources or affect operations</p>
           </div>
         </div>
-      </div>
-
-      <!-- Section 3: Information Security Services -->
-      <div *ngIf="currentSection === 3" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Information Security Services</h2>
-        <div class="grid gap-6">
-          <div *ngFor="let service of securityServices" class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ service.term }}</h3>
-            <p class="text-gray-700">{{ service.definition }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 4: Threat Models -->
-      <div *ngIf="currentSection === 4" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Types of Security Threats</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div *ngFor="let attack of attackTypes" class="bg-gray-50 rounded-lg p-4">
-            <div class="flex items-center mb-2">
-              <span class="px-2 py-1 text-xs font-semibold rounded-full mr-2"
-                [class.bg-red-100]="attack.category === 'active'" [class.text-red-800]="attack.category === 'active'"
-                [class.bg-yellow-100]="attack.category === 'passive'"
-                [class.text-yellow-800]="attack.category === 'passive'">
-                {{ attack.category }}
-              </span>
-              <h3 class="font-semibold text-gray-900">{{ attack.name }}</h3>
-            </div>
-            <p class="text-gray-700 text-sm">{{ attack.description }}</p>
           </div>
         </div>
 
-        <div class="mt-8 bg-blue-50 rounded-lg p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Main Classes of Threats</h3>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div class="bg-white rounded p-4">
-              <h4 class="font-semibold text-gray-900">Interruption</h4>
-              <p class="text-sm text-gray-600">Assets are lost or unavailable (e.g., deleted database).</p>
+    <!-- Section 5: Attack Categories -->
+    <div *ngSwitchCase="5" class="section">
+      <h2>Common Attack Types</h2>
+      <div class="attacks-grid">
+        <div 
+          *ngFor="let attack of attackTypes"
+          class="attack-card"
+          [class.active]="selectedAttack === attack"
+          [class.passive-attack]="attack.category === 'passive'"
+          [class.active-attack]="attack.category === 'active'"
+          (click)="selectAttack(attack)"
+        >
+          <h3>{{ attack.name }}</h3>
+          <p>{{ attack.description }}</p>
+          <div class="attack-details" *ngIf="selectedAttack === attack">
+            <div class="examples">
+              <h4>Common Examples:</h4>
+              <ul>
+                <li *ngFor="let example of attack.examples">{{ example }}</li>
+              </ul>
             </div>
-            <div class="bg-white rounded p-4">
-              <h4 class="font-semibold text-gray-900">Interception</h4>
-              <p class="text-sm text-gray-600">Unauthorized copying (e.g., network wiretapping).</p>
-            </div>
-            <div class="bg-white rounded p-4">
-              <h4 class="font-semibold text-gray-900">Modification</h4>
-              <p class="text-sm text-gray-600">Tampering with data (e.g., altering database records).</p>
-            </div>
-            <div class="bg-white rounded p-4">
-              <h4 class="font-semibold text-gray-900">Fabrication</h4>
-              <p class="text-sm text-gray-600">Inserting counterfeit data or transactions.</p>
+            <div class="countermeasures">
+              <h4>Countermeasures:</h4>
+              <ul>
+                <li *ngFor="let measure of attack.countermeasures">{{ measure }}</li>
+              </ul>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Section 5: Passive vs Active Attacks -->
-      <div *ngIf="currentSection === 5" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Attack Categories</h2>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="bg-yellow-50 rounded-lg p-6 border-l-4 border-yellow-400">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Passive Attacks</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>• Observe or eavesdrop on communications</li>
-              <li>• Difficult to detect</li>
-              <li>• Examples: Network monitoring, traffic analysis</li>
-            </ul>
-          </div>
-          <div class="bg-red-50 rounded-lg p-6 border-l-4 border-red-400">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Active Attacks</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>• Modify communications or data in flight</li>
-              <li>• Powerful but riskier</li>
-              <li>• Examples: TCP/IP spoofing, mail forgery</li>
-            </ul>
           </div>
         </div>
       </div>
 
       <!-- Section 6: Security Mechanisms -->
-      <div *ngIf="currentSection === 6" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Overview of Security Mechanisms</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">🏢 Physical Protection</h3>
-            <p class="text-gray-700">Securing physical access to systems and data</p>
+    <div *ngSwitchCase="6" class="section">
+      <h2>Security Mechanisms</h2>
+      <div class="mechanisms-grid">
+        <div 
+          *ngFor="let mechanism of securityMechanisms"
+          class="mechanism-card"
+          [class.active]="selectedMechanism === mechanism"
+          (click)="selectMechanism(mechanism)"
+        >
+          <div class="mechanism-header">
+            <span class="mechanism-icon">{{ mechanism.icon }}</span>
+            <h3>{{ mechanism.name }}</h3>
           </div>
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">🔐 Cryptographic Techniques</h3>
-            <p class="text-gray-700">Mathematical methods for securing information</p>
-          </div>
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">🔑 Access Control & Authorization</h3>
-            <p class="text-gray-700">Managing who can access what resources</p>
-          </div>
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">📋 Auditing & Logging</h3>
-            <p class="text-gray-700">Recording and monitoring system activities</p>
-          </div>
-        </div>
-        <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4">
-          <p class="text-gray-700">
-            <strong>Note:</strong> Cryptography is a critical layer but must be combined with other mechanisms for true
-            end-to-end security.
-          </p>
-        </div>
-      </div>
-
-      <!-- Section 7: What Is Cryptography? -->
-      <div *ngIf="currentSection === 7" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Cryptography Defined</h2>
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8">
-          <blockquote class="text-lg text-gray-700 italic mb-4">
-            "Cryptography is the science of secret writing"
-          </blockquote>
-          <p class="text-gray-700">
-            Cryptography is concerned with designing algorithms to provide confidentiality, integrity, and
-            authentication.
-            Well-designed cryptographic protocols protect against eavesdropping, tampering, and impersonation.
-          </p>
-        </div>
-      </div>
-
-      <!-- Section 8: Core Building Blocks -->
-      <div *ngIf="currentSection === 8" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Fundamental Components of a Cryptosystem</h2>
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Plaintext (P)</h3>
-            <p class="text-gray-700">Original message</p>
-          </div>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Ciphertext (C)</h3>
-            <p class="text-gray-700">Encrypted message</p>
-          </div>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Key Space (K)</h3>
-            <p class="text-gray-700">All possible keys</p>
-          </div>
-          <div class="bg-gray-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Encryption Algorithm (Eₖ)</h3>
-            <p class="text-gray-700">Transforms P → C using key k</p>
-          </div>
-        </div>
-        <div class="bg-gray-900 rounded-lg p-6 text-center">
-          <div class="text-green-400 font-mono text-lg">
-            <div>C = Eₖ(P)</div>
-            <div class="mt-2">P = Dₖ(C)</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 9: Types of Cryptosystems -->
-      <div *ngIf="currentSection === 9" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Keyed vs. Keyless Schemes</h2>
-        <div class="space-y-6">
-          <div class="bg-gray-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Keyless Cryptosystem</h3>
-            <p class="text-gray-700">Performs encryption/decryption without a secret key.</p>
-          </div>
-          <div class="bg-blue-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Symmetric (Secret-Key)</h3>
-            <p class="text-gray-700">Same key for encryption and decryption (fast, but key distribution is challenging).
-            </p>
-          </div>
-          <div class="bg-green-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Asymmetric (Public-Key)</h3>
-            <p class="text-gray-700">Separate public/private keys (computationally intensive, ideal for digital
-              signatures).</p>
-          </div>
-          <div class="bg-purple-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Hash Functions</h3>
-            <p class="text-gray-700">Map arbitrary data to fixed-length digests, ensuring integrity and enabling
-              authentication.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 10: Block & Stream Ciphers -->
-      <div *ngIf="currentSection === 10" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Block & Stream Ciphers</h2>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="bg-blue-50 rounded-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Block Ciphers</h3>
-            <p class="text-gray-700 mb-4">Encrypt fixed-size blocks (e.g., 64 bits) as a permutation under a secret key.
-            </p>
-            <div class="space-y-2">
-              <div class="text-sm">
-                <span class="font-semibold text-green-700">Pros:</span>
-                <span class="text-gray-600"> Diffusion across block, tamper detection if block length changes.</span>
-              </div>
-              <div class="text-sm">
-                <span class="font-semibold text-red-700">Cons:</span>
-                <span class="text-gray-600"> Must buffer entire block, error propagation within block.</span>
-              </div>
+          <p>{{ mechanism.description }}</p>
+          <div class="mechanism-details" *ngIf="selectedMechanism === mechanism">
+            <div class="examples">
+              <h4>Implementation Examples:</h4>
+              <ul>
+                <li *ngFor="let example of mechanism.examples">{{ example }}</li>
+              </ul>
             </div>
-          </div>
-          <div class="bg-green-50 rounded-lg p-6">
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Stream Ciphers</h3>
-            <p class="text-gray-700 mb-4">Encrypt data one unit at a time using a keystream.</p>
-            <div class="space-y-2">
-              <div class="text-sm">
-                <span class="font-semibold text-green-700">Pros:</span>
-                <span class="text-gray-600"> Very fast, low error propagation.</span>
+            <div class="pros-cons">
+              <div class="advantages">
+                <h4>Advantages:</h4>
+                <ul>
+                  <li *ngFor="let advantage of mechanism.advantages">{{ advantage }}</li>
+                </ul>
               </div>
-              <div class="text-sm">
-                <span class="font-semibold text-red-700">Cons:</span>
-                <span class="text-gray-600"> Lower diffusion, vulnerable to insertion and selective modification.</span>
+              <div class="limitations">
+                <h4>Limitations:</h4>
+                <ul>
+                  <li *ngFor="let limitation of mechanism.limitations">{{ limitation }}</li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Section 11: Cryptanalysis & Attack Models -->
-      <div *ngIf="currentSection === 11" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Breaking Ciphers</h2>
-        <p class="text-gray-700 mb-6">
-          Cryptanalysis is the art of recovering plaintext or keys. Theoretical or practical feasibility depends on
-          algorithm strength and information available to the attacker.
-        </p>
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
-          <div class="bg-red-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Ciphertext-Only Attack</h3>
-            <p class="text-gray-700 text-sm">
-              Attacker sees only ciphertexts '{{ '{' }}C₁, C₂, …{{ '}' }}'.
-            </p>
-          </div>
-          <div class="bg-orange-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Known-Plaintext Attack</h3>
-            <p class="text-gray-700 text-sm">Attacker knows some plaintext/ciphertext pairs (Pᵢ, Cᵢ).</p>
-          </div>
-          <div class="bg-yellow-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Chosen-Plaintext Attack</h3>
-            <p class="text-gray-700 text-sm">Attacker can encrypt arbitrary Pᵢ to observe Cᵢ.</p>
-          </div>
-          <div class="bg-purple-50 rounded-lg p-4">
-            <h3 class="font-semibold text-gray-900">Chosen-Ciphertext Attack</h3>
-            <p class="text-gray-700 text-sm">Attacker can decrypt chosen Cᵢ to obtain Pᵢ (esp. in public-key systems).
-            </p>
-          </div>
-        </div>
-        <div class="bg-indigo-100 border-l-4 border-indigo-500 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Kerckhoffs' Principle</h3>
-          <p class="text-gray-700 italic">
-            "A cryptosystem should be secure even if everything about the system, except the key, is public knowledge."
-          </p>
         </div>
       </div>
 
-      <!-- Section 12: Real-World Benefits & Limitations -->
-      <div *ngIf="currentSection === 12" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">What Cryptography Can and Cannot Do</h2>
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="bg-green-50 rounded-lg p-6">
-            <h3 class="text-xl font-semibold text-green-800 mb-4">✅ Can Do</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>• Protect privacy and confidentiality</li>
-              <li>• Authenticate senders (digital signatures)</li>
-              <li>• Ensure data integrity and non-repudiation</li>
-              <li>• Enable digital credentials and audit trails</li>
-            </ul>
-          </div>
-          <div class="bg-red-50 rounded-lg p-6">
-            <h3 class="text-xl font-semibold text-red-800 mb-4">❌ Cannot Do</h3>
-            <ul class="space-y-2 text-gray-700">
-              <li>• Secure data before encryption or during active use</li>
-              <li>• Prevent insider leaks, social engineering, or physical espionage</li>
-            </ul>
-          </div>
-        </div>
+    <!-- Section 7: Cryptography Defined -->
+    <div *ngSwitchCase="7" class="section">
+      <h2>What is Cryptography?</h2>
+      <div class="content-card definition-card">
+        <div class="definition-box">
+          <h3>Cryptography</h3>
+          <p>The art and science of creating secure communication systems in the presence of adversaries.</p>
       </div>
 
-      <!-- Section 13: Conclusions -->
-      <div *ngIf="currentSection === 13" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Conclusions</h2>
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8">
-          <p class="text-lg text-gray-700">
-            Strong cryptography is essential but not sufficient on its own. Effective security demands understanding
-            real threats,
-            designing robust protocols from the start, and combining cryptographic methods with layered controls.
-          </p>
+        <div class="key-aspects">
+          <h3>Key Aspects</h3>
+          <div class="aspect-grid">
+            <div class="aspect-item">
+              <h4>Mathematics</h4>
+              <p>Based on mathematical principles and proofs</p>
         </div>
+            <div class="aspect-item">
+              <h4>Algorithms</h4>
+              <p>Uses well-defined procedures and protocols</p>
       </div>
-
-      <!-- Section 14: Active Learning Tasks -->
-      <div *ngIf="currentSection === 14" class="p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning Tasks</h2>
-
-        <!-- Caesar Cipher Exercise -->
-        <div class="bg-blue-50 rounded-lg p-6 mb-8">
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">Task 1: Caesar Cipher Exercise</h3>
-          <div class="grid md:grid-cols-2 gap-6">
-            <div>
-              <p class="text-gray-700 mb-2"><strong>Plaintext:</strong> {{ caesarPlaintext }}</p>
-              <p class="text-gray-700 mb-4"><strong>Key:</strong> {{ caesarKey }}</p>
-              <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Your Answer:</label>
-                <input type="text" [(ngModel)]="userCaesarResult"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your encrypted result">
-              </div>
-              <button (click)="checkCaesarAnswer()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
-                Check Answer
-              </button>
+            <div class="aspect-item">
+              <h4>Keys</h4>
+              <p>Relies on secret values for security</p>
             </div>
-            <div *ngIf="showCaesarSolution">
-              <div class="bg-white rounded-lg p-4">
-                <h4 class="font-semibold text-gray-900 mb-2">Solution:</h4>
-                <p class="text-gray-700 mb-2"><strong>Correct Answer:</strong> {{ caesarResult }}</p>
-                <p class="text-gray-700 mb-2"><strong>Your Answer:</strong> {{ userCaesarResult }}</p>
-                <div class="px-3 py-2 rounded text-sm"
-                  [class.bg-green-100]="userCaesarResult.toUpperCase() === caesarResult"
-                  [class.text-green-800]="userCaesarResult.toUpperCase() === caesarResult"
-                  [class.bg-red-100]="userCaesarResult.toUpperCase() !== caesarResult"
-                  [class.text-red-800]="userCaesarResult.toUpperCase() !== caesarResult">
-                  {{ userCaesarResult.toUpperCase() === caesarResult ? 'Correct!' : 'Try again!' }}
+            <div class="aspect-item">
+              <h4>Standards</h4>
+              <p>Follows established security standards</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Zero-Knowledge Proofs Activity -->
-        <div class="bg-green-50 rounded-lg p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">Task 2: Zero-Knowledge Proofs (Class Activity)</h3>
-          <div class="space-y-4">
-            <div class="flex items-start">
-              <span
-                class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">1</span>
-              <p class="text-gray-700">Watch a 10-minute video on zero-knowledge proofs.</p>
+    <!-- Section 8: Core Building Blocks -->
+    <div *ngSwitchCase="8" class="section">
+      <h2>Core Components of a Cryptosystem</h2>
+      <div class="components-grid">
+        <div *ngFor="let component of cryptoComponents" class="component-card">
+          <h3>{{ component.name }}</h3>
+          <p>{{ component.description }}</p>
+          <div class="component-details">
+            <div class="example-box">
+              <h4>Example:</h4>
+              <code>{{ component.example }}</code>
             </div>
-            <div class="flex items-start">
-              <span
-                class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">2</span>
-              <p class="text-gray-700">Formulate one question based on the video.</p>
+            <div class="importance-box">
+              <h4>Importance:</h4>
+              <p>{{ component.importance }}</p>
             </div>
-            <div class="flex items-start">
-              <span
-                class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">3</span>
-              <p class="text-gray-700">Exchange and answer peer questions.</p>
-            </div>
-            <div class="flex items-start">
-              <span
-                class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">4</span>
-              <p class="text-gray-700">Defend your reasoning in the group forum.</p>
+          </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Navigation -->
-      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
-        <button (click)="previousSection()" [disabled]="currentSection === 1"
-          class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-          </svg>
+  <!-- Navigation Footer -->
+  <footer class="nav-footer">
+    <button 
+      class="nav-button prev"
+      [disabled]="currentSection === 1"
+      (click)="prevSection()"
+    >
           Previous
         </button>
-
-        <div class="flex space-x-2">
-          <button *ngFor="let section of [].constructor(totalSections); let i = index" (click)="goToSection(i + 1)"
-            class="w-8 h-8 rounded-full text-sm font-medium transition-colors"
-            [class.bg-blue-600]="currentSection === i + 1" [class.text-white]="currentSection === i + 1"
-            [class.bg-gray-200]="currentSection !== i + 1" [class.text-gray-700]="currentSection !== i + 1"
-            [class.hover:bg-gray-300]="currentSection !== i + 1">
-            {{ i + 1 }}
-          </button>
-        </div>
-
-        <button (click)="nextSection()" [disabled]="currentSection === totalSections"
-          class="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
-          Next
-          <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
+    <div class="current-section">
+      {{ sections[currentSection - 1]?.title }}
     </div>
-  </main>
+    <button 
+      class="nav-button next"
+      [disabled]="currentSection === totalSections"
+      (click)="nextSection()"
+    >
+      Next
+    </button>
+  </footer>
 </div>

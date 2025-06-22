@@ -6,7 +6,7 @@ import { Chapter1Component } from './chapters/chapter1/chapter1.component';
 import { Chapter3Component } from './chapters/chapter3/chapter3.component';
 import { Chapter5Component } from './chapters/chapter5/chapter5.component';
 import { Chapter10Component } from './chapters/chapter10/chapter10.component';
-import { adminGuard, noAuthGuard } from './auth.guard';
+import { adminGuard, noAuthGuard, authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -29,6 +29,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: StudentDashboardComponent,
+    canActivate: [authGuard],
     title: 'Dashboard'
   },
   {
@@ -107,25 +108,35 @@ export const routes: Routes = [
     title: 'Chapter 16 - Homomorphic Encryption'
   },
   {
-    path: 'DES',
+    path: 'des',
     loadComponent: () => import('./crypto-tools/des-tool/des-tool.component').then(m => m.DesToolComponent),
     title: 'DES Tool - Data Encryption Standard'
   },
   {
-    path: 'RSA',
+    path: 'rsa',
     loadComponent: () => import('./crypto-tools/rsa/rsa.component').then(m => m.RSAComponent),
     title: 'RSA Tool - RSA Encryption'
   },
   {
-    path: 'SHA256',
+    path: 'sha256',
     loadComponent: () => import('./crypto-tools/sha256/sha256.component').then(m => m.Sha256Component),
     title: 'SHA256 Tool - SHA256 Hashing'
+  },
+  {
+    path: 'aes',
+    loadComponent: () => import('./crypto-tools/aes/aes.component').then(m => m.AESComponent),
+    title: 'AES Tool - Advanced Encryption Standard'
   },
   {
     path: 'admin',
     loadComponent: () => import('./admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
     canActivate: [adminGuard],
     title: 'Admin Dashboard'
+  },
+  {
+    path: 'instructor',
+    loadComponent: () => import('./instructor-dashboard/instructor-dashboard.component').then(m => m.InstructorDashboardComponent),
+    title: 'Instructor Dashboard'
   },
   {
     path: '**',

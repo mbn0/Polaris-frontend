@@ -24,7 +24,7 @@ type RoundKey = State
 })
 export class AESComponent {
   // Input values
-  inputPlaintext = "1234567890123456"  // Default input of exactly 16 chars
+  inputPlaintext = "Hello, World!123"  // Default input of exactly 16 bytes
   inputKey = "MySecretKey12345"
 
   // State
@@ -58,51 +58,150 @@ export class AESComponent {
     0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36
   ]
 
-  // AES Helper Functions
+  // Enhanced error handling
+  private showError(message: string): void {
+    this.inputError = message
+    console.error('AES Error:', message)
+  }
+
+  private clearError(): void {
+    this.inputError = ""
+  }
+
+  // Enhanced input validation
+  private validateInput(input: string, name: string): void {
+    if (!input) {
+      throw new Error(`${name} cannot be empty`)
+    }
+    
+    if (input.length === 0) {
+      throw new Error(`${name} must contain at least one character`)
+    }
+
+    // Check for valid UTF-8 encoding
+    try {
+      const encoder = new TextEncoder()
+      const bytes = encoder.encode(input)
+      
+      if (bytes.length !== 16) {
+        throw new Error(`${name} must be exactly 16 bytes when UTF-8 encoded. Current: ${bytes.length} bytes (${input.length} characters)`)
+      }
+
+      // Verify all bytes are valid (0-255 range)
+      for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] < 0 || bytes[i] > 255) {
+          throw new Error(`${name} contains invalid byte value: ${bytes[i]}`)
+        }
+      }
+    } catch (error: any) {
+      throw new Error(`${name} encoding error: ${error.message}`)
+    }
+  }
+
+  // AES Helper Functions with enhanced validation
   private toState(input: Uint8Array): State {
+    if (input.length !== 16) {
+      throw new Error(`Input must be exactly 16 bytes, got ${input.length}`)
+    }
+
     const s: State = [[], [], [], []]
     for (let i = 0; i < 16; i++) {
-      s[i % 4][Math.floor(i / 4)] = input[i]
+      const byte = input[i]
+      if (byte < 0 || byte > 255) {
+        throw new Error(`Invalid byte value at position ${i}: ${byte}`)
+      }
+      s[i % 4][Math.floor(i / 4)] = byte
     }
     return s
   }
 
   private fromState(s: State): Uint8Array {
+    if (!s || s.length !== 4 || !s.every(row => row && row.length === 4)) {
+      throw new Error('Invalid state matrix: must be 4x4')
+    }
+
     const out = new Uint8Array(16)
     for (let c = 0; c < 4; c++) {
       for (let r = 0; r < 4; r++) {
-        out[4 * c + r] = s[r][c]
+        const byte = s[r][c]
+        if (byte < 0 || byte > 255) {
+          throw new Error(`Invalid byte in state[${r}][${c}]: ${byte}`)
+        }
+        out[4 * c + r] = byte
       }
     }
     return out
   }
 
   private subBytes(s: State): void {
+    if (!s || s.length !== 4) {
+      throw new Error('Invalid state for SubBytes operation')
+    }
+
     for (let r = 0; r < 4; r++) {
+      if (!s[r] || s[r].length !== 4) {
+        throw new Error(`Invalid state row ${r} for SubBytes operation`)
+      }
       for (let c = 0; c < 4; c++) {
-        s[r][c] = this.SBOX[s[r][c]]
+        const byte = s[r][c]
+        if (byte < 0 || byte > 255) {
+          throw new Error(`Invalid byte for S-box lookup: ${byte}`)
+        }
+        s[r][c] = this.SBOX[byte]
       }
     }
   }
 
   private shiftRows(s: State): void {
+    if (!s || s.length !== 4 || !s.every(row => row && row.length === 4)) {
+      throw new Error('Invalid state for ShiftRows operation')
+    }
+
     for (let r = 1; r < 4; r++) {
       s[r] = s[r].slice(r).concat(s[r].slice(0, r))
     }
   }
 
+  // Enhanced Galois field multiplication with better error handling
   private xtime(b: number): number {
+    if (b < 0 || b > 255) {
+      throw new Error(`Invalid byte for xtime operation: ${b}`)
+    }
     return ((b << 1) ^ ((b & 0x80) ? 0x1b : 0)) & 0xff
   }
 
-  private gmul(b: number, factor: number): number {
-    if (factor === 1) return b
-    if (factor === 2) return this.xtime(b)
-    if (factor === 3) return this.xtime(b) ^ b
-    throw new Error('Unsupported gmul factor')
+  // Improved gmul with full Galois field multiplication support
+  private gmul(a: number, b: number): number {
+    if (a < 0 || a > 255 || b < 0 || b > 255) {
+      throw new Error(`Invalid bytes for gmul operation: a=${a}, b=${b}`)
+    }
+
+    let result = 0
+    let tempA = a
+    let tempB = b
+
+    for (let i = 0; i < 8; i++) {
+      if (tempB & 1) {
+        result ^= tempA
+      }
+      tempA = this.xtime(tempA)
+      tempB >>= 1
+    }
+
+    return result & 0xff
   }
 
   private mixColumn(col: number[]): number[] {
+    if (!col || col.length !== 4) {
+      throw new Error('Invalid column for MixColumn operation')
+    }
+
+    for (let i = 0; i < 4; i++) {
+      if (col[i] < 0 || col[i] > 255) {
+        throw new Error(`Invalid byte in column[${i}]: ${col[i]}`)
+      }
+    }
+
     const [a, b, c, d] = col
     return [
       this.gmul(a, 2) ^ this.gmul(b, 3) ^ this.gmul(c, 1) ^ this.gmul(d, 1),
@@ -113,89 +212,160 @@ export class AESComponent {
   }
 
   private mixColumns(s: State): void {
+    if (!s || s.length !== 4 || !s.every(row => row && row.length === 4)) {
+      throw new Error('Invalid state for MixColumns operation')
+    }
+
     for (let c = 0; c < 4; c++) {
       const col = [s[0][c], s[1][c], s[2][c], s[3][c]]
       const mixed = this.mixColumn(col)
-      for (let r = 0; r < 4; r++) s[r][c] = mixed[r]
+      for (let r = 0; r < 4; r++) {
+        s[r][c] = mixed[r]
+      }
     }
   }
 
   private addRoundKey(s: State, rk: RoundKey): void {
+    if (!s || s.length !== 4 || !s.every(row => row && row.length === 4)) {
+      throw new Error('Invalid state for AddRoundKey operation')
+    }
+    if (!rk || rk.length !== 4 || !rk.every(row => row && row.length === 4)) {
+      throw new Error('Invalid round key for AddRoundKey operation')
+    }
+
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 4; c++) {
+        if (s[r][c] < 0 || s[r][c] > 255 || rk[r][c] < 0 || rk[r][c] > 255) {
+          throw new Error(`Invalid byte values for XOR: state[${r}][${c}]=${s[r][c]}, key[${r}][${c}]=${rk[r][c]}`)
+        }
         s[r][c] ^= rk[r][c]
       }
     }
   }
 
   private rotateWord(w: number[]): number[] {
+    if (!w || w.length !== 4) {
+      throw new Error('Invalid word for RotateWord operation')
+    }
+    for (let i = 0; i < 4; i++) {
+      if (w[i] < 0 || w[i] > 255) {
+        throw new Error(`Invalid byte in word[${i}]: ${w[i]}`)
+      }
+    }
     return w.slice(1).concat(w[0])
   }
 
   private subWord(w: number[]): number[] {
-    return w.map(b => this.SBOX[b])
+    if (!w || w.length !== 4) {
+      throw new Error('Invalid word for SubWord operation')
+    }
+    return w.map((b, i) => {
+      if (b < 0 || b > 255) {
+        throw new Error(`Invalid byte in word[${i}]: ${b}`)
+      }
+      return this.SBOX[b]
+    })
   }
 
   private keyExpansion(key: Uint8Array): RoundKey[] {
+    if (!key || key.length !== 16) {
+      throw new Error(`Key must be exactly 16 bytes, got ${key.length}`)
+    }
+
     const Nk = 4, Nr = 10, Nb = 4
     const w: number[][] = []
 
-    // First Nk words from the key
-    for (let i = 0; i < Nk; i++) {
-      w[i] = [key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]]
-    }
-
-    for (let i = Nk; i < Nb * (Nr + 1); i++) {
-      let temp = w[i - 1].slice()
-      if (i % Nk === 0) {
-        temp = this.subWord(this.rotateWord(temp))
-        temp[0] ^= this.RCON[i / Nk]
+    try {
+      // First Nk words from the key
+      for (let i = 0; i < Nk; i++) {
+        w[i] = [key[4 * i], key[4 * i + 1], key[4 * i + 2], key[4 * i + 3]]
       }
-      w[i] = w[i - Nk].map((b, idx) => b ^ temp[idx])
-    }
 
-    // Group into RoundKey states
-    const roundKeys: RoundKey[] = []
-    for (let r = 0; r < Nr + 1; r++) {
-      const rk: RoundKey = [[], [], [], []]
-      for (let c = 0; c < Nb; c++) {
-        const word = w[r * Nb + c]
-        for (let row = 0; row < 4; row++) {
-          rk[row][c] = word[row]
+      for (let i = Nk; i < Nb * (Nr + 1); i++) {
+        let temp = w[i - 1].slice()
+        if (i % Nk === 0) {
+          temp = this.subWord(this.rotateWord(temp))
+          temp[0] ^= this.RCON[i / Nk]
         }
+        w[i] = w[i - Nk].map((b, idx) => b ^ temp[idx])
       }
-      roundKeys.push(rk)
+
+      // Group into RoundKey states
+      const roundKeys: RoundKey[] = []
+      for (let r = 0; r < Nr + 1; r++) {
+        const rk: RoundKey = [[], [], [], []]
+        for (let c = 0; c < Nb; c++) {
+          const word = w[r * Nb + c]
+          if (!word || word.length !== 4) {
+            throw new Error(`Invalid word at position ${r * Nb + c}`)
+          }
+          for (let row = 0; row < 4; row++) {
+            rk[row][c] = word[row]
+          }
+        }
+        roundKeys.push(rk)
+      }
+      return roundKeys
+    } catch (error: any) {
+      throw new Error(`Key expansion failed: ${error.message}`)
     }
-    return roundKeys
   }
 
   private padKey(input: string): Uint8Array {
-    const bytes = new TextEncoder().encode(input)
-    // Key must always be exactly 16 bytes
-    if (bytes.length > 16) {
-      throw new Error("Key must not exceed 16 bytes")
+    try {
+      this.validateInput(input, 'Key')
+      const bytes = new TextEncoder().encode(input)
+      
+      if (bytes.length > 16) {
+        throw new Error(`Key is too long: ${bytes.length} bytes (max 16 bytes)`)
+      }
+      
+      const padded = new Uint8Array(16)
+      padded.set(bytes)
+      // Zero padding for shorter keys
+      padded.fill(0, bytes.length)
+      return padded
+    } catch (error: any) {
+      throw new Error(`Key processing failed: ${error.message}`)
     }
-    const padded = new Uint8Array(16)
-    padded.set(bytes)
-    // Zero padding for key (since key padding method doesn't affect security)
-    padded.fill(0, bytes.length)
-    return padded
   }
 
   private padPlaintext(input: string): Uint8Array {
-    const bytes = new TextEncoder().encode(input)
-    
-    if (bytes.length !== 16) {
-      throw new Error(`Input must be exactly 16 bytes. Current length: ${bytes.length} bytes`)
+    try {
+      this.validateInput(input, 'Plaintext')
+      const bytes = new TextEncoder().encode(input)
+      
+      if (bytes.length !== 16) {
+        throw new Error(`Plaintext must be exactly 16 bytes. Current: ${bytes.length} bytes`)
+      }
+      
+      return bytes
+    } catch (error: any) {
+      throw new Error(`Plaintext processing failed: ${error.message}`)
     }
-    
-    return bytes
   }
 
   private bytesToHex(bytes: Uint8Array): string {
+    if (!bytes) {
+      throw new Error('Invalid bytes array for hex conversion')
+    }
     return Array.from(bytes)
-      .map(b => b.toString(16).padStart(2, '0'))
+      .map(b => {
+        if (b < 0 || b > 255) {
+          throw new Error(`Invalid byte for hex conversion: ${b}`)
+        }
+        return b.toString(16).padStart(2, '0')
+      })
       .join(' ')
+  }
+
+  // Enhanced byte length calculation
+  getByteLength(input: string): number {
+    try {
+      return new TextEncoder().encode(input).length
+    } catch {
+      return 0
+    }
   }
 
   processInput(): void {
@@ -203,25 +373,37 @@ export class AESComponent {
     this.steps = []
     this.currentStep = 0
     this.finalCiphertext = ""
-    this.inputError = ""  // Reset error message
+    this.clearError()
 
     try {
+      // Enhanced input validation
+      if (!this.inputPlaintext.trim()) {
+        throw new Error('Plaintext cannot be empty')
+      }
+      if (!this.inputKey.trim()) {
+        throw new Error('Key cannot be empty')
+      }
+
       this.generateSteps()
     } catch (error: any) {
-      this.inputError = error.message || "An unknown error occurred"
-      console.error("Error processing AES:", error)
+      this.showError(error.message || "An unknown error occurred during AES processing")
+      console.error("AES processing error:", error)
+    } finally {
+      this.isProcessing = false
     }
-
-    this.isProcessing = false
   }
 
   private formatCiphertext(ciphertext: Uint8Array): string {
-    // Format ciphertext in blocks of 16 bytes with detailed hex representation
-    const hex = Array.from(ciphertext)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join(' ')
-    
-    return `${ciphertext.length} bytes: ${hex}`
+    try {
+      // Format ciphertext in blocks of 16 bytes with detailed hex representation
+      const hex = Array.from(ciphertext)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join(' ')
+      
+      return `${ciphertext.length} bytes: ${hex}`
+    } catch (error: any) {
+      throw new Error(`Ciphertext formatting failed: ${error.message}`)
+    }
   }
 
   private generateSteps(): void {
@@ -525,12 +707,12 @@ export class AESComponent {
   }
 
   reset(): void {
-    this.inputPlaintext = "1234567890123456"
+    this.inputPlaintext = "Hello, World!123"
     this.inputKey = "MySecretKey12345"
     this.steps = []
     this.currentStep = 0
     this.finalCiphertext = ""
-    this.inputError = ""
+    this.clearError()
     this.isProcessing = false
   }
 

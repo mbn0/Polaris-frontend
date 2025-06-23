@@ -25,12 +25,7 @@ interface BiometricMetrics {
   accuracy: number
 }
 
-interface OTPState {
-  currentHash: string
-  counter: number
-  hashChain: string[]
-  isValid: boolean
-}
+
 
 @Component({
   selector: "app-chapter14",
@@ -76,15 +71,7 @@ export class Chapter14Component implements OnInit {
   loginAttempt = ""
   loginResult = ""
 
-  // OTP Demo
-  otpState: OTPState = {
-    currentHash: "",
-    counter: 0,
-    hashChain: [],
-    isValid: false,
-  }
-  otpSeed = "mysecret123"
-  otpLength = 10
+
 
   // Challenge-Response Demo
   challengeResponseDemo: ChallengeResponseDemo = {
@@ -104,19 +91,11 @@ export class Chapter14Component implements OnInit {
     { technique: "Keystroke Dynamics", far: 0.05, frr: 0.15, accuracy: 88.0 },
   ]
 
-  // Exercise States
-  exerciseResults = {
-    saltedHash: { completed: false, score: 0 },
-    lamportOTP: { completed: false, score: 0 },
-    challengeResponse: { completed: false, score: 0 },
-    biometricEval: { completed: false, score: 0 },
-    multiFactor: { completed: false, score: 0 },
-  }
+
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.initializeOTP()
     this.generateChallenge()
   }
 
@@ -153,38 +132,7 @@ export class Chapter14Component implements OnInit {
     this.loginResult = attemptHash === this.storedHash ? "SUCCESS" : "FAILED"
   }
 
-  // OTP Implementation
-  initializeOTP() {
-    this.otpState.hashChain = []
-    let current = this.otpSeed
 
-    // Generate hash chain
-    for (let i = 0; i < this.otpLength; i++) {
-      current = this.simpleHashSync(current)
-      this.otpState.hashChain.push(current)
-    }
-
-    this.otpState.currentHash = this.otpState.hashChain[this.otpLength - 1]
-    this.otpState.counter = this.otpLength - 1
-  }
-
-  authenticateOTP() {
-    if (this.otpState.counter > 0) {
-      const expectedHash = this.otpState.hashChain[this.otpState.counter - 1]
-      const providedHash = this.simpleHashSync(expectedHash)
-
-      this.otpState.isValid = providedHash === this.otpState.currentHash
-
-      if (this.otpState.isValid) {
-        this.otpState.currentHash = expectedHash
-        this.otpState.counter--
-      }
-    }
-  }
-
-  resetOTP() {
-    this.initializeOTP()
-  }
 
   // Challenge-Response Demo
   generateChallenge() {
@@ -249,16 +197,7 @@ export class Chapter14Component implements OnInit {
     return "#dc3545"
   }
 
-  // Exercise Methods
-  completeExercise(exercise: string) {
-    const score = Math.floor(Math.random() * 30) + 70 // 70-100
-    ;(this.exerciseResults as any)[exercise] = { completed: true, score }
-  }
 
-  getOverallProgress(): number {
-    const completed = Object.values(this.exerciseResults).filter((r) => r.completed).length
-    return (completed / Object.keys(this.exerciseResults).length) * 100
-  }
 
   // Utility Methods
   private async simpleHash(input: string): Promise<string> {

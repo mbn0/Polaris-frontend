@@ -42,6 +42,7 @@
     margin: 0;
     font-size: 2.5em;
     font-weight: 300;
+    text-align: center;
   }
   
   .chapter-info p {
@@ -118,6 +119,7 @@
     margin-bottom: 30px;
     font-size: 2.2em;
     font-weight: 300;
+    text-align: center;
   }
   
   .content-grid {
@@ -947,68 +949,109 @@
     min-width: 120px;
   }
   
-  .chain-validation {
-    background: #f8f9fa;
+  .chain-validation-explanation {
+    margin-top: 30px;
     padding: 25px;
-    border-radius: 8px;
+    background: #f8f9fa;
+    border-radius: 12px;
   }
   
-  .chain-validation h4 {
+  .chain-validation-explanation h4 {
     color: #667eea;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.5em;
   }
   
-  .validate-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
+  .validation-steps {
+    margin-bottom: 30px;
+  }
+  
+  .validation-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
     margin-bottom: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
   }
   
-  .validate-btn:hover {
-    background: #218838;
+  .validation-step:hover {
+    transform: translateY(-2px);
   }
   
-  .validation-result {
+  .step-icon {
+    font-size: 1.5em;
+    min-width: 40px;
+  }
+  
+  .step-content h5 {
+    color: #667eea;
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+  }
+  
+  .step-content p {
+    margin: 0;
+    color: #555;
+    line-height: 1.5;
+  }
+  
+  .validation-importance {
     background: white;
     padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border-left: 5px solid #28a745;
   }
   
-  .validation-status {
-    font-weight: bold;
-    font-size: 1.1em;
+  .validation-importance h5 {
+    color: #28a745;
     margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 6px;
-    text-align: center;
+    font-size: 1.2em;
   }
   
-  .validation-status.valid {
-    background: #d4edda;
-    color: #155724;
+  .importance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
   }
   
-  .validation-status.invalid {
-    background: #f8d7da;
-    color: #721c24;
-  }
-  
-  .validation-issues {
-    margin-top: 15px;
-  }
-  
-  .issue-item {
-    padding: 8px 12px;
-    margin: 5px 0;
+  .importance-item {
+    padding: 12px;
     background: #f8f9fa;
-    border-radius: 4px;
-    border-left: 3px solid #667eea;
+    border-radius: 6px;
+    border-left: 3px solid #28a745;
+  }
+  
+  .common-validation-errors {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #dc3545;
+  }
+  
+  .common-validation-errors h5 {
+    color: #dc3545;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+  }
+  
+  .common-validation-errors ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  
+  .common-validation-errors li {
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  .common-validation-errors strong {
+    color: #dc3545;
   }
   
   .revocation-methods {
@@ -1251,64 +1294,27 @@
     margin: 0;
   }
   
-  .exercise-status {
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    font-weight: bold;
-  }
-  
-  .exercise-status.completed {
-    background: #28a745;
-  }
-  
-  .exercise-status:not(.completed) {
-    background: rgba(255,255,255,0.2);
-  }
+
   
   .exercise-content {
     padding: 20px;
   }
   
-  .exercise-hint {
-    background: #fff3cd;
-    padding: 12px;
-    border-radius: 6px;
-    margin-top: 15px;
-    font-size: 0.9em;
-    border-left: 4px solid #ffc107;
+  .exercise-content h5 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.1em;
   }
   
-  .exercise-actions {
-    padding: 20px;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .exercise-content ul {
+    margin: 0;
+    padding-left: 20px;
   }
   
-  .complete-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  .complete-btn:hover:not(:disabled) {
-    background: #218838;
-  }
-  
-  .complete-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .exercise-score {
-    font-weight: bold;
-    color: #28a745;
+  .exercise-content li {
+    margin: 8px 0;
+    color: #555;
+    line-height: 1.5;
   }
   
   .quiz-section {

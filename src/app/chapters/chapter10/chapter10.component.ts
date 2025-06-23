@@ -66,8 +66,8 @@ export class Chapter10Component implements OnInit {
   elgamalC2 = 0
   elgamalDecrypted = 0
 
-  // Random number for something
- ran =Math.random().toString(36).substring(7)
+  // Random string for OAEP demonstration
+  randomString = Math.random().toString(36).substring(7)
 
   // Security level comparison
   securityLevels: SecurityLevel[] = [
@@ -221,10 +221,24 @@ export class Chapter10Component implements OnInit {
     if (!this.rsaKeyPair) return
 
     // Simple hash function (for demonstration)
-    this.signatureHash = this.simpleHash(this.signatureMessage)
+    let hash = this.simpleHash(this.signatureMessage)
+    const { n } = this.rsaKeyPair.privateKey
+    
+    // Ensure hash is valid for RSA signing (hash < n and gcd(hash, n) = 1)
+    if (hash >= n) {
+      hash = hash % (n - 1) + 1  // Ensure hash is in range [1, n-1]
+    }
+    
+    // Ensure gcd(hash, n) = 1
+    while (this.gcd(hash, n) !== 1) {
+      hash = (hash + 1) % n
+      if (hash === 0) hash = 1  // Avoid hash = 0
+    }
+    
+    this.signatureHash = hash
 
     // Sign with private key: S = H^d mod n
-    const { d, n } = this.rsaKeyPair.privateKey
+    const { d } = this.rsaKeyPair.privateKey
     this.digitalSignature = this.modularExponentiation(this.signatureHash, d, n)
   }
 

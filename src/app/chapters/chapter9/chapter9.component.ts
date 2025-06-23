@@ -367,30 +367,56 @@ export class Chapter9Component implements OnInit {
   }
 
   extendedGCD(a: number, b: number): ExtendedEuclideanResult {
-    const steps: { equation: string; x: number; y: number }[] = []
-
-    if (b === 0) {
-      return {
-        gcd: a,
-        x: 1,
-        y: 0,
-        steps: [{ equation: `${a} = 1 × ${a} + 0 × 0`, x: 1, y: 0 }],
-      }
+    const originalA = a;
+    const originalB = b;
+    
+    // Extended Euclidean Algorithm using iterative approach
+    let oldR = a, r = b;
+    let oldS = 1, s = 0;
+    let oldT = 0, t = 1;
+    
+    const steps: { equation: string; x: number; y: number }[] = [];
+    
+    while (r !== 0) {
+      const quotient = Math.floor(oldR / r);
+      
+      [oldR, r] = [r, oldR - quotient * r];
+      [oldS, s] = [s, oldS - quotient * s];
+      [oldT, t] = [t, oldT - quotient * t];
     }
-
-    const result = this.extendedGCD(b, a % b)
-    const x = result.y
-    const y = result.x - Math.floor(a / b) * result.y
-
-    const equation = `${result.gcd} = ${x} × ${a} + ${y} × ${b}`
-    steps.unshift({ equation, x, y })
-
+    
+    // oldR is the GCD, oldS and oldT are the Bézout coefficients
+    const gcd = oldR;
+    const x = oldS;
+    const y = oldT;
+    
+    // Generate step-by-step explanation
+    steps.push({
+      equation: `gcd(${originalA}, ${originalB}) = ${gcd}`,
+      x: 0,
+      y: 0
+    });
+    
+    steps.push({
+      equation: `${gcd} = ${x} × ${originalA} + ${y} × ${originalB}`,
+      x,
+      y
+    });
+    
+    // Verification step
+    const verification = x * originalA + y * originalB;
+    steps.push({
+      equation: `Verification: ${x} × ${originalA} + ${y} × ${originalB} = ${verification}`,
+      x,
+      y
+    });
+    
     return {
-      gcd: result.gcd,
+      gcd,
       x,
       y,
-      steps: [...result.steps, ...steps],
-    }
+      steps,
+    };
   }
 
   // Prime generation
@@ -442,9 +468,17 @@ export class Chapter9Component implements OnInit {
   isStrongPrime(p: number): boolean {
     if (p <= 3) return false
 
-    // Simplified check: p-1 should have a large prime factor
-    const factors = this.primeFactorization(p - 1)
-    return factors.some((factor) => factor.prime > Math.sqrt(p - 1))
+    // A strong prime p satisfies:
+    // 1. p-1 has a large prime factor r
+    // 2. p+1 has a large prime factor s  
+    // 3. r-1 has a large prime factor
+    // For simplicity, we check the first condition: p-1 has a large prime factor
+    const factorsOfPMinus1 = this.primeFactorization(p - 1)
+    const largestPrimeFactor = Math.max(...factorsOfPMinus1.map(f => f.prime))
+    
+    // A prime factor is considered "large" if it's greater than a threshold
+    // For educational purposes, we use sqrt(p-1) as the threshold
+    return largestPrimeFactor > Math.sqrt(p - 1)
   }
 
   gcd(a: number, b: number): number {

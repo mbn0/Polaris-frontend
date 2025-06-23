@@ -119,6 +119,42 @@ export class Chapter8Component implements OnInit {
     this.analyzePatterns();
   }
 
+  // Helper method to convert string to hex for display
+  stringToHex(str: string): string {
+    let hex = '';
+    for (let i = 0; i < str.length; i++) {
+      const charCode = str.charCodeAt(i);
+      hex += charCode.toString(16).padStart(2, '0').toUpperCase();
+    }
+    return hex;
+  }
+
+  // Helper method to get displayable ciphertext
+  getDisplayableCiphertext(ciphertext: string, maxLength: number = 20): string {
+    const hex = this.stringToHex(ciphertext);
+    return hex.length > maxLength ? hex.substring(0, maxLength) + '...' : hex;
+  }
+
+  // Helper method to check if string contains non-printable characters
+  hasNonPrintableChars(str: string): boolean {
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      if (code < 32 || code > 126) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Get formatted result for display
+  getFormattedResult(result: CipherResult): { plaintext: string, ciphertext: string, ciphertextHex: string } {
+    return {
+      plaintext: result.plaintext,
+      ciphertext: this.hasNonPrintableChars(result.ciphertext) ? '[Non-printable]' : result.ciphertext,
+      ciphertextHex: this.stringToHex(result.ciphertext)
+    };
+  }
+
   // Simple block cipher simulation (toy cipher for demonstration)
   simpleBlockCipher(block: string, key: string, encrypt = true): string {
     const keyCode = key.charCodeAt(0) % 26;

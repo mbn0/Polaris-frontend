@@ -73,38 +73,75 @@ export class Sha256Component {
     0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
   ]
 
-  // SHA-256 Helper Functions
+  // SHA-256 Helper Functions with validation
   private ROTR(x: number, n: number): number {
+    // Validate inputs
+    if (!Number.isInteger(x) || x < 0 || x > 0xffffffff) {
+      throw new Error(`Invalid input to ROTR: x must be a 32-bit unsigned integer, got ${x}`)
+    }
+    if (!Number.isInteger(n) || n < 0 || n > 31) {
+      throw new Error(`Invalid rotation amount: n must be between 0 and 31, got ${n}`)
+    }
     return ((x >>> n) | (x << (32 - n))) >>> 0
   }
 
   private Ch(x: number, y: number, z: number): number {
+    // Choose function: if x then y else z
+    // Validates that inputs are 32-bit unsigned integers
+    this.validate32BitUnsigned(x, 'Ch function parameter x')
+    this.validate32BitUnsigned(y, 'Ch function parameter y')
+    this.validate32BitUnsigned(z, 'Ch function parameter z')
     return ((x & y) ^ (~x & z)) >>> 0
   }
 
   private Maj(x: number, y: number, z: number): number {
+    // Majority function: return the majority bit of x, y, z
+    this.validate32BitUnsigned(x, 'Maj function parameter x')
+    this.validate32BitUnsigned(y, 'Maj function parameter y')
+    this.validate32BitUnsigned(z, 'Maj function parameter z')
     return ((x & y) ^ (x & z) ^ (y & z)) >>> 0
   }
 
   private Σ0(x: number): number {
+    // Upper case Sigma 0 function
+    this.validate32BitUnsigned(x, 'Σ0 function parameter')
     return (this.ROTR(x, 2) ^ this.ROTR(x, 13) ^ this.ROTR(x, 22)) >>> 0
   }
 
   private Σ1(x: number): number {
+    // Upper case Sigma 1 function
+    this.validate32BitUnsigned(x, 'Σ1 function parameter')
     return (this.ROTR(x, 6) ^ this.ROTR(x, 11) ^ this.ROTR(x, 25)) >>> 0
   }
 
   private σ0(x: number): number {
+    // Lower case sigma 0 function
+    this.validate32BitUnsigned(x, 'σ0 function parameter')
     return (this.ROTR(x, 7) ^ this.ROTR(x, 18) ^ (x >>> 3)) >>> 0
   }
 
   private σ1(x: number): number {
+    // Lower case sigma 1 function
+    this.validate32BitUnsigned(x, 'σ1 function parameter')
     return (this.ROTR(x, 17) ^ this.ROTR(x, 19) ^ (x >>> 10)) >>> 0
+  }
+
+  // Helper function to validate 32-bit unsigned integers
+  private validate32BitUnsigned(value: number, context: string): void {
+    if (!Number.isInteger(value) || value < 0 || value > 0xffffffff) {
+      throw new Error(`${context}: must be a 32-bit unsigned integer, got ${value}`)
+    }
   }
 
   private padMessage(msg: Uint8Array): Uint8Array {
     const len = msg.length * 8
-    const k = (448 - (msg.length * 8 + 1)) % 512
+    // Calculate padding: message + 1 bit + k zero bits + 64-bit length = multiple of 512 bits
+    // So: (msg.length * 8 + 1 + k + 64) % 512 = 0
+    // Therefore: k = (448 - (msg.length * 8 + 1)) % 512
+    // But we need to handle negative values correctly
+    let k = (448 - (msg.length * 8 + 1)) % 512
+    if (k < 0) k += 512
+    
     const paddingLength = Math.floor((k + 1) / 8)
     const padded = new Uint8Array(msg.length + paddingLength + 8)
     
@@ -123,6 +160,17 @@ export class Sha256Component {
   }
 
   private getBlocks(padded: Uint8Array): number[][] {
+    // Validate input
+    if (!(padded instanceof Uint8Array)) {
+      throw new Error('Input must be a Uint8Array')
+    }
+    if (padded.length % 64 !== 0) {
+      throw new Error(`Padded message length must be multiple of 64 bytes, got ${padded.length}`)
+    }
+    if (padded.length === 0) {
+      throw new Error('Padded message cannot be empty')
+    }
+
     const blocks: number[][] = []
     const view = new DataView(padded.buffer)
     
@@ -137,20 +185,65 @@ export class Sha256Component {
   }
 
   private expandSchedule(W: number[]): number[] {
+    // Validate input
+    if (!Array.isArray(W)) {
+      throw new Error('Message schedule input must be an array')
+    }
+    if (W.length !== 16) {
+      throw new Error(`Message schedule input must have exactly 16 words, got ${W.length}`)
+    }
+    
+    // Validate each word is a 32-bit unsigned integer
+    for (let i = 0; i < 16; i++) {
+      this.validate32BitUnsigned(W[i], `Message schedule word W[${i}]`)
+    }
+
     const schedule = [...W]
     for (let t = 16; t < 64; t++) {
-      schedule[t] = (this.σ1(schedule[t - 2]) + schedule[t - 7] + this.σ0(schedule[t - 15]) + schedule[t - 16]) >>> 0
+      const term1 = this.σ1(schedule[t - 2])
+      const term2 = schedule[t - 7]
+      const term3 = this.σ0(schedule[t - 15])
+      const term4 = schedule[t - 16]
+      
+      // Perform addition with proper 32-bit wrapping
+      schedule[t] = (term1 + term2 + term3 + term4) >>> 0
     }
     return schedule
   }
 
   private compressBlock(W: number[], H: number[]): number[] {
+    // Validate message schedule
+    if (!Array.isArray(W) || W.length !== 64) {
+      throw new Error(`Message schedule must have exactly 64 words, got ${W?.length || 'undefined'}`)
+    }
+    
+    // Validate hash values
+    if (!Array.isArray(H) || H.length !== 8) {
+      throw new Error(`Hash values must have exactly 8 words, got ${H?.length || 'undefined'}`)
+    }
+    
+    // Validate all values are 32-bit unsigned integers
+    for (let i = 0; i < 64; i++) {
+      this.validate32BitUnsigned(W[i], `Message schedule word W[${i}]`)
+    }
+    for (let i = 0; i < 8; i++) {
+      this.validate32BitUnsigned(H[i], `Hash value H[${i}]`)
+    }
+
     let [a, b, c, d, e, f, g, h] = H
 
     for (let t = 0; t < 64; t++) {
-      const T1 = (h + this.Σ1(e) + this.Ch(e, f, g) + this.K[t] + W[t]) >>> 0
-      const T2 = (this.Σ0(a) + this.Maj(a, b, c)) >>> 0
+      // Calculate T1 = h + Σ₁(e) + Ch(e,f,g) + K[t] + W[t]
+      const sigma1_e = this.Σ1(e)
+      const ch_efg = this.Ch(e, f, g)
+      const T1 = (h + sigma1_e + ch_efg + this.K[t] + W[t]) >>> 0
       
+      // Calculate T2 = Σ₀(a) + Maj(a,b,c)
+      const sigma0_a = this.Σ0(a)
+      const maj_abc = this.Maj(a, b, c)
+      const T2 = (sigma0_a + maj_abc) >>> 0
+      
+      // Update working variables
       h = g
       g = f
       f = e
@@ -161,6 +254,7 @@ export class Sha256Component {
       a = (T1 + T2) >>> 0
     }
 
+    // Add working variables to hash values
     return [
       (H[0] + a) >>> 0,
       (H[1] + b) >>> 0,
@@ -176,14 +270,28 @@ export class Sha256Component {
   processInput(): void {
     this.inputError = null
     
-    // Input validation
-    if (!this.inputMessage) {
+    // Enhanced input validation
+    if (this.inputMessage === null || this.inputMessage === undefined) {
       this.inputError = "Please enter a message to hash"
       return
     }
 
+    // Allow empty string as valid input (SHA-256 of empty string is well-defined)
+    if (typeof this.inputMessage !== 'string') {
+      this.inputError = "Input must be a valid string"
+      return
+    }
+
     if (this.inputMessage.length > this.MAX_INPUT_LENGTH) {
-      this.inputError = `Input too large. Maximum size is ${this.MAX_INPUT_LENGTH} characters`
+      this.inputError = `Input too large. Maximum size is ${this.MAX_INPUT_LENGTH} characters (${(this.MAX_INPUT_LENGTH / 1024).toFixed(0)}KB)`
+      return
+    }
+
+    // Check for potential encoding issues
+    try {
+      new TextEncoder().encode(this.inputMessage)
+    } catch (error) {
+      this.inputError = "Input contains invalid characters that cannot be encoded"
       return
     }
 
@@ -195,10 +303,11 @@ export class Sha256Component {
     try {
       this.generateSteps()
     } catch (error) {
-      this.inputError = "Error processing SHA-256: " + error
+      this.inputError = `Error processing SHA-256: ${error instanceof Error ? error.message : 'Unknown error'}`
+      console.error('SHA-256 processing error:', error)
+    } finally {
+      this.isProcessing = false
     }
-
-    this.isProcessing = false
   }
 
   private generateSteps(): void {
@@ -469,5 +578,9 @@ Total padded length: ${paddedBits} bits (${paddedBits / 512} × 512-bit blocks)`
       this.copySuccess = true
       setTimeout(() => this.copySuccess = false, 2000)
     }
+  }
+
+  getByteLength(text: string): number {
+    return new TextEncoder().encode(text).length
   }
 }

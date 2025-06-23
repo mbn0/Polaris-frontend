@@ -515,21 +515,79 @@
           </div>
         </div>
   
-        <div class="chain-validation">
-          <h4>🔗 Certificate Chain Validation</h4>
-          <button (click)="validateCertificateChain()" class="validate-btn">Validate Chain</button>
+        <div class="chain-validation-explanation">
+          <h4>🔗 Certificate Chain Validation Process</h4>
           
-          <div class="validation-result">
-            <ng-container *ngIf="validateCertificateChain() as validation">
-              <div class="validation-status" [class.valid]="validation.valid" [class.invalid]="!validation.valid">
-                {{ validation.valid ? '✓ Chain Valid' : '✗ Chain Invalid' }}
+          <div class="validation-steps">
+            <div class="validation-step">
+              <div class="step-icon">1️⃣</div>
+              <div class="step-content">
+                <h5>Certificate Path Construction</h5>
+                <p>Build a chain from the end-entity certificate up to a trusted root CA. Each certificate's issuer field must match the subject field of the next certificate in the chain.</p>
               </div>
-              <div class="validation-issues">
-                <div *ngFor="let issue of validation.issues" class="issue-item">
-                  {{ issue }}
-                </div>
+            </div>
+            
+            <div class="validation-step">
+              <div class="step-icon">2️⃣</div>
+              <div class="step-content">
+                <h5>Signature Verification</h5>
+                <p>Verify each certificate's digital signature using the public key from its issuer certificate. This confirms the certificate was legitimately issued by the claimed CA.</p>
               </div>
-            </ng-container>
+            </div>
+            
+            <div class="validation-step">
+              <div class="step-icon">3️⃣</div>
+              <div class="step-content">
+                <h5>Validity Period Check</h5>
+                <p>Ensure each certificate is within its validity period (not expired or not yet valid). Check both "Valid From" and "Valid To" timestamps against current time.</p>
+              </div>
+            </div>
+            
+            <div class="validation-step">
+              <div class="step-icon">4️⃣</div>
+              <div class="step-content">
+                <h5>Revocation Status Check</h5>
+                <p>Verify none of the certificates have been revoked by checking Certificate Revocation Lists (CRLs) or using Online Certificate Status Protocol (OCSP).</p>
+              </div>
+            </div>
+            
+            <div class="validation-step">
+              <div class="step-icon">5️⃣</div>
+              <div class="step-content">
+                <h5>Policy and Constraints</h5>
+                <p>Validate certificate policies, key usage constraints, and path length restrictions. Ensure the certificate is authorized for its intended purpose.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="validation-importance">
+            <h5>🛡️ Why Chain Validation Matters</h5>
+            <div class="importance-grid">
+              <div class="importance-item">
+                <strong>Trust Establishment:</strong> Ensures the certificate can be traced back to a trusted root
+              </div>
+              <div class="importance-item">
+                <strong>Integrity Verification:</strong> Confirms certificates haven't been tampered with
+              </div>
+              <div class="importance-item">
+                <strong>Authenticity Assurance:</strong> Validates the identity claims in the certificate
+              </div>
+              <div class="importance-item">
+                <strong>Security Compliance:</strong> Meets industry standards for certificate-based authentication
+              </div>
+            </div>
+          </div>
+          
+          <div class="common-validation-errors">
+            <h5>⚠️ Common Validation Failures</h5>
+            <ul>
+              <li><strong>Expired Certificate:</strong> Certificate has passed its validity end date</li>
+              <li><strong>Untrusted Root:</strong> Certificate chain doesn't lead to a trusted root CA</li>
+              <li><strong>Revoked Certificate:</strong> Certificate appears on a CRL or OCSP indicates revocation</li>
+              <li><strong>Broken Chain:</strong> Missing intermediate certificate or subject/issuer mismatch</li>
+              <li><strong>Invalid Signature:</strong> Certificate signature doesn't verify with issuer's public key</li>
+              <li><strong>Wrong Usage:</strong> Certificate used for purpose not specified in key usage extension</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -679,57 +737,64 @@
         <div *ngFor="let exercise of exercises" class="exercise-card">
           <div class="exercise-header">
             <h4>{{ exercise.title }}</h4>
-            <div class="exercise-status" [class.completed]="exercise.completed">
-              {{ exercise.completed ? '✓ Completed' : 'Pending' }}
-            </div>
           </div>
           
           <div class="exercise-content">
             <div *ngIf="exercise.id === 1">
-              <p>Draw the complete ticket-granting exchange for Kerberos, labeling all encrypted fields.</p>
-              <div class="exercise-hint">
-                💡 Include AS exchange, TGS exchange, and client-server authentication
-              </div>
+              <h5>📋 Task Details:</h5>
+              <ul>
+                <li>Draw the complete ticket-granting exchange for Kerberos</li>
+                <li>Label all encrypted fields and specify encryption keys</li>
+                <li>Include AS exchange, TGS exchange, and client-server authentication</li>
+                <li>Show nonce handling and timestamp validation</li>
+                <li>Document potential security vulnerabilities</li>
+              </ul>
             </div>
             
             <div *ngIf="exercise.id === 2">
-              <p>Code a Diffie–Hellman key exchange with small primes; verify both sides derive the same secret.</p>
-              <div class="exercise-hint">
-                💡 Use the interactive demo above as a reference for implementation
-              </div>
+              <h5>💻 Implementation Requirements:</h5>
+              <ul>
+                <li>Code a Diffie–Hellman key exchange with small primes</li>
+                <li>Implement modular exponentiation function</li>
+                <li>Verify both sides derive the same shared secret</li>
+                <li>Test with different parameter sets (p, g values)</li>
+                <li>Add input validation and error handling</li>
+              </ul>
             </div>
             
             <div *ngIf="exercise.id === 3">
-              <p>Extend your DH code to sign and verify the exchanged values, preventing a man-in-the-middle.</p>
-              <div class="exercise-hint">
-                💡 Add digital signatures to the DH public key exchanges
-              </div>
+              <h5>🔐 Security Enhancement:</h5>
+              <ul>
+                <li>Extend your DH code to include digital signatures</li>
+                <li>Sign the exchanged public values to prevent MITM attacks</li>
+                <li>Implement signature verification logic</li>
+                <li>Test the protocol against man-in-the-middle scenarios</li>
+                <li>Document the security improvements achieved</li>
+              </ul>
             </div>
             
             <div *ngIf="exercise.id === 4">
-              <p>Given three X.509 certificates (root → intermediate → end-entity), write pseudocode to validate the chain.</p>
-              <div class="exercise-hint">
-                💡 Check signatures, validity periods, and certificate chain integrity
-              </div>
+              <h5>🔍 Validation Algorithm:</h5>
+              <ul>
+                <li>Write pseudocode for X.509 certificate chain validation</li>
+                <li>Check digital signatures using issuer public keys</li>
+                <li>Validate certificate validity periods</li>
+                <li>Verify subject/issuer name chaining</li>
+                <li>Include revocation status checking (CRL/OCSP)</li>
+                <li>Handle common validation errors gracefully</li>
+              </ul>
             </div>
             
             <div *ngIf="exercise.id === 5">
-              <p>Compare CRL vs. OCSP in terms of timeliness and network overhead; propose when to use each.</p>
-              <div class="exercise-hint">
-                💡 Consider real-time requirements vs. bandwidth constraints
-              </div>
-            </div>
-          </div>
-          
-          <div class="exercise-actions">
-            <button 
-              (click)="completeExercise(exercise.id, 85)" 
-              [disabled]="exercise.completed"
-              class="complete-btn">
-              Mark Complete
-            </button>
-            <div *ngIf="exercise.completed" class="exercise-score">
-              Score: {{ exercise.score }}%
+              <h5>📊 Comparative Analysis:</h5>
+              <ul>
+                <li>Compare CRL vs. OCSP in terms of timeliness</li>
+                <li>Analyze network overhead for each approach</li>
+                <li>Consider scalability implications</li>
+                <li>Propose decision criteria for choosing between them</li>
+                <li>Design hybrid approaches for optimal performance</li>
+                <li>Include real-world deployment considerations</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -790,16 +855,16 @@
         <h3>📊 Chapter Summary</h3>
         <div class="summary-stats">
           <div class="stat-card">
-            <div class="stat-number">{{ getCompletedExercisesCount() }}</div>
-            <div class="stat-label">Exercises Completed</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">{{ getOverallScore() }}%</div>
-            <div class="stat-label">Overall Score</div>
+            <div class="stat-number">5</div>
+            <div class="stat-label">Practical Exercises</div>
           </div>
           <div class="stat-card">
             <div class="stat-number">8</div>
             <div class="stat-label">Sections Covered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Quiz Questions</div>
           </div>
         </div>
       </div>

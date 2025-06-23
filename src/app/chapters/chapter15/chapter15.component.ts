@@ -158,13 +158,13 @@ export class Chapter15Component implements OnInit {
     }
   ]
 
-  // Exercise tracking
+  // Exercise tracking - removed scoring system
   exercises = [
-    { id: 1, title: "Design a KDC Workflow", completed: false, score: 0 },
-    { id: 2, title: "Implement Simple DH", completed: false, score: 0 },
-    { id: 3, title: "Station-to-Station Simulation", completed: false, score: 0 },
-    { id: 4, title: "Certificate Chain Validation", completed: false, score: 0 },
-    { id: 5, title: "Revocation Scenarios", completed: false, score: 0 }
+    { id: 1, title: "Design a KDC Workflow" },
+    { id: 2, title: "Implement Simple DH" },
+    { id: 3, title: "Station-to-Station Simulation" },
+    { id: 4, title: "Certificate Chain Validation" },
+    { id: 5, title: "Revocation Scenarios" }
   ]
 
   // Quiz questions
@@ -480,39 +480,7 @@ export class Chapter15Component implements OnInit {
     this.stsStep = 3
   }
 
-  // Certificate Chain Validation
-  validateCertificateChain(): { valid: boolean; issues: string[] } {
-    const issues: string[] = []
-    let valid = true
-    
-    // Check each certificate
-    this.certificates.forEach((cert, index) => {
-      if (cert.status === 'revoked') {
-        issues.push(`Certificate ${index + 1} has been revoked`)
-        valid = false
-      }
-      
-      if (cert.status === 'expired') {
-        issues.push(`Certificate ${index + 1} has expired`)
-        valid = false
-      }
-      
-      // Check signature chain (simplified)
-      if (index > 0) {
-        const issuer = this.certificates[index - 1]
-        if (cert.issuer !== issuer.subject) {
-          issues.push(`Certificate ${index + 1} issuer doesn't match previous subject`)
-          valid = false
-        }
-      }
-    })
-    
-    if (valid) {
-      issues.push("Certificate chain is valid")
-    }
-    
-    return { valid, issues }
-  }
+  // Certificate Chain Validation - removed demo, replaced with educational content
 
   // Utility functions
   modPow(base: number, exponent: number, modulus: number): number {
@@ -575,24 +543,7 @@ export class Chapter15Component implements OnInit {
     this.quizScore = 0
   }
 
-  // Exercise completion
-  completeExercise(exerciseId: number, score: number) {
-    const exercise = this.exercises.find(e => e.id === exerciseId)
-    if (exercise) {
-      exercise.completed = true
-      exercise.score = score
-    }
-  }
-
-  getOverallScore(): number {
-    const completedExercises = this.exercises.filter(e => e.completed)
-    if (completedExercises.length === 0) return 0
-    return Math.round(completedExercises.reduce((sum, e) => sum + e.score, 0) / completedExercises.length)
-  }
-
-  getCompletedExercisesCount(): number {
-    return this.exercises.filter(e => e.completed).length
-  }
+  // Exercise completion - removed scoring functionality
 
   goToDashboard() {
     this.router.navigate(['/dashboard'])

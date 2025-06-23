@@ -1,0 +1,99 @@
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-900">My Feedback</h3>
+      <div class="flex items-center space-x-2">
+        <button 
+          (click)="onRefresh()"
+          class="text-gray-500 hover:text-gray-700 transition-colors"
+          aria-label="Refresh"
+          [disabled]="isLoading">
+          <svg class="w-5 h-5" [class.animate-spin]="isLoading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+        <button 
+          (click)="onClose()"
+          class="text-gray-400 hover:text-gray-600 transition-colors"
+          aria-label="Close">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Not Logged In Message -->
+    <div *ngIf="!isLoggedIn" class="mb-4 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded-md">
+      Please log in to view your feedback.
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-8">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-2 text-gray-600">Loading feedback...</span>
+    </div>
+
+    <!-- Feedback List -->
+    <div *ngIf="!isLoading && isLoggedIn" class="flex-1 overflow-auto">
+      <div *ngIf="feedbackList.length === 0" class="text-center py-8">
+        <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900">No feedback yet</h3>
+        <p class="text-gray-500">You haven't submitted any feedback. Use the "Send Feedback" button to share your thoughts!</p>
+      </div>
+
+      <div *ngIf="feedbackList.length > 0" class="space-y-4">
+        <div *ngFor="let feedback of feedbackList" 
+             class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+          <div class="flex justify-between items-start mb-2">
+            <h4 class="font-semibold text-gray-900 flex-1 pr-4">{{ feedback.subject }}</h4>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  [class]="feedback.isResolved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+              {{ feedback.isResolved ? 'Resolved' : 'Pending' }}
+            </span>
+          </div>
+          
+          <div class="flex items-center justify-between text-sm text-gray-500">
+            <span>{{ formatDate(feedback.createdAt) }}</span>
+            <div class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              {{ feedback.userFullName }}
+            </div>
+          </div>
+
+          <div *ngIf="feedback.isResolved" class="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+            <div class="flex items-center">
+              <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="text-sm text-green-800 font-medium">This feedback has been reviewed and resolved by our team.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
+      <button
+        (click)="onClose()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div> 

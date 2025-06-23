@@ -53,15 +53,6 @@ export class StudentDashboardComponent implements OnInit {
       completed: false,
     },
     {
-      id: 4,
-      title: "Hashing Algorithms",
-      description: "One-way functions for data integrity",
-      topics: ["SHA-256", "SHA-3", "MD5 (deprecated)"],
-      difficulty: "Beginner",
-      estimatedTime: "1 hour",
-      completed: false,
-    },
-    {
       id: 5,
       title: "Digital Signatures",
       description: "Ensuring authenticity and integrity of digital documents",

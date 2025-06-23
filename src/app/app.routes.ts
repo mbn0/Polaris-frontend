@@ -6,6 +6,7 @@ import { Chapter1Component } from './chapters/chapter1/chapter1.component';
 import { Chapter3Component } from './chapters/chapter3/chapter3.component';
 import { Chapter5Component } from './chapters/chapter5/chapter5.component';
 import { Chapter10Component } from './chapters/chapter10/chapter10.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { adminGuard, noAuthGuard, authGuard } from './auth.guard';
 
 export const routes: Routes = [
@@ -140,6 +141,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/register'
+    component: NotFoundComponent,
+    title: '404 - Page Not Found'
   },
 ];

@@ -97,6 +97,8 @@ export class Chapter7Component implements OnInit {
   // Animation control
   isAnimating = false;
   animationSpeed = 1000;
+  isPaused = false;
+  showStepByStep = true;
 
   constructor(private router: Router) {}
 
@@ -304,46 +306,88 @@ export class Chapter7Component implements OnInit {
     };
   }
 
-  // Animation control
+  // Enhanced animation control
   async animateEncryption(): Promise<void> {
     this.isAnimating = true;
+    this.isPaused = false;
     this.currentRound = 0;
     this.currentStep = 0;
 
+    // Start with original state
     this.currentState = this.deepCopyState(this.originalState);
-    await this.delay(this.animationSpeed);
+    await this.delayIfNotPaused(this.animationSpeed);
 
+    // Initial AddRoundKey (Round 0)
+    this.currentStep = 0; // Show "Initial AddRoundKey"
     this.currentState = this.addRoundKey(this.currentState, this.roundKeys[0]);
-    await this.delay(this.animationSpeed);
+    await this.delayIfNotPaused(this.animationSpeed);
 
+    // Process each round
     for (let i = 0; i < this.encryptionRounds.length; i++) {
+      if (!this.isAnimating) break; // Allow stopping animation
+      
       this.currentRound = i + 1;
       const roundData = this.encryptionRounds[i];
 
+      // Show state before SubBytes
+      this.currentStep = 0; // Before any transformation
+      this.currentState = roundData.beforeSubBytes;
+      await this.delayIfNotPaused(this.animationSpeed / 2);
+
+      // SubBytes step
       this.currentStep = 1;
       this.currentState = roundData.afterSubBytes;
-      await this.delay(this.animationSpeed);
+      await this.delayIfNotPaused(this.animationSpeed);
 
+      // ShiftRows step
       this.currentStep = 2;
       this.currentState = roundData.afterShiftRows;
-      await this.delay(this.animationSpeed);
+      await this.delayIfNotPaused(this.animationSpeed);
 
+      // MixColumns step (skip for final round)
       if (i < this.encryptionRounds.length - 1) {
         this.currentStep = 3;
         this.currentState = roundData.afterMixColumns;
-        await this.delay(this.animationSpeed);
+        await this.delayIfNotPaused(this.animationSpeed);
       }
 
+      // AddRoundKey step
       this.currentStep = 4;
       this.currentState = roundData.afterAddRoundKey;
-      await this.delay(this.animationSpeed);
+      await this.delayIfNotPaused(this.animationSpeed);
     }
 
     this.isAnimating = false;
+    this.isPaused = false;
+  }
+
+  async delayIfNotPaused(ms: number): Promise<void> {
+    while (this.isPaused && this.isAnimating) {
+      await this.delay(100); // Check every 100ms if still paused
+    }
+    if (this.isAnimating) {
+      await this.delay(ms);
+    }
   }
 
   delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  pauseAnimation(): void {
+    this.isPaused = !this.isPaused;
+  }
+
+  stopAnimation(): void {
+    this.isAnimating = false;
+    this.isPaused = false;
+    this.currentRound = 0;
+    this.currentStep = 0;
+    this.currentState = this.deepCopyState(this.originalState);
+  }
+
+  setAnimationSpeed(speed: number): void {
+    this.animationSpeed = speed;
   }
 
   // Navigation
@@ -390,14 +434,32 @@ export class Chapter7Component implements OnInit {
   }
 
   getStepName(step: number): string {
+    if (this.currentRound === 0) {
+      return step === 0 ? "Initial AddRoundKey" : "Initial State";
+    }
+    
     switch (step) {
-      case 0: return "Initial State";
-      case 1: return "SubBytes";
-      case 2: return "ShiftRows";
-      case 3: return "MixColumns";
-      case 4: return "AddRoundKey";
+      case 0: return `Round ${this.currentRound} - Start`;
+      case 1: return `Round ${this.currentRound} - SubBytes`;
+      case 2: return `Round ${this.currentRound} - ShiftRows`;
+      case 3: return `Round ${this.currentRound} - MixColumns`;
+      case 4: return `Round ${this.currentRound} - AddRoundKey`;
       default: return "Unknown";
     }
+  }
+
+  getCurrentRoundKey(): number[][] {
+    if (this.roundKeys.length > this.currentRound) {
+      return this.roundKeys[this.currentRound];
+    }
+    return [];
+  }
+
+  getAnimationProgress(): number {
+    if (!this.isAnimating) return 0;
+    const totalSteps = this.rounds * 4 + 1; // Each round has 4 steps + initial
+    const currentSteps = this.currentRound * 4 + this.currentStep;
+    return Math.min((currentSteps / totalSteps) * 100, 100);
   }
 
   trackByIndex(index: number, item: any): number {

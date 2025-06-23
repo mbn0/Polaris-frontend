@@ -130,6 +130,8 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.currentUserValue
+    console.log(`hasRole(${role}) - User:`, user)
+    console.log(`hasRole(${role}) - User roles:`, user?.roles)
     const hasRole = user ? user.roles.includes(role) : false
     console.log(`Checking role ${role}:`, hasRole)
     return hasRole

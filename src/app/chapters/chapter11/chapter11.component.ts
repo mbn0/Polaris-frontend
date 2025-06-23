@@ -145,17 +145,50 @@ export class Chapter11Component implements OnInit {
     this.measurePerformance()
   }
 
-  // Simple hash function simulation (for demonstration)
+  // Improved hash function simulation with better avalanche effect
   simpleHash(input: string, algorithm: string): string {
-    let hash = 0
-    const multiplier = algorithm === "md5" ? 31 : algorithm === "sha1" ? 37 : 41
-
-    for (let i = 0; i < input.length; i++) {
-      hash = (hash * multiplier + input.charCodeAt(i)) % Math.pow(2, 32)
+    const multipliers = algorithm === "md5" ? [31, 37, 41, 43] : 
+                       algorithm === "sha1" ? [47, 53, 59, 61] : [67, 71, 73, 79]
+    
+    // Use multiple rounds for better mixing
+    let hash = 0x12345678 // Non-zero initial value
+    
+    for (let round = 0; round < 4; round++) {
+      const multiplier = multipliers[round]
+      let roundHash = hash
+      
+      for (let i = 0; i < input.length; i++) {
+        const char = input.charCodeAt(i)
+        roundHash = ((roundHash * multiplier) ^ (char << (i % 16))) >>> 0
+        roundHash = ((roundHash << 13) | (roundHash >>> 19)) >>> 0 // Rotate bits
+        roundHash = (roundHash + 0x9e3779b9) >>> 0 // Add constant
+      }
+      
+      hash = (hash ^ roundHash) >>> 0
     }
+    
+    // Additional mixing for better avalanche effect
+    hash ^= hash >>> 16
+    hash = (hash * 0x85ebca6b) >>> 0
+    hash ^= hash >>> 13
+    hash = (hash * 0xc2b2ae35) >>> 0
+    hash ^= hash >>> 16
 
     const hexLength = algorithm === "md5" ? 32 : algorithm === "sha1" ? 40 : 64
-    return hash.toString(16).padStart(hexLength, "0").substring(0, hexLength)
+    
+    // Generate full-length hash by repeating and mixing
+    let fullHash = ""
+    let seed = hash
+    
+    while (fullHash.length < hexLength) {
+      seed = (seed * 0x9e3779b9 + 0x6a09e667) >>> 0
+      seed ^= seed >>> 16
+      seed = (seed * 0x85ebca6b) >>> 0
+      seed ^= seed >>> 13
+      fullHash += seed.toString(16).padStart(8, "0")
+    }
+    
+    return fullHash.substring(0, hexLength)
   }
 
   // Compute hashes with multiple algorithms
@@ -210,13 +243,18 @@ export class Chapter11Component implements OnInit {
     })
   }
 
-  // Simple MAC computation simulation
+  // Improved MAC computation with proper key mixing
   computeMAC(message: string, key: string, algorithm: string): string {
-    const combined = key + message + key // Simplified MAC
+    // Ensure key affects the computation significantly
+    const keyHash = this.simpleHash(key, "sha256")
+    const messageHash = this.simpleHash(message, "sha256")
+    
+    // Mix key and message hashes in a non-trivial way
+    const combined = keyHash + message + messageHash + key + algorithm
     return this.simpleHash(combined, "sha256").substring(0, 16)
   }
 
-  // HMAC computation with steps
+  // HMAC computation with proper key mixing and steps
   computeHMAC() {
     const ipad = "36".repeat(32) // Simplified inner pad
     const opad = "5c".repeat(32) // Simplified outer pad
@@ -226,8 +264,19 @@ export class Chapter11Component implements OnInit {
     this.hmacSteps.push(`2. Inner hash: H((K ⊕ ipad) || M)`)
     this.hmacSteps.push(`3. Outer hash: H((K ⊕ opad) || inner_hash)`)
 
-    const innerHash = this.simpleHash(this.hmacKey + ipad + this.hmacMessage, "sha256")
-    const outerHash = this.simpleHash(this.hmacKey + opad + innerHash, "sha256")
+    // Improved key mixing - XOR key with pads more realistically
+    const keyPadded = this.hmacKey.padEnd(64, '0')
+    let innerKey = ""
+    let outerKey = ""
+    
+    for (let i = 0; i < Math.min(keyPadded.length, 64); i++) {
+      const keyChar = keyPadded.charCodeAt(i)
+      innerKey += String.fromCharCode(keyChar ^ 0x36)
+      outerKey += String.fromCharCode(keyChar ^ 0x5c)
+    }
+
+    const innerHash = this.simpleHash(innerKey + this.hmacMessage, "sha256")
+    const outerHash = this.simpleHash(outerKey + innerHash, "sha256")
 
     this.hmacSteps.push(`4. Inner result: ${innerHash.substring(0, 16)}...`)
     this.hmacSteps.push(`5. Final HMAC: ${outerHash.substring(0, 16)}...`)

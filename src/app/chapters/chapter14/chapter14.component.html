@@ -228,25 +228,186 @@
       </ul>
     </div>
 
-    <!-- OTP Demo -->
+    <!-- OTP Explanation -->
     <div class="otp-section">
-      <h3>One-Time Passwords (Lamport Hash Chain)</h3>
-      <div class="otp-demo">
-        <div class="otp-state">
-          <h4>Current State:</h4>
-          <p><strong>Counter:</strong> {{ otpState.counter }}</p>
-          <p><strong>Current Hash:</strong> <code>{{ otpState.currentHash }}</code></p>
+      <h3>One-Time Passwords (OTP): Beyond Static Credentials</h3>
+      
+      <div class="otp-overview">
+        <div class="concept-card">
+          <h4>🔄 What Are One-Time Passwords?</h4>
+          <p>One-Time Passwords (OTPs) are authentication credentials that are valid for only a single login session or transaction. Unlike static passwords, OTPs provide enhanced security by ensuring that even if intercepted, they cannot be reused by attackers.</p>
         </div>
 
-        <div class="otp-controls">
-          <button (click)="authenticateOTP()" [disabled]="otpState.counter === 0">
-            Authenticate (Use OTP)
-          </button>
-          <button (click)="resetOTP()">Reset Chain</button>
+        <div class="otp-benefits">
+          <h4>Key Advantages of OTPs</h4>
+          <div class="benefits-grid">
+            <div class="benefit">
+              <strong>🛡️ Replay Attack Prevention:</strong> Each password is used only once
+            </div>
+            <div class="benefit">
+              <strong>🔐 Enhanced Security:</strong> Compromised passwords become useless immediately
+            </div>
+            <div class="benefit">
+              <strong>⏱️ Time-Limited Validity:</strong> Reduces window of opportunity for attacks
+            </div>
+            <div class="benefit">
+              <strong>🎯 Targeted Protection:</strong> Ideal for high-value transactions
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lamport-explanation">
+        <h4>🔗 Lamport Hash Chain: The Mathematical Foundation</h4>
+        
+        <div class="lamport-concept">
+          <p>The Lamport Hash Chain, invented by Leslie Lamport, provides a mathematically elegant solution for generating sequences of one-time passwords using only hash functions.</p>
+          
+          <div class="mathematical-approach">
+            <h5>Mathematical Construction:</h5>
+            <div class="math-steps">
+              <div class="step">
+                <strong>Step 1:</strong> Choose a random seed value <code>s</code>
+              </div>
+              <div class="step">
+                <strong>Step 2:</strong> Define chain length <code>n</code> (e.g., 1000 passwords)
+              </div>
+              <div class="step">
+                <strong>Step 3:</strong> Compute hash chain: <code>H^n(s), H^(n-1)(s), ..., H^1(s)</code>
+              </div>
+              <div class="step">
+                <strong>Step 4:</strong> Store only the final hash <code>H^n(s)</code> on the server
+              </div>
+            </div>
+          </div>
+
+          <div class="chain-visualization">
+            <h5>Hash Chain Visualization:</h5>
+            <div class="chain-flow">
+              <div class="chain-element seed">
+                <div class="element-label">Seed</div>
+                <div class="element-value">s</div>
+              </div>
+              <div class="arrow">H()</div>
+              <div class="chain-element">
+                <div class="element-label">H¹(s)</div>
+                <div class="element-value">OTP₁</div>
+              </div>
+              <div class="arrow">H()</div>
+              <div class="chain-element">
+                <div class="element-label">H²(s)</div>
+                <div class="element-value">OTP₂</div>
+              </div>
+              <div class="arrow">H()</div>
+              <div class="chain-element">
+                <div class="element-label">...</div>
+                <div class="element-value">...</div>
+              </div>
+              <div class="arrow">H()</div>
+              <div class="chain-element final">
+                <div class="element-label">Hⁿ(s)</div>
+                <div class="element-value">Stored</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div *ngIf="otpState.isValid !== undefined" class="otp-result" [class]="otpState.isValid ? 'success' : 'failure'">
-          {{ otpState.isValid ? 'Authentication Successful' : 'Authentication Failed' }}
+        <div class="authentication-process">
+          <h5>Authentication Process:</h5>
+          <div class="auth-steps">
+            <div class="auth-step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h6>User Authentication Attempt</h6>
+                <p>User provides the next OTP in sequence: <code>H^(n-i)(s)</code></p>
+              </div>
+            </div>
+            
+            <div class="auth-step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h6>Server Verification</h6>
+                <p>Server computes: <code>H(provided_OTP)</code> and compares with stored value</p>
+              </div>
+            </div>
+            
+            <div class="auth-step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h6>Update State</h6>
+                <p>If valid, server updates stored value to <code>provided_OTP</code></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-properties">
+          <h5>Security Properties:</h5>
+          <div class="properties-list">
+            <div class="property">
+              <strong>🔒 One-Way Function Security:</strong> Computing previous values from current hash is computationally infeasible
+            </div>
+            <div class="property">
+              <strong>🛡️ Forward Security:</strong> Compromising current OTP doesn't reveal future OTPs
+            </div>
+            <div class="property">
+              <strong>⏮️ Backward Security:</strong> Future OTPs can't be derived from past ones
+            </div>
+            <div class="property">
+              <strong>🎯 Deterministic Verification:</strong> Server can verify without storing all OTPs
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="practical-considerations">
+        <h4>Practical Implementation Considerations</h4>
+        
+        <div class="considerations-grid">
+          <div class="consideration-card">
+            <h5>⚡ Performance</h5>
+            <ul>
+              <li>Hash computation is fast and efficient</li>
+              <li>Minimal storage requirements on server</li>
+              <li>No network dependency during generation</li>
+            </ul>
+          </div>
+          
+          <div class="consideration-card">
+            <h5>🔄 Synchronization</h5>
+            <ul>
+              <li>Client and server must maintain counter sync</li>
+              <li>Handle missed or failed authentication attempts</li>
+              <li>Implement resynchronization mechanisms</li>
+            </ul>
+          </div>
+          
+          <div class="consideration-card">
+            <h5>📱 Modern Alternatives</h5>
+            <ul>
+              <li>TOTP (Time-based OTP) - RFC 6238</li>
+              <li>HOTP (HMAC-based OTP) - RFC 4226</li>
+              <li>Hardware security keys (FIDO/WebAuthn)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="real-world-applications">
+        <h4>Real-World Applications</h4>
+        <div class="applications-list">
+          <div class="application">
+            <strong>🏦 Banking Systems:</strong> Transaction authorization codes
+          </div>
+          <div class="application">
+            <strong>🔐 VPN Access:</strong> Secure remote authentication
+          </div>
+          <div class="application">
+            <strong>☁️ Cloud Services:</strong> Multi-factor authentication
+          </div>
+          <div class="application">
+            <strong>🎮 Gaming Platforms:</strong> Account security enhancement
+          </div>
         </div>
       </div>
     </div>
@@ -408,72 +569,84 @@
   <div *ngIf="currentSection === 7" class="section">
     <h2>Active Learning & Exercises</h2>
 
-    <div class="progress-overview">
-      <h3>Overall Progress</h3>
-      <div class="progress-bar large">
-        <div class="progress-fill" [style.width.%]="getOverallProgress()"></div>
-      </div>
-      <p>{{ getOverallProgress().toFixed(0) }}% Complete</p>
+    <div class="learning-objectives">
+      <h3>Learning Objectives</h3>
+      <p>Complete these exercises to master entity authentication concepts and implementation techniques.</p>
     </div>
 
     <div class="exercises-grid">
-      <div class="exercise-card" [class.completed]="exerciseResults.saltedHash.completed">
+      <div class="exercise-card">
         <h4>1. Design a Salted-Hash Scheme</h4>
         <p>Sketch database tables and hashing workflow using per-user salts and a slow KDF.</p>
         <div class="difficulty">Difficulty: ⭐⭐⭐</div>
-        <button (click)="completeExercise('saltedHash')" [disabled]="exerciseResults.saltedHash.completed">
-          {{ exerciseResults.saltedHash.completed ? 'Completed' : 'Start Exercise' }}
-        </button>
-        <div *ngIf="exerciseResults.saltedHash.completed" class="score">
-          Score: {{ exerciseResults.saltedHash.score }}/100
+        <div class="exercise-details">
+          <strong>Tasks:</strong>
+          <ul>
+            <li>Design user table schema with salt column</li>
+            <li>Choose appropriate KDF (bcrypt, PBKDF2, or Argon2)</li>
+            <li>Implement registration and login workflows</li>
+            <li>Consider salt generation and storage strategies</li>
+          </ul>
         </div>
       </div>
 
-      <div class="exercise-card" [class.completed]="exerciseResults.lamportOTP.completed">
+      <div class="exercise-card">
         <h4>2. Implement a Lamport OTP Login</h4>
         <p>Simulate a hash-chain for t=10 and demonstrate one authentication step.</p>
         <div class="difficulty">Difficulty: ⭐⭐⭐⭐</div>
-        <button (click)="completeExercise('lamportOTP')" [disabled]="exerciseResults.lamportOTP.completed">
-          {{ exerciseResults.lamportOTP.completed ? 'Completed' : 'Start Exercise' }}
-        </button>
-        <div *ngIf="exerciseResults.lamportOTP.completed" class="score">
-          Score: {{ exerciseResults.lamportOTP.score }}/100
+        <div class="exercise-details">
+          <strong>Tasks:</strong>
+          <ul>
+            <li>Generate a 10-step hash chain from random seed</li>
+            <li>Store only the final hash value on server</li>
+            <li>Implement authentication verification logic</li>
+            <li>Handle counter synchronization issues</li>
+          </ul>
         </div>
       </div>
 
-      <div class="exercise-card" [class.completed]="exerciseResults.challengeResponse.completed">
+      <div class="exercise-card">
         <h4>3. Build a Challenge-Response Demo</h4>
         <p>Use a shared AES key to authenticate a "client" to a "server" ensuring freshness.</p>
         <div class="difficulty">Difficulty: ⭐⭐⭐⭐</div>
-        <button (click)="completeExercise('challengeResponse')" [disabled]="exerciseResults.challengeResponse.completed">
-          {{ exerciseResults.challengeResponse.completed ? 'Completed' : 'Start Exercise' }}
-        </button>
-        <div *ngIf="exerciseResults.challengeResponse.completed" class="score">
-          Score: {{ exerciseResults.challengeResponse.score }}/100
+        <div class="exercise-details">
+          <strong>Tasks:</strong>
+          <ul>
+            <li>Generate random challenges with timestamps</li>
+            <li>Implement AES encryption for responses</li>
+            <li>Add replay attack prevention mechanisms</li>
+            <li>Test with multiple authentication attempts</li>
+          </ul>
         </div>
       </div>
 
-      <div class="exercise-card" [class.completed]="exerciseResults.biometricEval.completed">
+      <div class="exercise-card">
         <h4>4. Evaluate Biometric Metrics</h4>
         <p>Given sample FRR/FAR data, plot an ROC curve and choose an operating point for banking.</p>
         <div class="difficulty">Difficulty: ⭐⭐⭐</div>
-        <button (click)="completeExercise('biometricEval')" [disabled]="exerciseResults.biometricEval.completed">
-          {{ exerciseResults.biometricEval.completed ? 'Completed' : 'Start Exercise' }}
-        </button>
-        <div *ngIf="exerciseResults.biometricEval.completed" class="score">
-          Score: {{ exerciseResults.biometricEval.score }}/100
+        <div class="exercise-details">
+          <strong>Tasks:</strong>
+          <ul>
+            <li>Analyze provided biometric accuracy data</li>
+            <li>Plot ROC curves for different techniques</li>
+            <li>Calculate Equal Error Rate (EER) points</li>
+            <li>Recommend optimal thresholds for banking security</li>
+          </ul>
         </div>
       </div>
 
-      <div class="exercise-card" [class.completed]="exerciseResults.multiFactor.completed">
+      <div class="exercise-card">
         <h4>5. Multi-Factor Prototype</h4>
         <p>Combine password + TOTP using a standard library and discuss threat mitigations.</p>
         <div class="difficulty">Difficulty: ⭐⭐⭐⭐⭐</div>
-        <button (click)="completeExercise('multiFactor')" [disabled]="exerciseResults.multiFactor.completed">
-          {{ exerciseResults.multiFactor.completed ? 'Completed' : 'Start Exercise' }}
-        </button>
-        <div *ngIf="exerciseResults.multiFactor.completed" class="score">
-          Score: {{ exerciseResults.multiFactor.score }}/100
+        <div class="exercise-details">
+          <strong>Tasks:</strong>
+          <ul>
+            <li>Integrate TOTP library (Google Authenticator compatible)</li>
+            <li>Implement QR code generation for setup</li>
+            <li>Create backup recovery codes system</li>
+            <li>Analyze and document threat mitigation strategies</li>
+          </ul>
         </div>
       </div>
     </div>

@@ -103,43 +103,167 @@
 
     <!-- Section 3: State Matrix -->
     <div *ngIf="currentSection === 3" class="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h2 class="text-2xl font-bold mb-4">AES State Matrix</h2>
-      <div class="grid md:grid-cols-2 gap-6">
+      <h2 class="text-2xl font-bold mb-4">AES State Matrix & Animation</h2>
+      
+      <!-- Animation Controls -->
+      <div class="bg-gray-50 p-4 rounded-lg mb-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div class="flex flex-wrap items-center gap-3">
+            <button (click)="animateEncryption()" 
+              [disabled]="isAnimating"
+              class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+              <span *ngIf="!isAnimating">▶</span>
+              <span *ngIf="isAnimating">⏸</span>
+              {{ isAnimating ? 'Running...' : 'Start Animation' }}
+            </button>
+            
+            <button (click)="pauseAnimation()" 
+              [disabled]="!isAnimating"
+              class="bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors">
+              {{ isPaused ? '▶ Resume' : '⏸ Pause' }}
+            </button>
+            
+            <button (click)="stopAnimation()" 
+              [disabled]="!isAnimating && !isPaused"
+              class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors">
+              ⏹ Stop
+            </button>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <label class="text-sm font-medium text-gray-700">Speed:</label>
+            <select #speedSelect (change)="setAnimationSpeed(+speedSelect.value)" 
+              [value]="animationSpeed"
+              class="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500">
+              <option value="2000">Slow (2s)</option>
+              <option value="1000">Normal (1s)</option>
+              <option value="500">Fast (0.5s)</option>
+              <option value="250">Very Fast (0.25s)</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div *ngIf="isAnimating || isPaused" class="mb-4">
+          <div class="flex justify-between text-sm text-gray-600 mb-1">
+            <span>Animation Progress</span>
+            <span>{{ getAnimationProgress().toFixed(1) }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+              [style.width.%]="getAnimationProgress()"></div>
+          </div>
+        </div>
+        
+        <!-- Current Step Info -->
+        <div *ngIf="isAnimating || isPaused" class="text-center">
+          <div class="text-lg font-semibold text-blue-800">{{ getStepName(currentStep) }}</div>
+          <div class="text-sm text-gray-600">
+            <span *ngIf="isPaused" class="text-yellow-600 font-medium">⏸ PAUSED - </span>
+            Step {{ currentStep + 1 }} of {{ currentRound === rounds ? '4' : '5' }}
+            <span *ngIf="currentRound > 0"> | Round {{ currentRound }} of {{ rounds }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Original State -->
         <div>
-          <h3 class="text-lg font-semibold mb-3">128-bit Block as 4×4 Matrix</h3>
-          <p class="text-gray-700 mb-4">
-            AES treats the 128-bit input block as a 4×4 matrix of bytes, arranged in column-major order.
+          <h3 class="text-lg font-semibold mb-3">Original Plaintext</h3>
+          <p class="text-gray-700 mb-4 text-sm">
+            128-bit block as 4×4 matrix (column-major order)
           </p>
           <div class="bg-gray-50 p-4 rounded-lg">
-            <h4 class="font-medium mb-2">Original State</h4>
-            <div class="grid grid-cols-4 gap-1 max-w-xs">
+            <h4 class="font-medium mb-2">Initial State</h4>
+            <div class="grid grid-cols-4 gap-1 max-w-xs mx-auto">
               <div *ngFor="let row of originalState; let i = index" class="contents">
                 <div *ngFor="let cell of row; let j = index" 
-                  class="bg-blue-100 border border-blue-300 p-2 text-center text-xs font-mono">
+                  class="bg-blue-100 border border-blue-300 p-2 text-center text-xs font-mono transition-colors">
                   {{ formatHex(cell) }}
                 </div>
               </div>
             </div>
           </div>
         </div>
+        
+        <!-- Current State -->
         <div>
           <h3 class="text-lg font-semibold mb-3">Current State</h3>
           <div class="bg-gray-50 p-4 rounded-lg">
             <h4 class="font-medium mb-2">{{ getStepName(currentStep) }}</h4>
-            <div class="grid grid-cols-4 gap-1 max-w-xs">
+            <div class="grid grid-cols-4 gap-1 max-w-xs mx-auto">
               <div *ngFor="let row of currentState; let i = index" class="contents">
                 <div *ngFor="let cell of row; let j = index" 
-                  class="bg-green-100 border border-green-300 p-2 text-center text-xs font-mono">
+                  class="p-2 text-center text-xs font-mono transition-all duration-500"
+                  [class]="'bg-green-100 border border-green-300 ' + 
+                    (isAnimating ? 'animate-pulse' : '')">
                   {{ formatHex(cell) }}
                 </div>
               </div>
             </div>
+            
+            <!-- Step Description -->
+            <div class="mt-3 text-xs text-gray-600 text-center">
+              <div *ngIf="currentStep === 0 && currentRound === 0">
+                XOR with initial round key (whitening)
+              </div>
+              <div *ngIf="currentStep === 0 && currentRound > 0">
+                Starting Round {{ currentRound }}
+              </div>
+              <div *ngIf="currentStep === 1">
+                Non-linear byte substitution using S-Box
+              </div>
+              <div *ngIf="currentStep === 2">
+                Cyclical left shift of matrix rows
+              </div>
+              <div *ngIf="currentStep === 3">
+                Column mixing in Galois Field GF(2⁸)
+              </div>
+              <div *ngIf="currentStep === 4">
+                XOR with round key {{ currentRound }}
+              </div>
+            </div>
           </div>
-          <button (click)="animateEncryption()" 
-            [disabled]="isAnimating"
-            class="mt-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg transition-colors">
-            {{ isAnimating ? 'Animating...' : 'Animate Encryption' }}
-          </button>
+        </div>
+        
+        <!-- Current Round Key -->
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Current Round Key</h3>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-medium mb-2">Round {{ currentRound }} Key</h4>
+            <div *ngIf="getCurrentRoundKey().length > 0" class="grid grid-cols-4 gap-1 max-w-xs mx-auto">
+              <div *ngFor="let row of getCurrentRoundKey(); let i = index" class="contents">
+                <div *ngFor="let cell of row; let j = index" 
+                  class="bg-orange-100 border border-orange-300 p-2 text-center text-xs font-mono transition-colors">
+                  {{ formatHex(cell) }}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="getCurrentRoundKey().length === 0" class="text-center text-gray-500 text-sm">
+              No round key available
+            </div>
+            
+            <!-- Key Info -->
+            <div class="mt-3 text-xs text-gray-600 text-center">
+              <div *ngIf="currentRound === 0">Initial key (Round 0)</div>
+              <div *ngIf="currentRound > 0">Derived from key expansion</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Transformation Legend -->
+      <div class="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+        <h4 class="font-semibold text-blue-800 mb-2">AES Transformation Steps</h4>
+        <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-700">
+          <div>
+            <div class="mb-1"><strong>1. SubBytes:</strong> S-Box substitution for confusion</div>
+            <div class="mb-1"><strong>2. ShiftRows:</strong> Row shifting for diffusion</div>
+          </div>
+          <div>
+            <div class="mb-1"><strong>3. MixColumns:</strong> Column mixing (except final round)</div>
+            <div><strong>4. AddRoundKey:</strong> XOR with round-specific key</div>
+          </div>
         </div>
       </div>
     </div>

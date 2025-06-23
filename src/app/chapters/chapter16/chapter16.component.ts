@@ -84,7 +84,7 @@ export class Chapter16Component implements OnInit {
   paillierN = 143n // Small example: p=11, q=13
   paillierG = 144n
   paillierLambda = 60n // lcm(p-1, q-1)
-  paillierMu = 109n // Precomputed
+  paillierMu = 107n // Corrected: μ = L(g^λ mod n²)^(-1) mod n
 
   // RSA parameters for demo
   rsaN = 143n // p=11, q=13

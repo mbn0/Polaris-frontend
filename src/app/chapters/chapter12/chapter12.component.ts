@@ -446,18 +446,54 @@ export class Chapter12Component {
     this.benchmarkRunning = false
   }
 
-  // Utility Functions
+  // Improved hash function with better avalanche effect and proper output lengths
   computeHash(input: string, algorithm: string): string {
-    // Simplified hash simulation - in real implementation, use crypto libraries
-    let hash = 0
-    const multiplier = algorithm === "MD5" ? 31 : algorithm === "SHA-1" ? 37 : 41
+    const multipliers = algorithm === "MD5" ? [31, 37, 41, 43] : 
+                       algorithm === "SHA-1" ? [47, 53, 59, 61] : 
+                       algorithm === "SHA-256" ? [67, 71, 73, 79] :
+                       [83, 89, 97, 101] // SHA-512
 
-    for (let i = 0; i < input.length; i++) {
-      hash = (hash * multiplier + input.charCodeAt(i)) % Math.pow(2, 32)
+    // Multi-round hashing with better mixing
+    let hash = 0x12345678 // Non-zero initial value
+    
+    for (let round = 0; round < 4; round++) {
+      const multiplier = multipliers[round]
+      let roundHash = hash
+      
+      for (let i = 0; i < input.length; i++) {
+        const char = input.charCodeAt(i)
+        roundHash = ((roundHash * multiplier) ^ (char << (i % 16))) >>> 0
+        roundHash = ((roundHash << 13) | (roundHash >>> 19)) >>> 0 // Rotate bits
+        roundHash = (roundHash + 0x9e3779b9) >>> 0 // Add constant
+      }
+      
+      hash = (hash ^ roundHash) >>> 0
     }
+    
+    // Additional mixing for better avalanche effect
+    hash ^= hash >>> 16
+    hash = (hash * 0x85ebca6b) >>> 0
+    hash ^= hash >>> 13
+    hash = (hash * 0xc2b2ae35) >>> 0
+    hash ^= hash >>> 16
 
     const hexLength = this.getHashBits(algorithm) / 4
-    return hash.toString(16).padStart(hexLength, "0").substr(0, hexLength)
+    
+    // Generate full-length hash by repeating and mixing
+    let fullHash = ""
+    let seed = hash
+    
+    while (fullHash.length < hexLength) {
+      seed = (seed * 0x9e3779b9 + 0x6a09e667) >>> 0
+      seed ^= seed >>> 16
+      seed = (seed * 0x85ebca6b) >>> 0
+      seed ^= seed >>> 13
+      // Add algorithm-specific variation
+      seed ^= algorithm.charCodeAt(0) || 0
+      fullHash += seed.toString(16).padStart(8, "0")
+    }
+    
+    return fullHash.substring(0, hexLength)
   }
 
   getHashBits(algorithm: string): number {
@@ -557,12 +593,31 @@ export class Chapter12Component {
   }
 
   compressionFunction(H: string, block: string): string {
-    // Simplified compression function
-    let result = 0
-    for (let i = 0; i < Math.min(H.length, block.length); i++) {
-      result ^= Number.parseInt(H[i], 16) ^ Number.parseInt(block[i], 16)
+    // Improved compression function with better mixing
+    let result = Number.parseInt(H.substring(0, 8), 16) || 0
+    
+    // Process block in chunks with rotation and mixing
+    for (let i = 0; i < block.length; i += 8) {
+      const chunk = block.substring(i, i + 8)
+      let chunkValue = 0
+      
+      for (let j = 0; j < chunk.length; j++) {
+        chunkValue = (chunkValue << 4) + (Number.parseInt(chunk[j], 16) || 0)
+      }
+      
+      // Mix with current result using rotation and XOR
+      result = ((result << 7) | (result >>> 25)) >>> 0  // Rotate left 7
+      result ^= chunkValue
+      result = (result * 0x9e3779b9) >>> 0  // Multiply by golden ratio
+      result ^= result >>> 16
     }
-    return result.toString(16).padStart(H.length, "0")
+    
+    // Final mixing
+    result ^= result >>> 13
+    result = (result * 0xc2b2ae35) >>> 0
+    result ^= result >>> 16
+    
+    return result.toString(16).padStart(8, "0").substring(0, Math.min(8, H.length))
   }
 
   rabinScheme(H: string, x: string): string {
@@ -580,8 +635,21 @@ export class Chapter12Component {
   }
 
   sha512WordExpansion(i: number): string {
-    // Simplified word expansion
-    return `W${i}`
+    // Improved word expansion with rotation simulation
+    if (i < 16) return this.wordSchedule[i] || "00000000"
+    
+    // Simulate σ₀ and σ₁ functions with bit manipulation
+    const w15 = Number.parseInt(this.wordSchedule[i - 15] || "0", 16)
+    const w2 = Number.parseInt(this.wordSchedule[i - 2] || "0", 16)
+    const w16 = Number.parseInt(this.wordSchedule[i - 16] || "0", 16)
+    const w7 = Number.parseInt(this.wordSchedule[i - 7] || "0", 16)
+    
+    // Simplified σ₀ and σ₁ (using rotation and XOR)
+    const sigma0 = ((w15 >>> 1) ^ (w15 >>> 8) ^ (w15 >>> 7)) >>> 0
+    const sigma1 = ((w2 >>> 19) ^ (w2 >>> 61) ^ (w2 >>> 6)) >>> 0
+    
+    const newWord = (w16 + sigma0 + w7 + sigma1) >>> 0
+    return newWord.toString(16).padStart(8, "0").substring(0, 8)
   }
 
   getSHA512Constant(round: number): string {
@@ -599,20 +667,51 @@ export class Chapter12Component {
   }
 
   calculateT1(state: any, W: string, K: string): string {
-    return `T1_${state.H}_${W}_${K}`
+    // Simulate T1 = H + Σ₁(E) + Ch(E,F,G) + K + W
+    const h = Number.parseInt(state.H.substring(0, 8), 16) || 0
+    const e = Number.parseInt(state.E.substring(0, 8), 16) || 0
+    const f = Number.parseInt(state.F.substring(0, 8), 16) || 0
+    const g = Number.parseInt(state.G.substring(0, 8), 16) || 0
+    const w = Number.parseInt(W.substring(0, 8), 16) || 0
+    const k = Number.parseInt(K.substring(0, 8), 16) || 0
+    
+    // Simplified Σ₁(E) and Ch(E,F,G)
+    const sigma1 = ((e >>> 6) ^ (e >>> 11) ^ (e >>> 25)) >>> 0
+    const ch = ((e & f) ^ ((~e) & g)) >>> 0
+    
+    const t1 = (h + sigma1 + ch + k + w) >>> 0
+    return t1.toString(16).padStart(8, "0").substring(0, 8)
   }
 
   calculateT2(state: any): string {
-    return `T2_${state.A}_${state.B}_${state.C}`
+    // Simulate T2 = Σ₀(A) + Maj(A,B,C)
+    const a = Number.parseInt(state.A.substring(0, 8), 16) || 0
+    const b = Number.parseInt(state.B.substring(0, 8), 16) || 0
+    const c = Number.parseInt(state.C.substring(0, 8), 16) || 0
+    
+    // Simplified Σ₀(A) and Maj(A,B,C)
+    const sigma0 = ((a >>> 2) ^ (a >>> 13) ^ (a >>> 22)) >>> 0
+    const maj = ((a & b) ^ (a & c) ^ (b & c)) >>> 0
+    
+    const t2 = (sigma0 + maj) >>> 0
+    return t2.toString(16).padStart(8, "0").substring(0, 8)
   }
 
   updateSHA512State(state: any, T1: string, T2: string): any {
+    // Proper SHA-512 state update: A = T1 + T2, E = D + T1, others shift
+    const t1 = Number.parseInt(T1.substring(0, 8), 16) || 0
+    const t2 = Number.parseInt(T2.substring(0, 8), 16) || 0
+    const d = Number.parseInt(state.D.substring(0, 8), 16) || 0
+    
+    const newA = (t1 + t2) >>> 0
+    const newE = (d + t1) >>> 0
+    
     return {
-      A: `${T1}+${T2}`,
+      A: newA.toString(16).padStart(8, "0").substring(0, 8),
       B: state.A,
       C: state.B,
       D: state.C,
-      E: `${state.D}+${T1}`,
+      E: newE.toString(16).padStart(8, "0").substring(0, 8),
       F: state.E,
       G: state.F,
       H: state.G,

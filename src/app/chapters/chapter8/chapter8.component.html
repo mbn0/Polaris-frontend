@@ -139,13 +139,23 @@
 
             <div class="bg-gray-50 p-4 rounded">
               <h4 class="font-semibold text-gray-900 mb-2">Quick Preview</h4>
-              <div class="text-sm space-y-1">
-                <div><strong>ECB:</strong> {{ ecbResult.ciphertext.substring(0, 20) }}...</div>
-                <div><strong>CBC:</strong> {{ cbcResult.ciphertext.substring(0, 20) }}...</div>
-                <div><strong>CTR:</strong> {{ ctrResult.ciphertext.substring(0, 20) }}...</div>
+              <div class="text-sm space-y-2">
+                <div class="bg-white p-2 rounded border">
+                  <div class="font-semibold text-blue-800">ECB:</div>
+                  <div class="font-mono text-xs">{{ getDisplayableCiphertext(ecbResult.ciphertext, 32) }}</div>
+                </div>
+                <div class="bg-white p-2 rounded border">
+                  <div class="font-semibold text-green-800">CBC:</div>
+                  <div class="font-mono text-xs">{{ getDisplayableCiphertext(cbcResult.ciphertext, 32) }}</div>
+                </div>
+                <div class="bg-white p-2 rounded border">
+                  <div class="font-semibold text-purple-800">CTR:</div>
+                  <div class="font-mono text-xs">{{ getDisplayableCiphertext(ctrResult.ciphertext, 32) }}</div>
+                </div>
               </div>
-              <p class="text-xs text-gray-600 mt-2">
-                Notice how different modes produce different ciphertexts from the same input
+              <p class="text-xs text-gray-600 mt-3">
+                <strong>Notice:</strong> Different modes produce different ciphertexts from the same input.<br>
+                <em>Displayed in hexadecimal format for readability.</em>
               </p>
             </div>
           </div>
@@ -197,9 +207,15 @@
 
               <div class="bg-green-50 p-4 rounded">
                 <h4 class="font-semibold text-green-800 mb-2">Output</h4>
-                <div class="text-sm">
-                  <div><strong>Ciphertext:</strong></div>
-                  <div class="font-mono break-all">{{ ecbResult.ciphertext }}</div>
+                <div class="text-sm space-y-2">
+                  <div>
+                    <strong>Ciphertext (Text):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1">{{ ecbResult.ciphertext }}</div>
+                  </div>
+                  <div>
+                    <strong>Ciphertext (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(ecbResult.ciphertext) }}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -229,11 +245,18 @@
 
         <div class="bg-gray-50 rounded-lg p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-3">Pattern Analysis</h3>
-          <div class="text-sm space-y-2">
-            <div><strong>Input:</strong> {{ patternInput }}</div>
-            <div><strong>ECB Result:</strong> <span class="font-mono">{{ patternResults.ecb }}</span></div>
-            <div class="text-gray-600 mt-2">
-              Notice how repeated "AAAA" blocks produce identical ciphertext blocks, revealing the pattern.
+          <div class="text-sm space-y-3">
+            <div class="bg-white p-3 rounded border">
+              <strong>Input:</strong> {{ patternInput }}
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <strong>ECB Result (Hex):</strong>
+              <div class="font-mono text-xs mt-1 break-all">{{ stringToHex(patternResults.ecb) }}</div>
+            </div>
+            <div class="bg-yellow-50 p-3 rounded border border-yellow-300">
+              <p class="text-gray-700">
+                <strong>Pattern Leakage:</strong> Notice how repeated "AAAA" blocks produce identical ciphertext blocks in ECB mode, revealing the underlying pattern structure.
+              </p>
             </div>
           </div>
         </div>
@@ -271,9 +294,17 @@
 
               <div class="bg-green-50 p-4 rounded">
                 <h4 class="font-semibold text-green-800 mb-2">Output</h4>
-                <div class="text-sm">
-                  <div><strong>Ciphertext:</strong></div>
-                  <div class="font-mono break-all">{{ cbcResult.ciphertext }}</div>
+                <div class="text-sm space-y-2">
+                  <div>
+                    <strong>Ciphertext (Text):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1">
+                      {{ hasNonPrintableChars(cbcResult.ciphertext) ? '[Contains non-printable characters]' : cbcResult.ciphertext }}
+                    </div>
+                  </div>
+                  <div>
+                    <strong>Ciphertext (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(cbcResult.ciphertext) }}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -308,18 +339,610 @@
 
         <div class="bg-gray-50 rounded-lg p-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-3">Pattern Concealment</h3>
-          <div class="text-sm space-y-2">
-            <div><strong>Input:</strong> {{ patternInput }}</div>
-            <div><strong>CBC Result:</strong> <span class="font-mono">{{ patternResults.cbc }}</span></div>
-            <div class="text-gray-600 mt-2">
-              Notice how CBC conceals the repeated patterns, unlike ECB.
+          <div class="text-sm space-y-3">
+            <div class="bg-white p-3 rounded border">
+              <strong>Input:</strong> {{ patternInput }}
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <strong>CBC Result (Hex):</strong>
+              <div class="font-mono text-xs mt-1 break-all">{{ stringToHex(patternResults.cbc) }}</div>
+            </div>
+            <div class="bg-green-50 p-3 rounded border border-green-300">
+              <p class="text-gray-700">
+                <strong>Pattern Concealment:</strong> Notice how CBC conceals the repeated patterns through chaining, unlike ECB. Each identical input block produces different ciphertext.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Continue with remaining sections... -->
-      <!-- For brevity, I'll include the navigation section -->
+      <!-- Section 4: Cipher Feedback (CFB) Mode -->
+      <div *ngIf="currentSection === 4" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">CFB: Block Cipher as Stream</h2>
+
+        <div class="bg-purple-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            CFB turns a block cipher into a self-synchronizing stream cipher. For segment size <em>s</em>:
+          </p>
+          <div class="bg-white p-4 rounded border space-y-2">
+            <div class="font-mono text-lg text-center">1. Encrypt C<sub>i-1</sub> (or IV for i=1)</div>
+            <div class="font-mono text-lg text-center">2. XOR leftmost <em>s</em> bits with P<sub>i</sub> → C<sub>i</sub></div>
+            <div class="font-mono text-lg text-center">3. Shift C<sub>i</sub> into feedback register</div>
+          </div>
+          <p class="text-gray-700 mt-4">
+            Unlike CBC, decryption uses the encryption function, simplifying hardware implementation.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">CFB Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Input</h4>
+                <div class="text-sm">
+                  <div><strong>Plaintext:</strong> {{ cfbResult.plaintext }}</div>
+                  <div><strong>Key:</strong> {{ key }}</div>
+                  <div><strong>IV:</strong> {{ iv }}</div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Output</h4>
+                <div class="text-sm space-y-2">
+                  <div>
+                    <strong>Ciphertext (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(cfbResult.ciphertext) }}</div>
+                  </div>
+                  <div>
+                    <strong>Keystream (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(cfbResult.keystream || '') }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-yellow-50 p-4 rounded">
+                <h4 class="font-semibold text-yellow-800 mb-2">Stream Behavior</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Self-synchronizing after errors</li>
+                  <li>• Single-bit error affects s bits</li>
+                  <li>• Encryption function used for both directions</li>
+                  <li>• Real-time processing capability</li>
+                </ul>
+              </div>
+
+              <div class="bg-orange-50 p-4 rounded">
+                <h4 class="font-semibold text-orange-800 mb-2">Error Propagation</h4>
+                <p class="text-sm">
+                  Any single-bit error in ciphertext affects only the corresponding plaintext bit 
+                  plus the next <em>s-1</em> bits, then self-recovers.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Output Feedback (OFB) Mode -->
+      <div *ngIf="currentSection === 5" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">OFB: Precomputed Keystream</h2>
+
+        <div class="bg-indigo-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            OFB generates a keystream independent of plaintext/ciphertext:
+          </p>
+          <div class="bg-white p-4 rounded border space-y-2">
+            <div class="font-mono text-lg text-center">O<sub>0</sub> = IV</div>
+            <div class="font-mono text-lg text-center">O<sub>i</sub> = E<sub>K</sub>(O<sub>i-1</sub>)</div>
+            <div class="font-mono text-lg text-center">C<sub>i</sub> = P<sub>i</sub> ⊕ MSB<sub>s</sub>(O<sub>i</sub>)</div>
+          </div>
+          <p class="text-gray-700 mt-4">
+            Identical to CFB but without feedback of ciphertext—no error propagation beyond single bits.
+          </p>
+        </div>
+
+        <div class="bg-green-100 border-l-4 border-green-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-green-700">
+                <strong>Advantage:</strong> Since OFB's keystream is precomputable, it's ideal for high-latency or offline encryption scenarios.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">OFB Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Input</h4>
+                <div class="text-sm">
+                  <div><strong>Plaintext:</strong> {{ ofbResult.plaintext }}</div>
+                  <div><strong>Key:</strong> {{ key }}</div>
+                  <div><strong>IV:</strong> {{ iv }}</div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Output</h4>
+                <div class="text-sm space-y-2">
+                  <div>
+                    <strong>Ciphertext (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(ofbResult.ciphertext) }}</div>
+                  </div>
+                  <div>
+                    <strong>Keystream (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(ofbResult.keystream || '') }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-purple-50 p-4 rounded">
+                <h4 class="font-semibold text-purple-800 mb-2">Characteristics</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Keystream independent of plaintext</li>
+                  <li>• Precomputable encryption</li>
+                  <li>• No error propagation</li>
+                  <li>• Synchronous stream cipher</li>
+                </ul>
+              </div>
+
+              <div class="bg-yellow-50 p-4 rounded">
+                <h4 class="font-semibold text-yellow-800 mb-2">Security Note</h4>
+                <p class="text-sm">
+                  Never reuse the same IV with the same key, as this would generate 
+                  identical keystreams, compromising security.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Counter (CTR) Mode -->
+      <div *ngIf="currentSection === 6" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">CTR: Random-Access & Parallelism</h2>
+
+        <div class="bg-cyan-50 rounded-lg p-6 mb-6">
+          <p class="text-gray-700 mb-4">
+            CTR mode encrypts successive counter values:
+          </p>
+          <div class="bg-white p-4 rounded border space-y-2">
+            <div class="font-mono text-lg text-center">CTR<sub>i</sub> = Nonce ∥ i</div>
+            <div class="font-mono text-lg text-center">K<sub>i</sub> = E<sub>K</sub>(CTR<sub>i</sub>)</div>
+            <div class="font-mono text-lg text-center">C<sub>i</sub> = P<sub>i</sub> ⊕ K<sub>i</sub></div>
+          </div>
+          <p class="text-gray-700 mt-4">
+            This provides full parallelism and random access to blocks—no chaining, no IV reuse risks when implemented correctly.
+          </p>
+        </div>
+
+        <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-700">
+                <strong>Security Critical:</strong> Reusing a nonce/counter key pair devastates confidentiality—never reuse counters under the same key.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border p-6 mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">CTR Demonstration</h3>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Input</h4>
+                <div class="text-sm">
+                  <div><strong>Plaintext:</strong> {{ ctrResult.plaintext }}</div>
+                  <div><strong>Key:</strong> {{ key }}</div>
+                  <div><strong>Nonce:</strong> {{ iv }}</div>
+                </div>
+              </div>
+
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Output</h4>
+                <div class="text-sm space-y-2">
+                  <div>
+                    <strong>Ciphertext (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(ctrResult.ciphertext) }}</div>
+                  </div>
+                  <div>
+                    <strong>Keystream (Hex):</strong>
+                    <div class="font-mono break-all bg-white p-2 rounded border mt-1 text-xs">{{ stringToHex(ctrResult.keystream || '') }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="bg-green-50 p-4 rounded">
+                <h4 class="font-semibold text-green-800 mb-2">Advantages</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• Fully parallelizable encryption/decryption</li>
+                  <li>• Random access to any block</li>
+                  <li>• No error propagation</li>
+                  <li>• Preprocessing possible</li>
+                </ul>
+              </div>
+
+              <div class="bg-blue-50 p-4 rounded">
+                <h4 class="font-semibold text-blue-800 mb-2">Use Cases</h4>
+                <ul class="text-sm space-y-1">
+                  <li>• High-speed network protocols</li>
+                  <li>• Disk encryption</li>
+                  <li>• Parallel processing systems</li>
+                  <li>• Random access scenarios</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 7: Comparison of Modes -->
+      <div *ngIf="currentSection === 7" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Comparison of Modes</h2>
+
+        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300">
+              <thead class="bg-gray-100">
+                <tr>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Mode</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Type</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Parallelizable</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Error Propagation</th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900 border-b">Use Case</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let mode of modeComparisons; let i = index" 
+                    [class]="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900 border-b">{{ mode.mode }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700 border-b">{{ mode.type }}</td>
+                  <td class="px-4 py-3 text-sm border-b">
+                    <span [class]="mode.parallelizable ? 'text-green-600' : 'text-red-600'">
+                      {{ mode.parallelizable ? '✔' : '✘' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-700 border-b">{{ mode.errorPropagation }}</td>
+                  <td class="px-4 py-3 text-sm text-gray-700 border-b">{{ mode.useCase }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">Block Modes</h3>
+            <ul class="space-y-2 text-sm">
+              <li><strong>ECB:</strong> Simple but reveals patterns</li>
+              <li><strong>CBC:</strong> Secure but sequential</li>
+            </ul>
+          </div>
+
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-green-800 mb-3">Stream Modes</h3>
+            <ul class="space-y-2 text-sm">
+              <li><strong>CFB:</strong> Self-synchronizing</li>
+              <li><strong>OFB:</strong> Precomputable keystream</li>
+              <li><strong>CTR:</strong> Fully parallel access</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 8: Pure Stream Ciphers -->
+      <div *ngIf="currentSection === 8" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Pure Stream Ciphers</h2>
+
+        <!-- RC4 Section -->
+        <div class="bg-red-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-red-800 mb-4">RC4: Byte-Oriented Stream Cipher</h3>
+          <p class="text-gray-700 mb-4">
+            RC4 maintains a 256-byte state array and two indices <em>i,j</em>. Each output byte is derived by 
+            swapping state entries and XOR'ing with plaintext. Despite its simplicity, RC4's biases render it 
+            unsuitable for new applications.
+          </p>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-3">RC4 Components</h4>
+              <ul class="space-y-2 text-sm">
+                <li>• <strong>Key Scheduling Algorithm (KSA):</strong> Initializes state with key</li>
+                <li>• <strong>Pseudo-Random Generation Algorithm (PRGA):</strong> Produces keystream bytes</li>
+              </ul>
+            </div>
+
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-3">Interactive RC4 Demo</h4>
+              <div class="space-y-2">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700">Key:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="rc4Key" 
+                    (ngModelChange)="onRC4ParameterChange()"
+                    class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500">
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700">Plaintext:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="rc4Plaintext" 
+                    (ngModelChange)="onRC4ParameterChange()"
+                    class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 bg-white p-4 rounded border">
+            <h4 class="font-semibold text-gray-900 mb-2">RC4 Results</h4>
+            <div class="text-sm space-y-1">
+              <div><strong>Keystream (Hex):</strong> <span class="font-mono">{{ rc4Keystream }}</span></div>
+              <div><strong>Ciphertext (Hex):</strong> <span class="font-mono">{{ stringToHex(rc4Ciphertext) }}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- A5/1 Section -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-blue-800 mb-4">A5/1: GSM Stream Cipher</h3>
+          <p class="text-gray-700 mb-4">
+            A5/1 uses three LFSRs (lengths 19, 22, 23) clocked by a majority function on "clocking bits." 
+            The combined output bits form a keystream XOR'd with plaintext frames in GSM voice channels.
+          </p>
+
+          <div class="bg-white p-4 rounded border mb-4">
+            <h4 class="font-semibold text-gray-900 mb-2">Majority Clocking Example</h4>
+            <p class="text-sm text-gray-700 mb-2">
+              When the majority of clocking bits is 1, corresponding LFSRs shift; this irregular clocking hardens the keystream.
+            </p>
+            <div class="text-xs font-mono bg-gray-100 p-2 rounded">
+              Output bits: {{ a51Output.join(' ') }}
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-3 rounded border">
+              <h5 class="font-semibold text-sm text-gray-900 mb-1">LFSR1 (19 bits)</h5>
+              <div class="text-xs font-mono">{{ a51Lfsr1.slice(0, 10).join('') }}...</div>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h5 class="font-semibold text-sm text-gray-900 mb-1">LFSR2 (22 bits)</h5>
+              <div class="text-xs font-mono">{{ a51Lfsr2.slice(0, 10).join('') }}...</div>
+            </div>
+            <div class="bg-white p-3 rounded border">
+              <h5 class="font-semibold text-sm text-gray-900 mb-1">LFSR3 (23 bits)</h5>
+              <div class="text-xs font-mono">{{ a51Lfsr3.slice(0, 10).join('') }}...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 9: Key Management & Generation -->
+      <div *ngIf="currentSection === 9" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Key Management & Generation</h2>
+
+        <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-yellow-800 mb-4">Key Distribution Challenges</h3>
+          <p class="text-gray-700 mb-4">
+            Symmetric modes require both parties to share a secret key—managing <em>n(n-1)/2</em> keys for 
+            <em>n</em> users quickly becomes untenable. Hybrid schemes (e.g., RSA-wrapped AES keys) solve this 
+            by transporting session keys securely.
+          </p>
+
+          <div class="bg-white p-4 rounded border">
+            <h4 class="font-semibold text-gray-900 mb-2">Key Distribution Complexity</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-sm">
+              <div class="bg-gray-100 p-3 rounded">
+                <div class="font-bold text-lg">2 users</div>
+                <div class="text-gray-600">1 key</div>
+              </div>
+              <div class="bg-gray-100 p-3 rounded">
+                <div class="font-bold text-lg">5 users</div>
+                <div class="text-gray-600">10 keys</div>
+              </div>
+              <div class="bg-gray-100 p-3 rounded">
+                <div class="font-bold text-lg">10 users</div>
+                <div class="text-gray-600">45 keys</div>
+              </div>
+              <div class="bg-gray-100 p-3 rounded">
+                <div class="font-bold text-lg">100 users</div>
+                <div class="text-gray-600">4,950 keys</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 rounded-lg p-6 mb-6">
+          <h3 class="text-xl font-semibold text-green-800 mb-4">Random Key Generation</h3>
+          <p class="text-gray-700 mb-4">
+            High-quality pseudorandom number generators—ideally hardware-based entropy sources—are critical. 
+            Weak or predictable keys undermine every mode's security.
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Good Entropy Sources</h4>
+              <ul class="text-sm space-y-1">
+                <li>• Hardware random number generators</li>
+                <li>• Mouse movements and keyboard timings</li>
+                <li>• Thermal noise from electronic components</li>
+                <li>• Atmospheric noise</li>
+              </ul>
+            </div>
+
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-gray-900 mb-2">Poor Entropy Sources</h4>
+              <ul class="text-sm space-y-1">
+                <li>• System time alone</li>
+                <li>• Process IDs</li>
+                <li>• Simple counters</li>
+                <li>• Predictable patterns</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-6">
+          <h3 class="text-xl font-semibold text-blue-800 mb-4">Hybrid Key Management</h3>
+          <div class="bg-white p-4 rounded border">
+            <h4 class="font-semibold text-gray-900 mb-2">RSA-AES Hybrid Example</h4>
+            <ol class="text-sm space-y-1 list-decimal list-inside">
+              <li>Generate random AES session key</li>
+              <li>Encrypt large data with AES (fast)</li>
+              <li>Encrypt AES key with RSA (secure)</li>
+              <li>Send both RSA-encrypted key and AES-encrypted data</li>
+              <li>Recipient decrypts AES key with RSA, then data with AES</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 10: Active Learning & Exercises -->
+      <div *ngIf="currentSection === 10" class="p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Active Learning & Exercises</h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Exercise 1 -->
+          <div class="bg-blue-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">Mode Implementation Lab</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Implement ECB, CBC, and CTR modes using a small block cipher (e.g., toy 8-bit substitution). 
+              Compare throughput and error behavior.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-xs text-gray-900 mb-1">Learning Objectives:</h4>
+              <ul class="text-xs space-y-1">
+                <li>• Understand mode mechanics</li>
+                <li>• Compare performance characteristics</li>
+                <li>• Observe error propagation</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Exercise 2 -->
+          <div class="bg-green-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-green-800 mb-3">Pattern Analysis</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Encrypt a 256×256 pixel image in ECB vs. CBC vs. CTR. Observe and explain the visible patterns.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-xs text-gray-900 mb-1">Expected Results:</h4>
+              <ul class="text-xs space-y-1">
+                <li>• ECB: Patterns visible</li>
+                <li>• CBC: Patterns concealed</li>
+                <li>• CTR: Patterns concealed</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Exercise 3 -->
+          <div class="bg-yellow-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-yellow-800 mb-3">RC4 Bias Demonstration</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Generate large RC4 keystreams with key of all zeros; plot distribution of first-byte outputs 
+              to witness known biases.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-xs text-gray-900 mb-1">Expected Observation:</h4>
+              <p class="text-xs">Byte 0x00 appears more frequently than expected (bias)</p>
+            </div>
+          </div>
+
+          <!-- Exercise 4 -->
+          <div class="bg-purple-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-purple-800 mb-3">A5/1 Majority Clocking</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Simulate the three LFSRs and majority-clock rule for 1000 steps; analyze period and linear complexity.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-xs text-gray-900 mb-1">Analysis Points:</h4>
+              <ul class="text-xs space-y-1">
+                <li>• Keystream period length</li>
+                <li>• Linear complexity</li>
+                <li>• Statistical properties</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Exercise 5 -->
+          <div class="bg-red-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-red-800 mb-3">Ciphertext Stealing Practice</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Write CTS routines for ECB and CBC to encrypt messages not multiple of block size—verify 
+              correct plaintext recovery.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <h4 class="font-semibold text-xs text-gray-900 mb-1">Implementation Focus:</h4>
+              <ul class="text-xs space-y-1">
+                <li>• Handle partial blocks</li>
+                <li>• Maintain security</li>
+                <li>• Verify round-trip correctness</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Exercise 6 -->
+          <div class="bg-indigo-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-indigo-800 mb-3">Error Propagation Study</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              Introduce single-bit errors in ciphertext for each mode and measure how many plaintext 
+              bits are affected.
+            </p>
+            <div class="bg-white p-3 rounded border">
+              <div class="space-y-2">
+                <label class="block text-xs font-medium text-gray-700">Error Position:</label>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="20" 
+                  [(ngModel)]="errorPosition" 
+                  (ngModelChange)="onErrorPositionChange()"
+                  class="w-full">
+                <div class="text-xs text-gray-600">Position: {{ errorPosition }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 bg-gray-50 rounded-lg p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Error Propagation Results</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-sm text-blue-800">ECB Mode</h4>
+              <p class="text-xs text-gray-700">{{ errorResults['ECB'] || 'Run error simulation' }}</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-sm text-green-800">CBC Mode</h4>
+              <p class="text-xs text-gray-700">{{ errorResults['CBC'] || 'Run error simulation' }}</p>
+            </div>
+            <div class="bg-white p-4 rounded border">
+              <h4 class="font-semibold text-sm text-purple-800">CFB Mode</h4>
+              <p class="text-xs text-gray-700">{{ errorResults['CFB'] || 'Run error simulation' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Navigation -->
       <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">

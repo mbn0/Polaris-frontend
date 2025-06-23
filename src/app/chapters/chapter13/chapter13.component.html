@@ -28,52 +28,256 @@
   
     <!-- Section 1: Defining Digital Signatures -->
     <div *ngIf="currentSection === 1" class="section">
-      <h2>What Is a Digital Signature?</h2>
-      <div class="concept-box">
-        <p>A digital signature is a cryptographic construct that binds a signer's identity to a specific message, providing <strong>message authentication</strong>, <strong>integrity</strong>, and <strong>non-repudiation</strong>.</p>
-      </div>
-  
-      <div class="interactive-demo">
-        <h3>Interactive Digital Signature Demo</h3>
-        <div class="signature-demo">
-          <div class="input-group">
-            <label>Original Message:</label>
-            <input [(ngModel)]="signatureMessage" (input)="simulateSignature()" class="message-input">
-          </div>
-          
-          <div class="signature-status" [class.valid]="signatureValid" [class.invalid]="!signatureValid">
-            <div class="status-icon">{{signatureValid ? '✓' : '✗'}}</div>
-            <div class="status-text">
-              Signature: {{signatureValid ? 'VALID' : 'INVALID'}}
+      <div class="hero-section">
+        <h2 class="hero-title">
+          <span class="signature-icon">✍️</span>
+          What Is a Digital Signature?
+        </h2>
+        
+        <div class="hero-concept">
+          <div class="concept-highlight">
+            <div class="concept-icon">🔒</div>
+            <div class="concept-text">
+              <p>A <strong>digital signature</strong> is a cryptographic mechanism that provides mathematical proof of authenticity and integrity for digital messages or documents.</p>
+              <p class="concept-subtitle">Unlike handwritten signatures, digital signatures offer <em>unbreakable mathematical security</em>.</p>
             </div>
-          </div>
-  
-          <div class="demo-controls">
-            <button (click)="tamperMessage()" class="tamper-btn">Tamper with Message</button>
-            <button (click)="resetMessage()" class="reset-btn">Reset Message</button>
-          </div>
-  
-          <div *ngIf="tamperedMessage" class="tampered-message">
-            <label>Tampered Message:</label>
-            <div class="tampered-text">{{tamperedMessage}}</div>
           </div>
         </div>
       </div>
-  
-      <div class="key-properties">
-        <h3>Key Properties</h3>
-        <div class="properties-grid">
-          <div class="property-card">
-            <h4>Authentication</h4>
-            <p>Verifies the signer's identity</p>
+
+      <div class="definition-showcase">
+        <h3 class="section-header">
+          <span class="header-icon">⚙️</span>
+          Formal Definition
+        </h3>
+        <div class="algorithm-cards">
+          <div class="algorithm-card key-gen">
+            <div class="card-icon">🔑</div>
+            <h4>Key Generation</h4>
+            <p>Generates a public-private key pair</p>
+            <div class="formula-mini">(pk, sk) ← KeyGen()</div>
           </div>
-          <div class="property-card">
-            <h4>Integrity</h4>
-            <p>Detects any message modification</p>
+          
+          <div class="algorithm-card signing">
+            <div class="card-icon">✏️</div>
+            <h4>Signing</h4>
+            <p>Creates signature with private key</p>
+            <div class="formula-mini">σ ← Sign(m, sk)</div>
           </div>
-          <div class="property-card">
-            <h4>Non-repudiation</h4>
-            <p>Signer cannot deny signing</p>
+          
+          <div class="algorithm-card verification">
+            <div class="card-icon">✅</div>
+            <h4>Verification</h4>
+            <p>Validates signature with public key</p>
+            <div class="formula-mini">Verify(m, σ, pk) → {{'{'}}✓, ✗{{'}'}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="math-foundation">
+        <h3 class="section-header">
+          <span class="header-icon">🧮</span>
+          Mathematical Foundation
+        </h3>
+        <div class="math-container">
+          <div class="math-explanation">
+            <p>Digital signatures rely on <strong>asymmetric cryptography</strong> with one-way mathematical functions:</p>
+          </div>
+          <div class="formula-showcase">
+            <div class="formula-card primary">
+              <div class="formula-label">Signing Process</div>
+              <div class="formula-content">σ = Sign(m, sk)</div>
+            </div>
+            <div class="formula-arrow">→</div>
+            <div class="formula-card secondary">
+              <div class="formula-label">Verification Process</div>
+              <div class="formula-content">Verify(m, σ, pk)</div>
+            </div>
+          </div>
+          <div class="security-note">
+            <span class="note-icon">🛡️</span>
+            <p><strong>Security Guarantee:</strong> Computationally infeasible to forge signatures without the private key, even with knowledge of the public key and many valid signatures.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-trinity">
+        <h3 class="section-header">
+          <span class="header-icon">🛡️</span>
+          The Security Trinity
+        </h3>
+        <div class="trinity-grid">
+          <div class="trinity-card authentication">
+            <div class="trinity-icon">🔐</div>
+            <h4>Message Authentication</h4>
+            <div class="trinity-details">
+              <div class="detail-item">
+                <strong>What:</strong> Proves message origin
+              </div>
+              <div class="detail-item">
+                <strong>How:</strong> Private key uniqueness
+              </div>
+              <div class="detail-item">
+                <strong>Example:</strong> Email sender verification
+              </div>
+            </div>
+          </div>
+          
+          <div class="trinity-card integrity">
+            <div class="trinity-icon">🛡️</div>
+            <h4>Message Integrity</h4>
+            <div class="trinity-details">
+              <div class="detail-item">
+                <strong>What:</strong> Detects any modifications
+              </div>
+              <div class="detail-item">
+                <strong>How:</strong> Hash-based validation
+              </div>
+              <div class="detail-item">
+                <strong>Example:</strong> Software update verification
+              </div>
+            </div>
+          </div>
+          
+          <div class="trinity-card non-repudiation">
+            <div class="trinity-icon">📋</div>
+            <h4>Non-Repudiation</h4>
+            <div class="trinity-details">
+              <div class="detail-item">
+                <strong>What:</strong> Prevents denial of signing
+              </div>
+              <div class="detail-item">
+                <strong>How:</strong> Cryptographic proof
+              </div>
+              <div class="detail-item">
+                <strong>Example:</strong> Legal contract binding
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analogy-section">
+        <h3 class="section-header">
+          <span class="header-icon">🏛️</span>
+          Historical Perspective
+        </h3>
+        <div class="analogy-container">
+          <div class="analogy-visual">
+            <div class="wax-seal">🏺</div>
+            <div class="evolution-arrow">⟶</div>
+            <div class="digital-signature">💻</div>
+          </div>
+          <div class="analogy-comparison">
+            <div class="historical-method">
+              <h4>Medieval Wax Seal</h4>
+              <div class="method-features">
+                <div class="feature">🔑 Unique signet ring</div>
+                <div class="feature">🛡️ Tamper evidence</div>
+                <div class="feature">👑 Authority proof</div>
+              </div>
+            </div>
+            <div class="modern-method">
+              <h4>Digital Signature</h4>
+              <div class="method-features">
+                <div class="feature">🔐 Mathematical uniqueness</div>
+                <div class="feature">⚡ Instant verification</div>
+                <div class="feature">🌐 Global validity</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="impact-section">
+        <h3 class="section-header">
+          <span class="header-icon">🌟</span>
+          Why Digital Signatures Transform Everything
+        </h3>
+        <div class="impact-grid">
+          <div class="impact-card economy">
+            <div class="impact-icon">🌐</div>
+            <h4>Digital Economy Revolution</h4>
+            <p>Enable trillion-dollar online transactions without physical presence or paper trails</p>
+            <div class="impact-stat">$4.9T+ in digital transactions annually</div>
+          </div>
+          
+          <div class="impact-card legal">
+            <div class="impact-icon">⚖️</div>
+            <h4>Legal Framework Evolution</h4>
+            <p>Recognized as legally binding in 180+ countries under electronic signature laws</p>
+            <div class="impact-stat">99.9% court acceptance rate</div>
+          </div>
+          
+          <div class="impact-card security">
+            <div class="impact-icon">🔒</div>
+            <h4>Unbreakable Security</h4>
+            <p>Mathematically impossible to forge with current computational capabilities</p>
+            <div class="impact-stat">2^256 security level</div>
+          </div>
+          
+          <div class="impact-card scale">
+            <div class="impact-icon">📊</div>
+            <h4>Infinite Scalability</h4>
+            <p>Process millions of signatures per second with automated verification systems</p>
+            <div class="impact-stat">1M+ signatures/second</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="technical-deep-dive">
+        <h3 class="section-header">
+          <span class="header-icon">🔬</span>
+          Technical Deep Dive: Hash-then-Sign
+        </h3>
+        <div class="process-flow">
+          <div class="flow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Hash Computation</h4>
+              <div class="step-formula">h = Hash(message)</div>
+              <p>Creates fixed-size digest</p>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">→</div>
+          
+          <div class="flow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Signature Generation</h4>
+              <div class="step-formula">σ = Sign(h, private_key)</div>
+              <p>Signs the hash value</p>
+            </div>
+          </div>
+          
+          <div class="flow-arrow">→</div>
+          
+          <div class="flow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Verification</h4>
+              <div class="step-formula">Verify(Hash(message), σ, public_key)</div>
+              <p>Validates authenticity</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="benefits-showcase">
+          <h4>Why Hash First?</h4>
+          <div class="benefit-items">
+            <div class="benefit-item">
+              <span class="benefit-icon">⚡</span>
+              <strong>Speed:</strong> Constant-time signing regardless of message size
+            </div>
+            <div class="benefit-item">
+              <span class="benefit-icon">📏</span>
+              <strong>Size:</strong> Fixed signature length for any message
+            </div>
+            <div class="benefit-item">
+              <span class="benefit-icon">🔒</span>
+              <strong>Security:</strong> Ties to collision-resistant hash functions
+            </div>
           </div>
         </div>
       </div>
@@ -159,9 +363,10 @@
             <input [(ngModel)]="processMessage" class="message-input">
           </div>
           <button (click)="executeProcessStep()" class="process-btn">
-            {{processStep === 1 ? 'Hash Message' : 
-              processStep === 2 ? 'Generate Signature' : 
-              processStep === 3 ? 'Verify Signature' : 'Reset Process'}}
+            <span *ngIf="processStep === 1">Hash Message</span>
+            <span *ngIf="processStep === 2">Generate Signature</span>
+            <span *ngIf="processStep === 3">Verify Signature</span>
+            <span *ngIf="processStep === 4">Reset Process</span>
           </button>
         </div>
       </div>
@@ -244,7 +449,8 @@
         <div class="rsa-demo">
           <div class="key-generation">
             <button (click)="generateRSAKeys()" [disabled]="rsaGenerating" class="generate-btn">
-              {{rsaGenerating ? 'Generating...' : 'Generate RSA Keys'}}
+              <span *ngIf="rsaGenerating">Generating...</span>
+              <span *ngIf="!rsaGenerating">Generate RSA Keys</span>
             </button>
             
             <div *ngIf="rsaKeyPair" class="key-display">
@@ -322,10 +528,13 @@
       
       <div class="comparison-controls">
         <button (click)="toggleSchemeComparison()" class="comparison-btn">
-          {{schemeComparison ? 'Hide' : 'Show'}} Detailed Comparison
+          <span *ngIf="schemeComparison">Hide</span>
+          <span *ngIf="!schemeComparison">Show</span>
+          Detailed Comparison
         </button>
         <button (click)="runPerformanceBenchmark()" [disabled]="benchmarkRunning" class="benchmark-btn">
-          {{benchmarkRunning ? 'Running...' : 'Run Performance Benchmark'}}
+          <span *ngIf="benchmarkRunning">Running...</span>
+          <span *ngIf="!benchmarkRunning">Run Performance Benchmark</span>
         </button>
       </div>
   
@@ -477,7 +686,8 @@
           
           <div class="exercise-controls">
             <button (click)="startExercise(exercise)" class="exercise-btn">
-              {{exercise.completed ? 'Reset Exercise' : 'Start Exercise'}}
+              <span *ngIf="exercise.completed">Reset Exercise</span>
+              <span *ngIf="!exercise.completed">Start Exercise</span>
             </button>
           </div>
           

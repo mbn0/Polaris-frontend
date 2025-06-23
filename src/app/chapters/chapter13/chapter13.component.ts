@@ -30,11 +30,6 @@ export class Chapter13Component {
   currentSection = 1;
   totalSections = 8;
 
-  // Section 1: Digital Signature Properties
-  signatureMessage = 'Hello, this is a signed message!';
-  signatureValid = true;
-  tamperedMessage = '';
-
   // Section 2: Conventional vs Digital comparison
   comparisonAspects = [
     {
@@ -246,25 +241,6 @@ export class Chapter13Component {
     this.currentSection = section;
   }
 
-  // Section 1: Digital Signature Demo
-  simulateSignature() {
-    // Simulate signature generation
-    this.signatureValid = true;
-    setTimeout(() => {
-      this.signatureValid = this.signatureMessage === this.tamperedMessage || this.tamperedMessage === '';
-    }, 500);
-  }
-
-  tamperMessage() {
-    this.tamperedMessage = this.signatureMessage + ' [TAMPERED]';
-    this.simulateSignature();
-  }
-
-  resetMessage() {
-    this.tamperedMessage = '';
-    this.simulateSignature();
-  }
-
   // Section 3: Signature Process
   executeProcessStep() {
     switch (this.processStep) {
@@ -347,15 +323,33 @@ export class Chapter13Component {
   }
 
   signElGamalMessage() {
-    const k = 5n; // Random value (should be random in practice)
     const messageHash = BigInt(this.simpleHashToNumber(this.elGamalMessage));
     
-    this.elGamalR = this.modPow(this.elGamalG, k, this.elGamalP);
-    const kInv = this.modInverse(k, this.elGamalP - 1n);
-    this.elGamalS = (kInv * (messageHash - this.elGamalX * this.elGamalR)) % (this.elGamalP - 1n);
+    // Choose k such that gcd(k, p-1) = 1 and avoid s = 0
+    let k = 7n; // Try different k values
+    let attempts = 0;
     
-    if (this.elGamalS < 0n) {
-      this.elGamalS += (this.elGamalP - 1n);
+    while (attempts < 10) {
+      this.elGamalR = this.modPow(this.elGamalG, k, this.elGamalP);
+      
+      // Check if gcd(k, p-1) = 1
+      const gcd = this.gcd(k, this.elGamalP - 1n);
+      if (gcd === 1n) {
+        const kInv = this.modInverse(k, this.elGamalP - 1n);
+        this.elGamalS = (kInv * (messageHash - this.elGamalX * this.elGamalR)) % (this.elGamalP - 1n);
+        
+        if (this.elGamalS < 0n) {
+          this.elGamalS += (this.elGamalP - 1n);
+        }
+        
+        // If s != 0, we have a valid signature
+        if (this.elGamalS !== 0n) {
+          break;
+        }
+      }
+      
+      k = k + 1n;
+      attempts++;
     }
   }
 
@@ -448,6 +442,15 @@ export class Chapter13Component {
       base = (base * base) % modulus;
     }
     return result;
+  }
+
+  private gcd(a: bigint, b: bigint): bigint {
+    while (b !== 0n) {
+      const temp = b;
+      b = a % b;
+      a = temp;
+    }
+    return a;
   }
 
   private modInverse(a: bigint, m: bigint): bigint {

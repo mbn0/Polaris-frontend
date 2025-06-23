@@ -127,13 +127,31 @@ export class DesToolComponent {
   private readonly SHIFTS = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1]
 
   processInput(): void {
-    if (!this.inputText || !this.inputKey) {
-      alert("Please enter both plaintext and key")
+    // Enhanced input validation
+    if (!this.inputText || this.inputText.trim() === '') {
+      this.showError("Please enter plaintext to encrypt")
+      return
+    }
+
+    if (!this.inputKey || this.inputKey.trim() === '') {
+      this.showError("Please enter a key")
       return
     }
 
     if (this.inputKey.length !== 8) {
-      alert("Key must be exactly 8 characters (64 bits)")
+      this.showError("Key must be exactly 8 characters (64 bits)")
+      return
+    }
+
+    // Validate key contains only printable ASCII characters
+    if (!/^[\x20-\x7E]*$/.test(this.inputKey)) {
+      this.showError("Key must contain only printable ASCII characters")
+      return
+    }
+
+    // Validate plaintext contains only printable ASCII characters
+    if (!/^[\x20-\x7E]*$/.test(this.inputText)) {
+      this.showError("Plaintext must contain only printable ASCII characters")
       return
     }
 
@@ -141,12 +159,27 @@ export class DesToolComponent {
     this.steps = []
     this.currentStep = 0
 
-    // Convert input to binary
-    const plainBits = this.textToBinary(this.inputText.substring(0, 8).padEnd(8, "\0"))
+    try {
+      // Convert input to binary - pad plaintext to 8 bytes
+      const paddedText = this.inputText.substring(0, 8).padEnd(8, "\0")
+      const plainBits = this.textToBinary(paddedText)
     const keyBits = this.textToBinary(this.inputKey)
 
+      // Validate bit arrays
+      if (plainBits.length !== 64 || keyBits.length !== 64) {
+        throw new Error("Invalid bit conversion - expected 64 bits")
+      }
+
     this.performDES(plainBits, keyBits)
+    } catch (error) {
+      this.showError(`Encryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
     this.isProcessing = false
+    }
+  }
+
+  private showError(message: string): void {
+    alert(message)
   }
 
   private performDES(plainBits: number[], keyBits: number[]): void {
@@ -179,9 +212,26 @@ export class DesToolComponent {
 
     // 16 Feistel rounds
     for (let round = 1; round <= 16; round++) {
+      if (leftHalf.length !== 32 || rightHalf.length !== 32) {
+        throw new Error(`Invalid half lengths before round ${round}: L=${leftHalf.length}, R=${rightHalf.length}`)
+      }
+
       const newLeft = rightHalf.slice()
       const fResult = this.feistelFunction(rightHalf, subkeys[round - 1])
-      const newRight = leftHalf.map((bit, i) => bit ^ fResult[i])
+      
+      if (fResult.length !== 32) {
+        throw new Error(`Invalid F-function result length in round ${round}: ${fResult.length}`)
+      }
+
+      const newRight = leftHalf.map((bit, i) => {
+        if (bit !== 0 && bit !== 1) {
+          throw new Error(`Invalid bit in left half at round ${round}: ${bit}`)
+        }
+        if (fResult[i] !== 0 && fResult[i] !== 1) {
+          throw new Error(`Invalid bit in F-result at round ${round}: ${fResult[i]}`)
+        }
+        return bit ^ fResult[i]
+      })
 
       this.addStep(
         2 + round,
@@ -232,41 +282,111 @@ export class DesToolComponent {
   }
 
   private feistelFunction(rightHalf: number[], subkey: number[]): number[] {
+    if (rightHalf.length !== 32) {
+      throw new Error(`Invalid right half length: ${rightHalf.length} (expected 32)`)
+    }
+    if (subkey.length !== 48) {
+      throw new Error(`Invalid subkey length: ${subkey.length} (expected 48)`)
+    }
+
     // Expansion
     const expanded = this.expand(rightHalf)
+    if (expanded.length !== 48) {
+      throw new Error(`Invalid expansion result: ${expanded.length} (expected 48)`)
+    }
 
     // XOR with subkey
-    const xored = expanded.map((bit, i) => bit ^ subkey[i])
+    const xored = expanded.map((bit, i) => {
+      if (bit !== 0 && bit !== 1) {
+        throw new Error(`Invalid bit in expansion: ${bit}`)
+      }
+      if (subkey[i] !== 0 && subkey[i] !== 1) {
+        throw new Error(`Invalid bit in subkey: ${subkey[i]}`)
+      }
+      return bit ^ subkey[i]
+    })
 
     // S-box substitution
     const substituted = this.sBoxSubstitute(xored)
+    if (substituted.length !== 32) {
+      throw new Error(`Invalid S-box result: ${substituted.length} (expected 32)`)
+    }
 
     // P-box permutation
-    return this.permute32(substituted)
+    const permuted = this.permute32(substituted)
+    if (permuted.length !== 32) {
+      throw new Error(`Invalid P-box result: ${permuted.length} (expected 32)`)
+    }
+
+    return permuted
   }
 
   private initialPermute(bits: number[]): number[] {
-    return this.IP.map((i) => bits[i - 1])
+    if (bits.length !== 64) {
+      throw new Error(`Invalid input length for IP: ${bits.length} (expected 64)`)
+    }
+    return this.IP.map((i) => {
+      if (i < 1 || i > 64) {
+        throw new Error(`Invalid IP table value: ${i}`)
+      }
+      return bits[i - 1]
+    })
   }
 
   private finalPermute(bits: number[]): number[] {
-    return this.FP.map((i) => bits[i - 1])
+    if (bits.length !== 64) {
+      throw new Error(`Invalid input length for FP: ${bits.length} (expected 64)`)
+    }
+    return this.FP.map((i) => {
+      if (i < 1 || i > 64) {
+        throw new Error(`Invalid FP table value: ${i}`)
+      }
+      return bits[i - 1]
+    })
   }
 
   private expand(rHalf: number[]): number[] {
-    return this.E.map((i) => rHalf[i - 1])
+    if (rHalf.length !== 32) {
+      throw new Error(`Invalid input length for expansion: ${rHalf.length} (expected 32)`)
+    }
+    return this.E.map((i) => {
+      if (i < 1 || i > 32) {
+        throw new Error(`Invalid E table value: ${i}`)
+      }
+      return rHalf[i - 1]
+    })
   }
 
   private permute32(bits32: number[]): number[] {
-    return this.P.map((i) => bits32[i - 1])
+    if (bits32.length !== 32) {
+      throw new Error(`Invalid input length for P permutation: ${bits32.length} (expected 32)`)
+    }
+    return this.P.map((i) => {
+      if (i < 1 || i > 32) {
+        throw new Error(`Invalid P table value: ${i}`)
+      }
+      return bits32[i - 1]
+    })
   }
 
   private sBoxSubstitute(bits48: number[]): number[] {
+    if (bits48.length !== 48) {
+      throw new Error(`Invalid input length for S-box: ${bits48.length} (expected 48)`)
+    }
+
     const out32: number[] = []
     for (let box = 0; box < 8; box++) {
       const chunk = bits48.slice(box * 6, box * 6 + 6)
+      if (chunk.length !== 6) {
+        throw new Error(`Invalid S-box chunk length: ${chunk.length}`)
+      }
+
       const row = (chunk[0] << 1) | chunk[5]
       const col = (chunk[1] << 3) | (chunk[2] << 2) | (chunk[3] << 1) | chunk[4]
+
+      if (row < 0 || row > 3 || col < 0 || col > 15) {
+        throw new Error(`Invalid S-box coordinates: row=${row}, col=${col}`)
+      }
 
       const val = this.SBOX[box][row * 16 + col]
       out32.push((val >> 3) & 1, (val >> 2) & 1, (val >> 1) & 1, val & 1)
@@ -275,8 +395,17 @@ export class DesToolComponent {
   }
 
   private generateSubkeys(keyBits: number[]): number[][] {
+    if (keyBits.length !== 64) {
+      throw new Error(`Invalid key length: ${keyBits.length} (expected 64)`)
+    }
+
     // Apply PC1 permutation to get 56-bit key
-    const pc1Key = this.PC1.map(pos => keyBits[pos - 1])
+    const pc1Key = this.PC1.map(pos => {
+      if (pos < 1 || pos > 64) {
+        throw new Error(`Invalid PC1 table value: ${pos}`)
+      }
+      return keyBits[pos - 1]
+    })
     
     // Split into left and right halves (28 bits each)
     let c = pc1Key.slice(0, 28)
@@ -288,14 +417,29 @@ export class DesToolComponent {
     for (let round = 0; round < 16; round++) {
       // Perform left shifts
       const shifts = this.SHIFTS[round]
+      if (shifts < 1 || shifts > 2) {
+        throw new Error(`Invalid shift value for round ${round}: ${shifts}`)
+      }
       c = [...c.slice(shifts), ...c.slice(0, shifts)]
       d = [...d.slice(shifts), ...d.slice(0, shifts)]
       
       // Combine halves
       const combined = [...c, ...d]
+      if (combined.length !== 56) {
+        throw new Error(`Invalid combined key length: ${combined.length}`)
+      }
       
       // Apply PC2 permutation to get 48-bit subkey
-      const subkey = this.PC2.map(pos => combined[pos - 1])
+      const subkey = this.PC2.map(pos => {
+        if (pos < 1 || pos > 56) {
+          throw new Error(`Invalid PC2 table value: ${pos}`)
+        }
+        return combined[pos - 1]
+      })
+      
+      if (subkey.length !== 48) {
+        throw new Error(`Invalid subkey length: ${subkey.length}`)
+      }
       subkeys.push(subkey)
     }
     
@@ -303,21 +447,43 @@ export class DesToolComponent {
   }
 
   private textToBinary(text: string): number[] {
+    if (text.length > 8) {
+      throw new Error(`Text too long: ${text.length} characters (max 8)`)
+    }
+    
     const bits: number[] = []
     for (let i = 0; i < text.length; i++) {
       const charCode = text.charCodeAt(i)
+      if (charCode > 255) {
+        throw new Error(`Non-ASCII character at position ${i}: ${text.charAt(i)}`)
+      }
       for (let j = 7; j >= 0; j--) {
         bits.push((charCode >> j) & 1)
       }
     }
+    
+    // Pad to 64 bits if necessary
+    while (bits.length < 64) {
+      bits.push(0)
+    }
+    
     return bits
   }
 
   private binaryToText(bits: number[]): string {
+    if (bits.length !== 64) {
+      throw new Error(`Invalid bit array length: ${bits.length} (expected 64)`)
+    }
+    
     let text = ""
     for (let i = 0; i < bits.length; i += 8) {
       const byte = bits.slice(i, i + 8)
-      const charCode = byte.reduce((acc, bit, index) => acc + (bit << (7 - index)), 0)
+      const charCode = byte.reduce((acc, bit, index) => {
+        if (bit !== 0 && bit !== 1) {
+          throw new Error(`Invalid bit value: ${bit}`)
+        }
+        return acc + (bit << (7 - index))
+      }, 0)
       text += String.fromCharCode(charCode)
     }
     return text
@@ -328,10 +494,22 @@ export class DesToolComponent {
   }
 
   private bitsToHex(bits: number[]): string {
+    if (bits.length % 4 !== 0) {
+      throw new Error(`Invalid bit array length: ${bits.length} (must be multiple of 4)`)
+    }
+    
     let hex = ""
     for (let i = 0; i < bits.length; i += 4) {
       const nibble = bits.slice(i, i + 4)
-      const value = nibble.reduce((acc, bit, index) => acc + (bit << (3 - index)), 0)
+      if (nibble.length !== 4) {
+        throw new Error(`Invalid nibble length: ${nibble.length}`)
+      }
+      const value = nibble.reduce((acc, bit, index) => {
+        if (bit !== 0 && bit !== 1) {
+          throw new Error(`Invalid bit value: ${bit}`)
+        }
+        return acc + (bit << (3 - index))
+      }, 0)
       hex += value.toString(16).toUpperCase()
     }
     return hex
@@ -422,25 +600,46 @@ export class DesToolComponent {
   }
 
   private formatValue(value: string): string {
-    // If the value contains a binary or hex pattern, reformat it
-    const binaryMatch = value.match(/^[01 ]+$/)
-    const hexMatch = value.match(/^[0-9A-F]+$/)
-    
-    if (binaryMatch || hexMatch) {
-      const bits = value.replace(/\s+/g, '').split('').map(char => 
-        /^[01]$/.test(char) ? parseInt(char, 2) : 
-        parseInt(char, 16).toString(2).padStart(4, '0').split('').map(Number)
-      ).flat()
-      return this.formatBits(bits)
+    // Handle compound strings (like "L0: ABCD, R0: EF12")
+    if (value.includes(':') && value.includes(',')) {
+      const parts = value.split(',')
+      return parts.map(part => {
+        const trimmed = part.trim()
+        const colonIndex = trimmed.indexOf(':')
+        if (colonIndex !== -1) {
+          const label = trimmed.substring(0, colonIndex + 1)
+          const val = trimmed.substring(colonIndex + 1).trim()
+          return `${label} ${this.formatSingleValue(val)}`
+        }
+        return trimmed
+      }).join(', ')
     }
     
-    // Handle compound strings (like "L0: ABCD, R0: EF12")
-    const parts = value.split(/[:,]/)
-    if (parts.length > 1) {
-      return parts.map(part => {
-        const [label, val] = part.trim().split(/\s+/)
-        return val ? `${label}: ${this.formatValue(val)}` : part.trim()
-      }).join(", ")
+    return this.formatSingleValue(value)
+  }
+
+  private formatSingleValue(value: string): string {
+    // If it's already formatted properly, return as is
+    if (value.includes(' ') || value.length <= 8) {
+      return value
+    }
+    
+    // Check if it's a hex string
+    if (/^[0-9A-F]+$/i.test(value) && value.length % 2 === 0) {
+      try {
+        // Convert hex to bits and reformat
+        const bits: number[] = []
+        for (let i = 0; i < value.length; i += 2) {
+          const byte = parseInt(value.substr(i, 2), 16)
+          for (let j = 7; j >= 0; j--) {
+            bits.push((byte >> j) & 1)
+          }
+        }
+        return this.formatBits(bits)
+      } catch (error) {
+        // If conversion fails, return original
+        return value
+      }
     }
     
     return value

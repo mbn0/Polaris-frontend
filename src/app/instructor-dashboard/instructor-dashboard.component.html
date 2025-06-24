@@ -396,13 +396,13 @@
                            class="bg-white rounded-lg p-3 border border-gray-200">
                         <div class="flex items-center justify-between">
                           <div>
-                            <div class="text-sm font-medium text-gray-900">{{result.assessmentTitle}}</div>
-                            <div class="text-xs text-gray-500">Completed: {{result.dateTaken | date:'short'}}</div>
+                            <div class="text-sm font-medium text-gray-900">{{result.AssessmentTitle}}</div>
+                            <div class="text-xs text-gray-500">Completed: {{result.DateTaken | date:'short'}}</div>
                           </div>
                           <div class="text-right">
                             <div class="text-sm font-medium"
-                                 [class]="result.score >= 70 ? 'text-green-600' : result.score >= 50 ? 'text-yellow-600' : 'text-red-600'">
-                              {{result.score}}%
+                                 [class]="result.Score >= 70 ? 'text-green-600' : result.Score >= 50 ? 'text-yellow-600' : 'text-red-600'">
+                              {{result.Score}}%
                             </div>
                           </div>
                         </div>

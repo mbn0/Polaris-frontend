@@ -141,6 +141,12 @@ export const routes: Routes = [
     title: 'Instructor Dashboard'
   },
   {
+    path: 'assessment/:id',
+    loadComponent: () => import('./assessment/assessment.component').then(m => m.AssessmentComponent),
+    canActivate: [authGuard],
+    title: 'Assessment'
+  },
+  {
     path: '**',
     component: NotFoundComponent,
     title: '404 - Page Not Found'

@@ -157,8 +157,18 @@ export class AdminService {
   }
 
   deleteSection(id: number): Observable<void> {
+    console.log('Deleting section:', id); // Debug log
     return this.http.delete<void>(`${this.apiUrl}/sections/${id}`).pipe(
-      catchError(this.handleError)
+      tap(() => console.log('Section deleted successfully')), // Debug log
+      catchError(error => {
+        console.error('Delete section error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          error: error.error,
+          message: error.message
+        });
+        return this.handleError(error);
+      })
     )
   }
 

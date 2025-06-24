@@ -44,7 +44,7 @@ export interface SectionAssessmentVisibility {
 }
 
 export interface Assessment {
-  assessmentID: number
+  assessmentID: number  // Keep this as is for instructor interface to match backend
   title: string
   description: string
   maxScore: number
@@ -60,10 +60,10 @@ export interface StudentResultDto {
 }
 
 export interface ResultDto {
-  assessmentId: number
-  assessmentTitle: string
-  score: number
-  dateTaken: string
+  AssessmentId: number  // PascalCase to match backend
+  AssessmentTitle: string  // PascalCase to match backend
+  Score: number  // PascalCase to match backend
+  DateTaken: string  // PascalCase to match backend
 }
 
 export interface Result {

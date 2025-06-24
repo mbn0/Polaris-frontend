@@ -2,8 +2,9 @@ import { Injectable } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
 import type { Observable } from "rxjs"
 import { environment } from "../../../../environments/environment"
+import { map } from "rxjs"
 
-interface Assessment {
+export interface StudentAssessment {
   assessmentId: number
   title: string
   description: string
@@ -11,15 +12,15 @@ interface Assessment {
   maxScore: number
 }
 
-interface AssessmentVisibility {
+interface StudentAssessmentVisibility {
   assessmentVisibilityId: number
   assessmentId: number
   sectionId: number
   isVisible: boolean
-  assessment: Assessment
+  assessment: StudentAssessment
 }
 
-interface Instructor {
+interface StudentInstructor {
   instructorId: number
   userId: string
   user: {
@@ -29,11 +30,10 @@ interface Instructor {
   }
 }
 
-interface Section {
+interface StudentSection {
   sectionId: number
-  instructorId: number
-  instructor: Instructor
-  assessmentVisibilities: AssessmentVisibility[]
+  instructor: StudentInstructor
+  assessmentVisibilities: StudentAssessmentVisibility[]
 }
 
 export interface StudentProfile {
@@ -45,6 +45,12 @@ export interface StudentProfile {
   sectionName: string
 }
 
+interface ApiResponse<T> {
+  data: T
+  success: boolean
+  message: string
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -53,15 +59,50 @@ export class StudentService {
 
   constructor(private http: HttpClient) {}
 
-  getCurrentSection(): Observable<Section> {
-    return this.http.get<Section>(`${this.apiUrl}/sections/current`)
+  getCurrentSection(): Observable<StudentSection> {
+    return this.http.get<StudentSection>(`${this.apiUrl}/sections/current`)
   }
 
-  getSection(sectionId: number): Observable<Section> {
-    return this.http.get<Section>(`${this.apiUrl}/sections/${sectionId}`)
+  getSection(sectionId: number): Observable<StudentSection> {
+    return this.http.get<StudentSection>(`${this.apiUrl}/sections/${sectionId}`)
   }
 
   getProfile(): Observable<StudentProfile> {
     return this.http.get<StudentProfile>(`${this.apiUrl}/profile`)
+  }
+
+  getVisibleAssessments(): Observable<StudentAssessment[]> {
+    return this.getCurrentSection().pipe(
+      map(section => section.assessmentVisibilities
+        .filter(av => av.isVisible)
+        .map(av => av.assessment)
+      )
+    )
+  }
+
+  getAssessment(assessmentId: number): Observable<StudentAssessment> {
+    return this.getCurrentSection().pipe(
+      map(section => {
+        const assessmentVisibility = section.assessmentVisibilities
+          .find(av => av.assessmentId === assessmentId && av.isVisible)
+        if (!assessmentVisibility) {
+          throw new Error('Assessment not found or not visible')
+        }
+        return assessmentVisibility.assessment
+      })
+    )
+  }
+
+  submitResult(assessmentId: number, score: number): Observable<any> {
+    const submitData = {
+      assessmentId: assessmentId,
+      score: score,
+      dateTaken: new Date().toISOString()
+    }
+    return this.http.post(`${this.apiUrl}/results`, submitData)
+  }
+
+  getMyResults(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/results`)
   }
 }

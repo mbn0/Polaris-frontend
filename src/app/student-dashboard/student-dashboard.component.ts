@@ -4,7 +4,35 @@ import { Router } from "@angular/router"
 import { CommonModule, DecimalPipe } from "@angular/common"
 import { AuthService, type RegisterResponse } from "../core/services/auth/auth.service"
 import { StudentService, type StudentProfile } from "../core/services/student/student.service"
-import type { Section } from "./types"
+
+// Import interfaces from student service
+interface StudentAssessment {
+  assessmentId: number
+  title: string
+  description: string
+  maxScore: number
+  dueDate: string
+}
+
+interface StudentSection {
+  sectionId: number
+  instructor: {
+    instructorId: number
+    userId: string
+    user: {
+      id: string
+      fullName: string
+      email: string
+    }
+  }
+  assessmentVisibilities: {
+    assessmentVisibilityId: number
+    assessmentId: number
+    sectionId: number
+    isVisible: boolean
+    assessment: StudentAssessment
+  }[]
+}
 
 @Component({
   selector: "app-dashboard",
@@ -21,8 +49,13 @@ export class StudentDashboardComponent implements OnInit {
   activeTab = "classes"
   loadingSections = false
   sectionsError: string | null = null
-  currentSection: Section | null = null
-  studentSections: Section[] = []
+  currentSection: StudentSection | null = null
+  studentSections: StudentSection[] = []
+  
+  // New properties for assessments
+  loadingAssessments = false
+  assessmentsError: string | null = null
+  visibleAssessments: StudentAssessment[] = []
 
   chapters: Chapter[] = [
     {
@@ -246,6 +279,17 @@ export class StudentDashboardComponent implements OnInit {
       next: (section) => {
         this.currentSection = section
         this.loadingSections = false
+        // Store section data
+        this.currentSection = section
+
+        // Filter out assessments that are not marked as visible for students
+        if (this.currentSection) {
+          this.currentSection.assessmentVisibilities = this.currentSection.assessmentVisibilities.filter(
+            (av) => av.isVisible,
+          )
+        }
+        // Load visible assessments after section is loaded
+        this.loadVisibleAssessments()
       },
       error: (error) => {
         console.error("Error loading current section:", error)
@@ -255,8 +299,28 @@ export class StudentDashboardComponent implements OnInit {
     })
   }
 
-  setActiveTab(tab: "sections" | "classes" | "crypto"): void {
+  loadVisibleAssessments(): void {
+    this.loadingAssessments = true
+    this.assessmentsError = null
+
+    this.studentService.getVisibleAssessments().subscribe({
+      next: (assessments) => {
+        this.visibleAssessments = assessments
+        this.loadingAssessments = false
+      },
+      error: (error) => {
+        console.error("Error loading visible assessments:", error)
+        this.assessmentsError = "Failed to load assessments. Please try again later."
+        this.loadingAssessments = false
+      }
+    })
+  }
+
+  setActiveTab(tab: "sections" | "classes" | "crypto" | "assessments"): void {
     this.activeTab = tab
+    if (tab === "assessments" && this.visibleAssessments.length === 0) {
+      this.loadVisibleAssessments()
+    }
   }
 
   loadStudentSections(): void {
@@ -309,6 +373,16 @@ export class StudentDashboardComponent implements OnInit {
   navigateToCryptoTool(tool: string): void {
     // Navigate to the specific crypto tool
     this.router.navigate([`/${tool}`])
+  }
+
+  navigateToAssessment(assessment: StudentAssessment): void {
+    if (!this.user) {
+      this.router.navigate(["/login"])
+      return
+    }
+    
+    // Navigate to the assessment (you may need to create this route)
+    this.router.navigate([`/assessment/${assessment.assessmentId}`])
   }
 
   logout(): void {

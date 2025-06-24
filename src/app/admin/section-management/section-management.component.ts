@@ -165,12 +165,16 @@ export class SectionManagementComponent implements OnInit {
   }
 
   deleteSection(sectionId: number) {
-    if (confirm("Are you sure you want to delete this section?")) {
+    if (confirm("Are you sure you want to delete this section? This will remove all students from the section and delete related assessment visibilities.")) {
       this.adminService.deleteSection(sectionId).subscribe({
         next: () => {
-          this.loadSections()
+          console.log('Section deleted successfully');
+          this.loadSections();
         },
-        error: (error) => console.error("Error deleting section:", error),
+        error: (error) => {
+          console.error("Error deleting section:", error);
+          this.error = error.message || "Failed to delete section. Please try again.";
+        },
       })
     }
   }

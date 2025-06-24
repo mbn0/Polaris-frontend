@@ -218,7 +218,7 @@ export class InstructorDashboardComponent implements OnInit {
     if (!results || results.length === 0) {
       return 0
     }
-    const sum = results.reduce((acc, result) => acc + result.score, 0)
+    const sum = results.reduce((acc, result) => acc + result.Score, 0)
     return sum / results.length
   }
 
@@ -258,9 +258,9 @@ export class InstructorDashboardComponent implements OnInit {
           [
             `"${student.fullName}"`,
             student.matricNo,
-            `"${result.assessmentTitle}"`,
-            result.score,
-            new Date(result.dateTaken).toLocaleDateString(),
+            `"${result.AssessmentTitle}"`,  // Updated to PascalCase
+            result.Score,  // Updated to PascalCase
+            new Date(result.DateTaken).toLocaleDateString(),  // Updated to PascalCase
           ].join(","),
         ),
       ),

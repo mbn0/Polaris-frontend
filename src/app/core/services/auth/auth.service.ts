@@ -135,8 +135,8 @@ export class AuthService {
     const hasRole = user ? user.roles.includes(role) : false
     console.log(`Checking role ${role}:`, hasRole)
     return hasRole
-  }
-
+  } 
+    
   isAdmin(): boolean {
     return this.hasRole("Admin")
   }

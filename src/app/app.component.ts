@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 export class AppComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   currentUser: any = null;
+  mobileMenuOpen = false;
   private authSubscription: Subscription;
 
   constructor(private authService: AuthService) {
@@ -38,5 +39,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
+  }
+
+  toggleMobileMenu() {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.mobileMenuOpen = false;
   }
 }

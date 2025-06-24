@@ -204,6 +204,15 @@ export class StudentDashboardComponent implements OnInit {
       features: ["Message Padding", "64 Compression Rounds", "Hash Schedule", "Bitwise Operations"],
       color: "from-green-500 to-teal-600",
     },
+    {
+      id: "aes",
+      title: "AES Encryption",
+      description: "Advanced Encryption Standard with SubBytes, ShiftRows, MixColumns, and AddRoundKey operations",
+      icon: "shield",
+      difficulty: "Advanced",
+      features: ["SubBytes Transform", "ShiftRows Operation", "MixColumns Step", "Round Key Addition"],
+      color: "from-orange-500 to-red-600",
+    },
   ]
 
   constructor(
@@ -299,7 +308,7 @@ export class StudentDashboardComponent implements OnInit {
 
   navigateToCryptoTool(tool: string): void {
     // Navigate to the specific crypto tool
-    this.router.navigate([`/crypto/${tool}`])
+    this.router.navigate([`/${tool}`])
   }
 
   logout(): void {

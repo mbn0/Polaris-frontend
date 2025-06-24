@@ -42,3 +42,16 @@ export const authGuard: CanActivateFn = (route, state) => {
   });
   return false;
 };
+
+export const instructorGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isLoggedIn() && authService.isInstructor()) {
+    return true;
+  }
+
+  // Redirect to login if not authenticated or not instructor
+  router.navigate(['/login']);
+  return false;
+};

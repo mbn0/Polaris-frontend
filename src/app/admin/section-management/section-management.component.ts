@@ -200,7 +200,7 @@ export class SectionManagementComponent implements OnInit {
 
   getInstructorName(instructorId: string): string {
     const instructor = this.instructors.find((i) => i.userId === instructorId)
-    return instructor ? instructor.name : "Unknown"
+    return instructor ? instructor.fullName : "Unknown"
   }
 
   getUnassignedStudents(): StudentBrief[] {

@@ -7,7 +7,7 @@ import { Chapter3Component } from './chapters/chapter3/chapter3.component';
 import { Chapter5Component } from './chapters/chapter5/chapter5.component';
 import { Chapter10Component } from './chapters/chapter10/chapter10.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { adminGuard, noAuthGuard, authGuard } from './auth.guard';
+import { adminGuard, noAuthGuard, authGuard, instructorGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -137,6 +137,7 @@ export const routes: Routes = [
   {
     path: 'instructor',
     loadComponent: () => import('./instructor-dashboard/instructor-dashboard.component').then(m => m.InstructorDashboardComponent),
+    canActivate: [instructorGuard],
     title: 'Instructor Dashboard'
   },
   {

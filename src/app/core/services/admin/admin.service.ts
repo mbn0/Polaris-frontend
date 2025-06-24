@@ -42,6 +42,8 @@ export interface UpdateUserDto {
   fullName: string
   password?: string | null
   roles: string[]
+  matricNo?: string
+  sectionId?: number
 }
 
 export interface CreateSectionDto {
@@ -53,11 +55,11 @@ export interface UpdateSectionDto {
 }
 
 export interface InstructorDto {
-  id: number
+  instructorId: number
   userId: string
-  name: string
+  fullName: string
   email: string
-  sectionsCount: number
+  sectionsCount?: number
 }
 
 @Injectable({

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../core/services/auth/auth.service';
 
 @Component({
@@ -17,13 +17,22 @@ export class LoginComponent {
   submitted = false;
   loginError = false;
   isLoading = false;
+  private returnUrl: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder, 
+    private router: Router, 
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
+    
+    // Get return url from route parameters or default to dashboard
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
   }
 
   onSubmit() {
@@ -39,9 +48,18 @@ export class LoginComponent {
       }).subscribe({
         next: (response) => {
           this.isLoading = false;
-          // Redirect based on user role
+          
+          // If there's a returnUrl and the user has appropriate access, use it
+          if (this.returnUrl) {
+            this.router.navigateByUrl(this.returnUrl);
+            return;
+          }
+          
+          // Otherwise, redirect based on user role
           if (response.roles?.includes('Admin')) {
             this.router.navigate(['/admin']);
+          } else if (response.roles?.includes('Instructor')) {
+            this.router.navigate(['/instructor']);
           } else {
             this.router.navigate(['/dashboard']);
           }

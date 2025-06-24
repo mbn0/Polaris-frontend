@@ -13,7 +13,7 @@ import type {
   providedIn: "root",
 })
 export class InstructorService {
-  private readonly apiUrl = `${environment.apiUrl}/instructor`
+  private readonly apiUrl = `${environment.apiUrl}/api/Instructor`
 
   constructor(private http: HttpClient) {}
 

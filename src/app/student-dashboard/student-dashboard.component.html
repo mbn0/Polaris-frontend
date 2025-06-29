@@ -14,6 +14,20 @@
             <p class="text-sm text-gray-600">Student Dashboard</p>
           </div>
         </div>
+        
+        <!-- Toggle Tooltips Button -->
+        <div class="flex items-center space-x-4">
+          <button
+            (click)="toggleTooltips()"
+            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+            [matTooltip]="showTooltips ? 'Hide helpful tooltips' : 'Show helpful tooltips for navigation'"
+            matTooltipPosition="below">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ showTooltips ? 'Hide Tooltips' : 'Show Tooltips' }}
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -26,9 +40,12 @@
         <button
           [class]="activeTab === 'sections' ?
             'bg-white text-gray-900 shadow-lg font-semibold' :
-            'text-white hover:text-gray-100 hover:bg-white/10'"
+            'text-white hover:text-gray-800 hover:bg-white/10'"
           class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
-          (click)="setActiveTab('sections')">
+          (click)="setActiveTab('sections')"
+          [matTooltip]="showTooltips ? 'View your enrolled sections and available assessments' : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
@@ -37,9 +54,12 @@
         <button
           [class]="activeTab === 'classes' ?
             'bg-white text-gray-900 shadow-lg font-semibold' :
-            'text-white hover:text-gray-100 hover:bg-white/10'"
+            'text-white hover:text-gray-800 hover:bg-white/10'"
           class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
-          (click)="setActiveTab('classes')">
+          (click)="setActiveTab('classes')"
+          [matTooltip]="showTooltips ? 'Browse all course chapters and learning materials' : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
           </svg>
@@ -48,9 +68,12 @@
         <button
           [class]="activeTab === 'assessments' ?
             'bg-white text-gray-900 shadow-lg font-semibold' :
-            'text-white hover:text-gray-100 hover:bg-white/10'"
+            'text-white hover:text-gray-800 hover:bg-white/10'"
           class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
-          (click)="setActiveTab('assessments')">
+          (click)="setActiveTab('assessments')"
+          [matTooltip]="showTooltips ? 'View and take available assessments and quizzes' : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
           </svg>
@@ -59,13 +82,30 @@
         <button
           [class]="activeTab === 'crypto' ?
             'bg-white text-gray-900 shadow-lg font-semibold' :
-            'text-white hover:text-gray-100 hover:bg-white/10'"
+            'text-white hover:text-gray-800 hover:bg-white/10'"
           class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
-          (click)="setActiveTab('crypto')">
+          (click)="setActiveTab('crypto')"
+          [matTooltip]="showTooltips ? 'Interactive tools for testing cryptographic algorithms' : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
           </svg>
           <span>Crypto Testing</span>
+        </button>
+        <button
+          [class]="activeTab === 'results' ?
+            'bg-white text-gray-900 shadow-lg font-semibold' :
+            'text-white hover:text-gray-800 hover:bg-white/10'"
+          class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+          (click)="setActiveTab('results')"
+          [matTooltip]="showTooltips ? 'View your assessment results and performance analytics' : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span>My Results</span>
         </button>
       </div>
     </div>
@@ -128,7 +168,11 @@
           <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-sm">
             <div class="flex items-start justify-between">
               <div class="flex-1">
-                <div class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg p-4 mb-4">
+                <div class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg p-4 mb-4"
+                     [matTooltip]="showTooltips ? 'This is your enrolled section. All your assessments and course materials are managed through this section.' : ''"
+                     [matTooltipDisabled]="!showTooltips"
+                     matTooltipPosition="above"
+                     matTooltipShowDelay="500">
                   <h3 class="text-xl font-bold mb-2">
                     Section {{currentSection.sectionId}}
                   </h3>
@@ -223,7 +267,11 @@
           <div *ngFor="let assessment of visibleAssessments" 
                class="assessment-card rounded-xl p-6 border cursor-pointer group"
                style="background-color: #ffffff !important; border-color: #e5e7eb !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;"
-               (click)="navigateToAssessment(assessment)">
+               (click)="navigateToAssessment(assessment)"
+               [matTooltip]="showTooltips ? 'Click to start this assessment. Make sure you have enough time to complete it.' : ''"
+               [matTooltipDisabled]="!showTooltips"
+               matTooltipPosition="above"
+               matTooltipShowDelay="300">
             <div class="flex items-start justify-between mb-4">
               <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors duration-200">
                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -282,9 +330,16 @@
             *ngFor="let difficulty of ['All', 'Beginner', 'Intermediate', 'Advanced', 'Expert']"
             [class]="selectedFilter === difficulty ?
               'bg-white text-gray-900 shadow-lg font-semibold' :
-              'text-white hover:text-gray-100 hover:bg-white/10'"
+              'text-white hover:text-gray-800 hover:bg-white/10'"
             class="px-4 py-2 text-sm font-medium rounded-md transition-all duration-200"
-            (click)="setFilter(difficulty)">
+            (click)="setFilter(difficulty)"
+            [matTooltip]="showTooltips ? (difficulty === 'All' ? 'Show all available chapters' : 
+                         difficulty === 'Beginner' ? 'Show chapters suitable for beginners - basic concepts' :
+                         difficulty === 'Intermediate' ? 'Show intermediate chapters - requires some background' :
+                         difficulty === 'Advanced' ? 'Show advanced chapters - requires strong foundation' :
+                         'Show expert-level chapters - most challenging content') : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="below">
             {{difficulty}}
             <span *ngIf="difficulty !== 'All'" class="ml-1 text-xs opacity-75">
               ({{getChaptersByDifficulty(difficulty).length}})
@@ -295,152 +350,173 @@
 
       <!-- Chapters Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <div
-    *ngFor="let chapter of getFilteredChapters(); trackBy: trackByChapterId"
-    class="chapter-card group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer flex flex-col min-h-[400px]"
-    [class.opacity-60]="chapter.locked"
-    [class.cursor-not-allowed]="chapter.locked"
-    (click)="navigateToChapter(chapter)">
+        <div
+          *ngFor="let chapter of getFilteredChapters(); trackBy: trackByChapterId"
+          class="chapter-card group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 cursor-pointer flex flex-col min-h-[400px]"
+          [class.opacity-60]="chapter.locked"
+          [class.cursor-not-allowed]="chapter.locked"
+          (click)="navigateToChapter(chapter)"
+          [matTooltip]="showTooltips ? (chapter.locked ? 'This chapter is locked. Complete previous chapters to unlock.' :
+                        chapter.completed ? 'You have completed this chapter. Click to review.' :
+                        'Click to start learning this chapter') : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="above"
+          matTooltipShowDelay="500">
 
-    <!-- Background Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-br opacity-5 group-hover:opacity-10 transition-opacity duration-300"
-         [ngClass]="getChapterGradientClass(chapter.difficulty)"></div>
+          <!-- Background Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-br opacity-5 group-hover:opacity-10 transition-opacity duration-300"
+               [ngClass]="getChapterGradientClass(chapter.difficulty)"></div>
 
-    <!-- Chapter Header -->
-    <div class="relative p-6 pb-4 flex-1">
-      <div class="flex items-start justify-between mb-4">
-        <div class="flex items-center space-x-4">
-          <!-- Enhanced Chapter Number -->
-          <div class="relative">
-            <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg transform group-hover:scale-110 transition-transform duration-300"
-                 [ngClass]="getChapterNumberClass(chapter.id, chapter.difficulty)">
-              {{chapter.id}}
+          <!-- Chapter Header -->
+          <div class="relative p-6 pb-4 flex-1">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <!-- Enhanced Chapter Number -->
+                <div class="relative">
+                  <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg transform group-hover:scale-110 transition-transform duration-300"
+                       [ngClass]="getChapterNumberClass(chapter.id, chapter.difficulty)">
+                    {{chapter.id}}
+                  </div>
+                  <!-- Completion Badge -->
+                  <div *ngIf="chapter.completed" 
+                       class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                </div>
+                
+                <div class="flex-1">
+                  <h3 class="font-bold text-gray-900 text-lg leading-tight mb-1 group-hover:text-purple-700 transition-colors duration-300">
+                    {{chapter.title}}
+                  </h3>
+                  <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>{{chapter.estimatedTime}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lock Icon for Locked Chapters -->
+              <div *ngIf="chapter.locked" class="w-6 h-6 text-gray-400">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
             </div>
-            <!-- Completion Badge -->
-            <div *ngIf="chapter.completed" 
-                 class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
+
+            <!-- Enhanced Difficulty Badge -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
+                      [ngClass]="getDifficultyBadgeClass(chapter.difficulty)"
+                      [matTooltip]="showTooltips ? (chapter.difficulty === 'Beginner' ? 'Suitable for new learners - no prior knowledge required' :
+                                   chapter.difficulty === 'Intermediate' ? 'Requires basic understanding of previous concepts' :
+                                   chapter.difficulty === 'Advanced' ? 'Requires solid foundation in cryptography fundamentals' :
+                                   'Expert level - most challenging content requiring deep understanding') : ''"
+                      [matTooltipDisabled]="!showTooltips"
+                      matTooltipPosition="above">
+                  <span class="w-2 h-2 rounded-full mr-2" [ngClass]="getDifficultyDotClass(chapter.difficulty)"></span>
+                  {{chapter.difficulty}}
+                </span>
+                <!-- Progress Indicator -->
+                <div *ngIf="chapter.completed" class="flex items-center space-x-1 text-green-600">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 011-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-xs font-medium">Completed</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Description -->
+            <p class="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{{chapter.description}}</p>
+
+            <!-- Enhanced Topics Section -->
+            <div class="space-y-3">
+              <div class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Key Topics</h4>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  *ngFor="let topic of chapter.topics.slice(0, 3)"
+                  class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 border border-purple-100 hover:from-purple-100 hover:to-indigo-100 transition-colors duration-200">
+                  {{topic}}
+                </span>
+                <span
+                  *ngIf="chapter.topics.length > 3"
+                  class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                  +{{chapter.topics.length - 3}} more
+                </span>
+              </div>
             </div>
           </div>
-          
-          <div class="flex-1">
-            <h3 class="font-bold text-gray-900 text-lg leading-tight mb-1 group-hover:text-purple-700 transition-colors duration-300">
-              {{chapter.title}}
-            </h3>
-            <div class="flex items-center space-x-2 text-sm text-gray-500">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span>{{chapter.estimatedTime}}</span>
+
+          <!-- Enhanced Chapter Footer -->
+          <div class="relative px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-100 mt-auto">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-4">
+                <!-- Difficulty Indicator -->
+                <div class="flex items-center space-x-1">
+                  <div class="flex space-x-1">
+                    <div *ngFor="let i of getDifficultyStars(chapter.difficulty)" 
+                         class="w-2 h-2 rounded-full"
+                         [ngClass]="getDifficultyStarClass(chapter.difficulty)"></div>
+                  </div>
+                  <span class="text-xs text-gray-500 ml-1">{{getDifficultyLevel(chapter.difficulty)}}</span>
+                </div>
+              </div>
+
+              <!-- Action Button -->
+              <div class="flex items-center space-x-2">
+                <button
+                  *ngIf="!chapter.locked && !chapter.completed"
+                  class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+                  [matTooltip]="showTooltips ? 'Begin learning this chapter - includes interactive lessons and exercises' : ''"
+                  [matTooltipDisabled]="!showTooltips"
+                  matTooltipPosition="above">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4V8a3 3 0 616 0v2M5 12h14l-1 7H6l-1-7z"></path>
+                  </svg>
+                  Start Learning
+                </button>
+                
+                <button
+                  *ngIf="chapter.completed"
+                  class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-emerald-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg"
+                  [matTooltip]="showTooltips ? 'Review completed chapter content and refresh your knowledge' : ''"
+                  [matTooltipDisabled]="!showTooltips"
+                  matTooltipPosition="above">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 111-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Review
+                </button>
+                
+                <button
+                  *ngIf="chapter.locked"
+                  class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-lg cursor-not-allowed"
+                  [matTooltip]="showTooltips ? 'Complete previous chapters to unlock this content' : ''"
+                  [matTooltipDisabled]="!showTooltips"
+                  matTooltipPosition="above">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                  Locked
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Lock Icon for Locked Chapters -->
-        <div *ngIf="chapter.locked" class="w-6 h-6 text-gray-400">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-          </svg>
+          <!-- Hover Effect Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-600/0 to-indigo-600/0 group-hover:from-purple-600/5 group-hover:to-indigo-600/5 transition-all duration-300 pointer-events-none"></div>
         </div>
       </div>
-
-      <!-- Enhanced Difficulty Badge -->
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center space-x-2">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm"
-                [ngClass]="getDifficultyBadgeClass(chapter.difficulty)">
-            <span class="w-2 h-2 rounded-full mr-2" [ngClass]="getDifficultyDotClass(chapter.difficulty)"></span>
-            {{chapter.difficulty}}
-          </span>
-          <!-- Progress Indicator -->
-          <div *ngIf="chapter.completed" class="flex items-center space-x-1 text-green-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 011-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="text-xs font-medium">Completed</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Enhanced Description -->
-      <p class="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">{{chapter.description}}</p>
-
-      <!-- Enhanced Topics Section -->
-      <div class="space-y-3">
-        <div class="flex items-center space-x-2">
-          <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-          </svg>
-          <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Key Topics</h4>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <span
-            *ngFor="let topic of chapter.topics.slice(0, 3)"
-            class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 border border-purple-100 hover:from-purple-100 hover:to-indigo-100 transition-colors duration-200">
-            {{topic}}
-          </span>
-          <span
-            *ngIf="chapter.topics.length > 3"
-            class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-            +{{chapter.topics.length - 3}} more
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Enhanced Chapter Footer -->
-    <div class="relative px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-100 mt-auto">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <!-- Difficulty Indicator -->
-          <div class="flex items-center space-x-1">
-            <div class="flex space-x-1">
-              <div *ngFor="let i of getDifficultyStars(chapter.difficulty)" 
-                   class="w-2 h-2 rounded-full"
-                   [ngClass]="getDifficultyStarClass(chapter.difficulty)"></div>
-            </div>
-            <span class="text-xs text-gray-500 ml-1">{{getDifficultyLevel(chapter.difficulty)}}</span>
-          </div>
-        </div>
-
-        <!-- Action Button -->
-        <div class="flex items-center space-x-2">
-          <button
-            *ngIf="!chapter.locked && !chapter.completed"
-            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4V8a3 3 0 016 0v2M5 12h14l-1 7H6l-1-7z"></path>
-            </svg>
-            Start Learning
-          </button>
-          
-          <button
-            *ngIf="chapter.completed"
-            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-medium rounded-lg hover:from-green-600 hover:to-emerald-600 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Review
-          </button>
-          
-          <button
-            *ngIf="chapter.locked"
-            class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-lg cursor-not-allowed">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
-            Locked
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hover Effect Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-r from-purple-600/0 to-indigo-600/0 group-hover:from-purple-600/5 group-hover:to-indigo-600/5 transition-all duration-300 pointer-events-none"></div>
-  </div>
-</div>
 
       <!-- Empty State -->
       <div *ngIf="getFilteredChapters().length === 0" class="text-center py-12">
@@ -472,7 +548,11 @@
           <div
             *ngFor="let tool of cryptoTools"
             class="bg-gradient-to-br {{tool.color}} rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer border border-white/20"
-            (click)="navigateToCryptoTool(tool.id)">
+            (click)="navigateToCryptoTool(tool.id)"
+            [matTooltip]="showTooltips ? ('Interactive tool for ' + tool.title + ' - ' + tool.description) : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="above"
+            matTooltipShowDelay="500">
             
             <!-- Tool Header -->
             <div class="p-6 text-white">
@@ -562,5 +642,182 @@
         </div>
       </div>
     </div>
+
+    <!-- My Results Tab Content -->
+    <div *ngIf="activeTab === 'results'" class="space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center space-x-2">
+          <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          <span>My Assessment Results</span>
+        </h2>
+
+        <!-- Loading State -->
+        <div *ngIf="loadingResults" class="flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          <span class="ml-2 text-gray-600">Loading your results...</span>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="resultsError" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="text-red-700">{{resultsError}}</span>
+          </div>
+          <button
+            (click)="loadStudentResults()"
+            class="mt-3 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 transition-colors duration-200">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Try Again
+          </button>
+        </div>
+
+        <!-- Results Content -->
+        <div *ngIf="!loadingResults && !resultsError">
+          <!-- Statistics Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-green-900">Average Score</p>
+                  <p class="text-2xl font-bold text-green-700">{{getAverageScore() | number:'1.1-1'}}%</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-blue-900">Highest Score</p>
+                  <p class="text-2xl font-bold text-blue-700">{{getHighestScore()}}%</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-orange-900">Lowest Score</p>
+                  <p class="text-2xl font-bold text-orange-700">{{getLowestScore()}}%</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4">
+              <div class="flex items-center">
+                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-purple-900">Completed</p>
+                  <p class="text-2xl font-bold text-purple-700">{{studentResults.length}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Table -->
+          <div *ngIf="studentResults.length > 0" class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Taken</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let result of studentResults" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{result.assessmentTitle}}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium px-3 py-1 rounded-full {{getScoreClass(result.score)}}">
+                      {{result.score}}%
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-bold text-gray-900">{{getGradeLetter(result.score)}}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{result.dateTaken | date:'medium'}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- No Results State -->
+          <div *ngIf="studentResults.length === 0" class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No Assessment Results Yet</h3>
+            <p class="text-gray-600 mb-4">You haven't completed any assessments yet. Check the "Assessments" tab to see available assessments.</p>
+            <button
+              (click)="setActiveTab('assessments')"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+              View Assessments
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <!-- First-time user notification -->
+  <div *ngIf="showWelcomeMessage" class="fixed bottom-4 right-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+      <div class="flex items-start space-x-3">
+        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h4 class="text-sm font-medium text-gray-900 mb-1">👋 Welcome!</h4>
+          <p class="text-xs text-gray-600 mb-3">This is your first time here. Hover over elements to see helpful tooltips!</p>
+          <div class="flex space-x-2">
+            <button 
+              (click)="dismissWelcomeMessage()"
+              class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md transition-colors">
+              Got it!
+            </button>
+          </div>
+        </div>
+        <button 
+          (click)="dismissWelcomeMessage()" 
+          class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -3,7 +3,8 @@ import type { Chapter } from "./chapter.model"
 import { Router } from "@angular/router"
 import { CommonModule, DecimalPipe } from "@angular/common"
 import { AuthService, type RegisterResponse } from "../core/services/auth/auth.service"
-import { StudentService, type StudentProfile } from "../core/services/student/student.service"
+import { StudentService, type StudentProfile, type StudentResult } from "../core/services/student/student.service"
+import { MatTooltipModule } from '@angular/material/tooltip'
 
 // Import interfaces from student service
 interface StudentAssessment {
@@ -34,12 +35,14 @@ interface StudentSection {
   }[]
 }
 
+
+
 @Component({
   selector: "app-dashboard",
   templateUrl: "./student-dashboard.component.html",
   styleUrls: ["./student-dashboard.component.css"],
   providers: [DecimalPipe],
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   standalone: true,
 })
 export class StudentDashboardComponent implements OnInit {
@@ -56,6 +59,19 @@ export class StudentDashboardComponent implements OnInit {
   loadingAssessments = false
   assessmentsError: string | null = null
   visibleAssessments: StudentAssessment[] = []
+
+  // Properties for results
+  loadingResults = false
+  resultsError: string | null = null
+  studentResults: StudentResult[] = []
+
+  // First-time user properties
+  isFirstTimeUser = true
+  showTooltips = true
+  showWelcomeMessage = true
+  private readonly TOOLTIPS_DISMISSED_KEY = 'student-dashboard-tooltips-dismissed'
+  private readonly FIRST_VISIT_KEY = 'student-dashboard-first-visit'
+  private readonly WELCOME_MESSAGE_DISMISSED_KEY = 'student-dashboard-welcome-dismissed'
 
   chapters: Chapter[] = [
     {
@@ -256,8 +272,49 @@ export class StudentDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.authService.currentUserValue
+    this.checkFirstTimeUser()
     this.loadStudentProfile()
     this.loadCurrentSection()
+    this.loadVisibleAssessments()
+  }
+
+  private checkFirstTimeUser(): void {
+    const tooltipsDismissed = localStorage.getItem(this.TOOLTIPS_DISMISSED_KEY)
+    const firstVisit = localStorage.getItem(this.FIRST_VISIT_KEY)
+    const welcomeMessageDismissed = localStorage.getItem(this.WELCOME_MESSAGE_DISMISSED_KEY)
+    
+    if (!firstVisit) {
+      // First time visiting the dashboard
+      this.isFirstTimeUser = true
+      this.showTooltips = true
+      this.showWelcomeMessage = true
+      localStorage.setItem(this.FIRST_VISIT_KEY, 'false')
+    } else {
+      // Not first time, check settings
+      this.isFirstTimeUser = false
+      this.showTooltips = tooltipsDismissed !== 'true'
+      this.showWelcomeMessage = welcomeMessageDismissed !== 'true' && this.showTooltips
+    }
+  }
+
+  dismissWelcomeMessage(): void {
+    this.showWelcomeMessage = false
+    localStorage.setItem(this.WELCOME_MESSAGE_DISMISSED_KEY, 'true')
+  }
+
+  toggleTooltips(): void {
+    this.showTooltips = !this.showTooltips
+    localStorage.setItem(this.TOOLTIPS_DISMISSED_KEY, this.showTooltips ? 'false' : 'true')
+    
+    // If tooltips are disabled, also hide welcome message
+    if (!this.showTooltips) {
+      this.showWelcomeMessage = false
+    }
+  }
+
+  enableTooltips(): void {
+    this.showTooltips = true
+    localStorage.setItem(this.TOOLTIPS_DISMISSED_KEY, 'false')
   }
 
   loadStudentProfile(): void {
@@ -316,10 +373,29 @@ export class StudentDashboardComponent implements OnInit {
     })
   }
 
-  setActiveTab(tab: "sections" | "classes" | "crypto" | "assessments"): void {
+  loadStudentResults(): void {
+    this.loadingResults = true
+    this.resultsError = null
+
+    this.studentService.getMyResults().subscribe({
+      next: (results) => {
+        this.studentResults = results
+        this.loadingResults = false
+      },
+      error: (error) => {
+        console.error("Error loading student results:", error)
+        this.resultsError = "Failed to load your results. Please try again later."
+        this.loadingResults = false
+      }
+    })
+  }
+
+  setActiveTab(tab: "sections" | "classes" | "crypto" | "assessments" | "results"): void {
     this.activeTab = tab
     if (tab === "assessments" && this.visibleAssessments.length === 0) {
       this.loadVisibleAssessments()
+    } else if (tab === "results") {
+      this.loadStudentResults()
     }
   }
 
@@ -470,4 +546,44 @@ export class StudentDashboardComponent implements OnInit {
     }
     return levels[difficulty as keyof typeof levels] || "Level 1"
   }
+
+  // Results helper methods
+  getAverageScore(): number {
+    if (!this.studentResults || this.studentResults.length === 0) {
+      return 0
+    }
+    const sum = this.studentResults.reduce((acc, result) => acc + result.score, 0)
+    return sum / this.studentResults.length
+  }
+
+  getHighestScore(): number {
+    if (!this.studentResults || this.studentResults.length === 0) {
+      return 0
+    }
+    return Math.max(...this.studentResults.map(result => result.score))
+  }
+
+  getLowestScore(): number {
+    if (!this.studentResults || this.studentResults.length === 0) {
+      return 0
+    }
+    return Math.min(...this.studentResults.map(result => result.score))
+  }
+
+  getScoreClass(score: number): string {
+    if (score >= 90) return 'text-green-600 bg-green-50'
+    if (score >= 80) return 'text-blue-600 bg-blue-50'
+    if (score >= 70) return 'text-yellow-600 bg-yellow-50'
+    if (score >= 60) return 'text-orange-600 bg-orange-50'
+    return 'text-red-600 bg-red-50'
+  }
+
+  getGradeLetter(score: number): string {
+    if (score >= 90) return 'A'
+    if (score >= 80) return 'B'
+    if (score >= 70) return 'C'
+    if (score >= 60) return 'D'
+    return 'F'
+  }
 }
+

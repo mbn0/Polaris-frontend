@@ -1,17 +1,23 @@
 <div class="space-y-6">
   <!-- Header -->
   <div class="flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+    <h2 class="text-2xl font-bold text-gray-900"
+        [matTooltip]="showTooltips ? 'Manage all system users - students, instructors, and admins' : ''"
+        [matTooltipDisabled]="!showTooltips">User Management</h2>
     <button
       (click)="openCreateModal()"
       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+      [matTooltip]="showTooltips ? 'Create a new user account with role assignment' : ''"
+      [matTooltipDisabled]="!showTooltips"
     >
       Create New User
     </button>
   </div>
 
   <!-- Filters -->
-  <div class="bg-white p-4 rounded-lg shadow">
+  <div class="bg-white p-4 rounded-lg shadow"
+       [matTooltip]="showTooltips ? 'Filter and search users by name, email, or role' : ''"
+       [matTooltipDisabled]="!showTooltips">
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1">
         <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search Users</label>
@@ -22,6 +28,8 @@
           (ngModelChange)="onSearchChange()"
           placeholder="Search by name or email..."
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [matTooltip]="showTooltips ? 'Type to search users by full name or email address' : ''"
+          [matTooltipDisabled]="!showTooltips"
         >
       </div>
       <div class="sm:w-48">
@@ -31,6 +39,8 @@
           [(ngModel)]="selectedRole"
           (ngModelChange)="onRoleFilterChange()"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [matTooltip]="showTooltips ? 'Filter users by their assigned role' : ''"
+          [matTooltipDisabled]="!showTooltips"
         >
           <option value="All">All Roles</option>
           <option *ngFor="let role of availableRoles" [value]="role">{{ role }}</option>
@@ -40,14 +50,24 @@
   </div>
 
   <!-- Users Table -->
-  <div class="bg-white shadow rounded-lg overflow-hidden">
+  <div class="bg-white shadow rounded-lg overflow-hidden"
+       [matTooltip]="showTooltips ? 'List of all users with their details and management options' : ''"
+       [matTooltipDisabled]="!showTooltips">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roles</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              [matTooltip]="showTooltips ? 'User profile information and full name' : ''"
+              [matTooltipDisabled]="!showTooltips">User</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              [matTooltip]="showTooltips ? 'User email address for login and communication' : ''"
+              [matTooltipDisabled]="!showTooltips">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              [matTooltip]="showTooltips ? 'User roles and permissions in the system' : ''"
+              [matTooltipDisabled]="!showTooltips">Roles</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              [matTooltip]="showTooltips ? 'Edit user details or delete user account' : ''"
+              [matTooltipDisabled]="!showTooltips">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -69,6 +89,8 @@
                 *ngFor="let role of user.roles"
                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                 [class]="getRoleBadgeClass(role)"
+                [matTooltip]="showTooltips ? 'User has ' + role + ' permissions' : ''"
+                [matTooltipDisabled]="!showTooltips"
               >
                 {{ role }}
               </span>
@@ -78,12 +100,16 @@
             <button
               (click)="openEditModal(user)"
               class="text-blue-600 hover:text-blue-900 mr-4"
+              [matTooltip]="showTooltips ? 'Edit user details and role assignments' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
               Edit
             </button>
             <button
               (click)="deleteUser(user.id)"
               class="text-red-600 hover:text-red-900"
+              [matTooltip]="showTooltips ? 'Permanently delete this user account' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
               Delete
             </button>
@@ -97,42 +123,98 @@
   <div *ngIf="showCreateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
       <div class="mt-3">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Create New User</h3>
-        <form (ngSubmit)="createUser()" class="space-y-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-4"
+            [matTooltip]="showTooltips ? 'Fill out the form to create a new user account' : ''"
+            [matTooltipDisabled]="!showTooltips">Create New User</h3>
+        
+        <!-- Error Message Display -->
+        <div *ngIf="error" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm">{{ error }}</p>
+            </div>
+          </div>
+        </div>
+        
+        <form [formGroup]="createUserForm" (ngSubmit)="createUser()" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
             <input
               type="text"
-              [(ngModel)]="newUser.fullName"
-              name="fullName"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              formControlName="fullName"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="createUserForm.get('fullName')?.invalid && (createUserForm.get('fullName')?.dirty || submitted)"
+              [class.border-gray-300]="!(createUserForm.get('fullName')?.invalid && (createUserForm.get('fullName')?.dirty || submitted))"
+              [matTooltip]="showTooltips ? 'Enter the user full name as it will appear in the system (minimum 2 characters)' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
+            <div *ngIf="createUserForm.get('fullName')?.invalid && (createUserForm.get('fullName')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('fullName')?.errors?.['required']">Full name is required</div>
+              <div *ngIf="createUserForm.get('fullName')?.errors?.['minlength']">Full name must be at least 2 characters long</div>
+            </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
             <input
               type="email"
-              [(ngModel)]="newUser.email"
-              name="email"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              formControlName="email"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="createUserForm.get('email')?.invalid && (createUserForm.get('email')?.dirty || submitted)"
+              [class.border-gray-300]="!(createUserForm.get('email')?.invalid && (createUserForm.get('email')?.dirty || submitted))"
+              [matTooltip]="showTooltips ? 'Enter a valid email address - this will be used for login' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
+            <div *ngIf="createUserForm.get('email')?.invalid && (createUserForm.get('email')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('email')?.errors?.['required']">Email is required</div>
+              <div *ngIf="createUserForm.get('email')?.errors?.['email']">Please enter a valid email address</div>
+            </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
             <input
               type="password"
-              [(ngModel)]="newUser.password"
-              name="password"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              formControlName="password"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="createUserForm.get('password')?.invalid && (createUserForm.get('password')?.dirty || submitted)"
+              [class.border-gray-300]="!(createUserForm.get('password')?.invalid && (createUserForm.get('password')?.dirty || submitted))"
+              [matTooltip]="showTooltips ? 'Password must be at least 6 characters with uppercase, lowercase, number, and special character' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
+            <div *ngIf="createUserForm.get('password')?.invalid && (createUserForm.get('password')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('password')?.errors?.['required']">Password is required</div>
+              <div *ngIf="createUserForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters long</div>
+              <div *ngIf="createUserForm.get('password')?.errors?.['pattern']">Password must contain uppercase, lowercase, number, and special character</div>
+            </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="(createUserForm.get('confirmPassword')?.invalid || createUserForm.errors?.['passwordMismatch']) && (createUserForm.get('confirmPassword')?.dirty || submitted)"
+              [class.border-gray-300]="!((createUserForm.get('confirmPassword')?.invalid || createUserForm.errors?.['passwordMismatch']) && (createUserForm.get('confirmPassword')?.dirty || submitted))"
+              [matTooltip]="showTooltips ? 'Re-enter the password to confirm it matches' : ''"
+              [matTooltipDisabled]="!showTooltips"
+            >
+            <div *ngIf="(createUserForm.get('confirmPassword')?.invalid || createUserForm.errors?.['passwordMismatch']) && (createUserForm.get('confirmPassword')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</div>
+              <div *ngIf="createUserForm.errors?.['passwordMismatch']">Passwords do not match</div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+                   [matTooltip]="showTooltips ? 'Select the user role to determine their permissions' : ''"
+                   [matTooltipDisabled]="!showTooltips">Role *</label>
             <div class="space-y-2">
-              <label *ngFor="let role of availableRoles" class="flex items-center">
+              <label *ngFor="let role of availableRoles" class="flex items-center"
+                     [matTooltip]="showTooltips ? 'Assign ' + role + ' role with corresponding permissions' : ''"
+                     [matTooltipDisabled]="!showTooltips">
                 <input
                   type="radio"
                   [value]="role"
@@ -144,29 +226,50 @@
                 <span class="text-sm text-gray-700">{{ role }}</span>
               </label>
             </div>
+            <div *ngIf="createUserForm.get('role')?.invalid && (createUserForm.get('role')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('role')?.errors?.['required']">Please select a role</div>
+            </div>
           </div>
           <div *ngIf="selectedNewRole === 'Student'">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Matric Number</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Matric Number *</label>
             <input
               type="text"
-              [(ngModel)]="newUser.matricNo"
-              name="matricNo"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              formControlName="matricNo"
+              placeholder="e.g., A12345678"
+              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="createUserForm.get('matricNo')?.invalid && (createUserForm.get('matricNo')?.dirty || submitted)"
+              [class.border-gray-300]="!(createUserForm.get('matricNo')?.invalid && (createUserForm.get('matricNo')?.dirty || submitted))"
+              [matTooltip]="showTooltips ? 'Enter the student matriculation number for identification (alphanumeric only)' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
+            <div *ngIf="createUserForm.get('matricNo')?.invalid && (createUserForm.get('matricNo')?.dirty || submitted)" class="text-red-500 text-xs mt-1">
+              <div *ngIf="createUserForm.get('matricNo')?.errors?.['required']">Matric number is required for students</div>
+              <div *ngIf="createUserForm.get('matricNo')?.errors?.['pattern']">Matric number must contain only letters and numbers</div>
+            </div>
           </div>
           <div class="flex justify-end space-x-3 pt-4">
             <button
               type="button"
               (click)="closeCreateModal()"
               class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              [matTooltip]="showTooltips ? 'Cancel user creation and close modal' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              [disabled]="loading"
+              class="px-4 py-2 text-sm font-medium text-white rounded-md transition-colors"
+              [class.bg-blue-600]="!loading"
+              [class.hover:bg-blue-700]="!loading"
+              [class.bg-gray-400]="loading"
+              [class.cursor-not-allowed]="loading"
+              [matTooltip]="showTooltips ? 'Create the new user account with the specified details' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
-              Create User
+              <span *ngIf="!loading">Create User</span>
+              <span *ngIf="loading">Creating...</span>
             </button>
           </div>
         </form>
@@ -178,7 +281,24 @@
   <div *ngIf="showEditModal && selectedUser" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
       <div class="mt-3">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Edit User</h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4"
+            [matTooltip]="showTooltips ? 'Modify user details and role assignments' : ''"
+            [matTooltipDisabled]="!showTooltips">Edit User</h3>
+        
+        <!-- Error Message Display -->
+        <div *ngIf="error" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm">{{ error }}</p>
+            </div>
+          </div>
+        </div>
+        
         <form (ngSubmit)="updateUser()" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -188,6 +308,8 @@
               name="fullName"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [matTooltip]="showTooltips ? 'Update the user full name' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
           </div>
           <div>
@@ -198,12 +320,18 @@
               name="email"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [matTooltip]="showTooltips ? 'Update the user email address' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+                   [matTooltip]="showTooltips ? 'Change the user role and permissions' : ''"
+                   [matTooltipDisabled]="!showTooltips">Role</label>
             <div class="space-y-2">
-              <label *ngFor="let role of availableRoles" class="flex items-center">
+              <label *ngFor="let role of availableRoles" class="flex items-center"
+                     [matTooltip]="showTooltips ? 'Assign ' + role + ' role to this user' : ''"
+                     [matTooltipDisabled]="!showTooltips">
                 <input
                   type="radio"
                   [value]="role"
@@ -221,12 +349,16 @@
               type="button"
               (click)="closeEditModal()"
               class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+              [matTooltip]="showTooltips ? 'Cancel editing and close modal' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
               Cancel
             </button>
             <button
               type="submit"
               class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              [matTooltip]="showTooltips ? 'Save changes to the user account' : ''"
+              [matTooltipDisabled]="!showTooltips"
             >
               Update User
             </button>

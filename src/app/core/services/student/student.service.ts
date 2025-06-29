@@ -45,6 +45,17 @@ export interface StudentProfile {
   sectionName: string
 }
 
+export interface StudentResult {
+  resultId: number
+  studentId: number
+  assessmentId: number
+  assessmentTitle: string
+  score: number
+  dateTaken: string
+  studentName: string
+  matricNo: string
+}
+
 interface ApiResponse<T> {
   data: T
   success: boolean
@@ -102,7 +113,7 @@ export class StudentService {
     return this.http.post(`${this.apiUrl}/results`, submitData)
   }
 
-  getMyResults(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/results`)
+  getMyResults(): Observable<StudentResult[]> {
+    return this.http.get<StudentResult[]>(`${this.apiUrl}/results`)
   }
 }

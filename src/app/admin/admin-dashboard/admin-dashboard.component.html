@@ -15,15 +15,31 @@
             <p class="text-sm text-gray-600">Welcome, {{ user?.fullName || 'Admin' }}</p>
           </div>
         </div>
-        <button
-          (click)="logout()"
-          class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto justify-center"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-          </svg>
-          <span>Logout</span>
-        </button>
+        <div class="flex items-center space-x-4">
+          <!-- Toggle Tooltips Button -->
+          <button
+            (click)="toggleTooltips()"
+            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
+            [matTooltip]="showTooltips ? 'Hide helpful tooltips' : 'Show helpful tooltips for navigation'"
+            matTooltipPosition="below">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ showTooltips ? 'Hide Tooltips' : 'Show Tooltips' }}
+          </button>
+
+          <button
+            (click)="logout()"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto justify-center"
+            [matTooltip]="showTooltips ? 'Sign out of your admin account' : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="below">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -31,7 +47,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div
         *ngFor="let tab of [
-          { id: 'overview', label: 'Overview', icon: 'chart-bar', description: 'View system statistics and recent activity', color: 'from-blue-500 to-indigo-600' },
+          { id: 'analytics', label: 'Analytics', icon: 'chart-pie', description: 'View detailed analytics and trends', color: 'from-cyan-500 to-blue-600' },
           { id: 'users', label: 'User Management', icon: 'users', description: 'Manage students, instructors, and admins', color: 'from-green-500 to-emerald-600' },
           { id: 'sections', label: 'Section Management', icon: 'book-open', description: 'Create and manage course sections', color: 'from-purple-500 to-pink-600' }
         ]"
@@ -40,6 +56,10 @@
           (activeTab === tab.id
             ? 'border-indigo-500 ring-2 ring-indigo-200'
             : 'border-gray-200 hover:border-gray-300')"
+        [matTooltip]="showTooltips ? 'Click to switch to ' + tab.label + ' - ' + tab.description : ''"
+        [matTooltipDisabled]="!showTooltips"
+        matTooltipPosition="above"
+        matTooltipShowDelay="500"
       >
         <div class="p-6">
           <div class="flex items-center justify-between mb-4">
@@ -47,6 +67,7 @@
                  [ngClass]="tab.color">
               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path *ngIf="tab.icon === 'chart-bar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                <path *ngIf="tab.icon === 'chart-pie'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512a9.025 9.025 0 015.488 5.488z"></path>
                 <path *ngIf="tab.icon === 'users'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                 <path *ngIf="tab.icon === 'book-open'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
               </svg>
@@ -63,144 +84,9 @@
       </div>
     </div>
 
-    <!-- Overview Tab -->
-    <div *ngIf="activeTab === 'overview'" class="space-y-6">
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                  <dd class="text-2xl font-bold text-gray-900">{{ stats.totalUsers }}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Students</dt>
-                  <dd class="text-2xl font-bold text-gray-900">{{ stats.totalStudents }}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Instructors</dt>
-                  <dd class="text-2xl font-bold text-gray-900">{{ stats.totalInstructors }}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200">
-          <div class="p-6">
-            <div class="flex items-center">
-              <div class="flex-shrink-0">
-                <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                  </svg>
-                </div>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Sections</dt>
-                  <dd class="text-2xl font-bold text-gray-900">{{ stats.totalSections }}</dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="bg-white shadow-sm rounded-xl border border-gray-200">
-        <div class="px-6 py-6">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
-            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-          </div>
-          
-          <div *ngIf="loading" class="flex justify-center items-center py-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          </div>
-
-          <div *ngIf="!loading && error" class="text-center py-8">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"></path>
-              </svg>
-            </div>
-            <p class="text-gray-600">{{ error }}</p>
-            <button
-              (click)="loadDashboardStats()"
-              class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 transition-colors duration-200">
-              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-              </svg>
-              Try Again
-            </button>
-          </div>
-
-          <div *ngIf="!loading && !error" class="space-y-4">
-            <div *ngFor="let activity of stats.recentActivity; let last = last" 
-                 class="flex items-center justify-between py-4 border-gray-200"
-                 [class.border-b]="!last">
-              <div class="flex items-center space-x-4">
-                <div class="w-3 h-3 bg-indigo-500 rounded-full flex-shrink-0"></div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-gray-900">{{ activity.action }}</p>
-                  <p class="text-sm text-gray-500 truncate">{{ activity.user }}</p>
-                </div>
-              </div>
-              <span class="text-sm text-gray-400 flex-shrink-0">{{ activity.time }}</span>
-            </div>
-            
-            <div *ngIf="stats.recentActivity.length === 0" class="text-center py-8 text-gray-500">
-              <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-              </svg>
-              <p>No recent activity</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Analytics Tab -->
+    <div *ngIf="activeTab === 'analytics'" class="space-y-6">
+      <app-admin-analytics></app-admin-analytics>
     </div>
 
     <!-- User Management Tab -->
@@ -217,6 +103,37 @@
       </div>
     </div>
   </main>
+
+  <!-- First-time user notification -->
+  <div *ngIf="showWelcomeMessage" class="fixed bottom-4 right-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+      <div class="flex items-start space-x-3">
+        <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h4 class="text-sm font-medium text-gray-900 mb-1">👋 Welcome, Admin!</h4>
+          <p class="text-xs text-gray-600 mb-3">This is your first time here. Hover over elements to see helpful tooltips for managing the system!</p>
+          <div class="flex space-x-2">
+            <button 
+              (click)="dismissWelcomeMessage()"
+              class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md transition-colors">
+              Got it!
+            </button>
+          </div>
+        </div>
+        <button 
+          (click)="dismissWelcomeMessage()" 
+          class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 

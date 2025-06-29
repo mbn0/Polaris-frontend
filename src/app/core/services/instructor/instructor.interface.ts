@@ -47,8 +47,8 @@ export interface Assessment {
   assessmentID: number  // Keep this as is for instructor interface to match backend
   title: string
   description: string
-  maxScore: number
-  dueDate: string
+  MaxScore: number  // PascalCase to match backend
+  DueDate: string   // PascalCase to match backend
 }
 
 export interface StudentResultDto {

@@ -157,7 +157,7 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 /* Progress bar animation */
@@ -723,4 +723,47 @@ div.assessment-card div {
 .assessment-card:focus-within {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
+}
+
+/* First-time user notification animation */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Material Tooltip Styling - Fix transparency issue */
+::ng-deep .mat-mdc-tooltip {
+  background-color: rgba(37, 47, 63, 0.95) !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  max-width: 250px !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.025em !important;
+}
+
+::ng-deep .mat-mdc-tooltip .mdc-tooltip__surface {
+  background-color: rgba(37, 47, 63, 0.95) !important;
+  color: #ffffff !important;
+}
+
+/* Alternative darker tooltip for better contrast */
+::ng-deep .mat-mdc-tooltip.dark-tooltip {
+  background-color: rgba(17, 24, 39, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }

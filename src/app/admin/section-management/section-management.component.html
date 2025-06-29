@@ -1,10 +1,14 @@
 <div class="space-y-6">
   <!-- Header -->
   <div class="flex justify-between items-center">
-    <h2 class="text-2xl font-bold text-gray-900">Section Management</h2>
+    <h2 class="text-2xl font-bold text-gray-900"
+        [matTooltip]="showTooltips ? 'Manage all sections - create, edit, and assign students to instructors' : ''"
+        [matTooltipDisabled]="!showTooltips">Section Management</h2>
     <button
       (click)="openCreateModal()"
       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+      [matTooltip]="showTooltips ? 'Create a new section and assign an instructor' : ''"
+      [matTooltipDisabled]="!showTooltips"
     >
       Create New Section
     </button>
@@ -22,12 +26,16 @@
           <button
             (click)="openEditModal(section)"
             class="text-blue-600 hover:text-blue-800 text-sm"
+            [matTooltip]="showTooltips ? 'Edit section details and change instructor' : ''"
+            [matTooltipDisabled]="!showTooltips"
           >
             Edit
           </button>
           <button
             (click)="deleteSection(section.sectionId)"
             class="text-red-600 hover:text-red-800 text-sm"
+            [matTooltip]="showTooltips ? 'Permanently delete this section and unassign all students' : ''"
+            [matTooltipDisabled]="!showTooltips"
           >
             Delete
           </button>
@@ -40,6 +48,8 @@
           <button
             (click)="openStudentModal(section)"
             class="text-blue-600 hover:text-blue-800 text-sm"
+            [matTooltip]="showTooltips ? 'Add or remove students from this section' : ''"
+            [matTooltipDisabled]="!showTooltips"
           >
             Manage
           </button>

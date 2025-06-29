@@ -1,7 +1,10 @@
-import { Component, OnInit } from "@angular/core"
+import { Component, OnInit, OnDestroy } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { AdminService, Section, User, InstructorDto } from "../../core/services/admin/admin.service"
+import { TooltipService } from "../../services/tooltip.service"
+import { Subscription } from 'rxjs'
 
 interface StudentBrief {
   userId: string
@@ -12,11 +15,11 @@ interface StudentBrief {
 @Component({
   selector: "app-section-management",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatTooltipModule],
   templateUrl: "./section-management.component.html",
   styleUrls: ["./section-management.component.css"],
 })
-export class SectionManagementComponent implements OnInit {
+export class SectionManagementComponent implements OnInit, OnDestroy {
   sections: Section[] = []
   instructors: InstructorDto[] = []
   availableStudents: StudentBrief[] = []
@@ -33,12 +36,28 @@ export class SectionManagementComponent implements OnInit {
 
   isSubmitting = false;
 
-  constructor(private adminService: AdminService) {}
+  // Tooltip management
+  showTooltips: boolean = false;
+  private tooltipSubscription?: Subscription;
+
+  constructor(
+    private adminService: AdminService,
+    private tooltipService: TooltipService
+  ) {}
 
   ngOnInit() {
+    this.tooltipSubscription = this.tooltipService.tooltipState$.subscribe(state => {
+      this.showTooltips = state
+    })
     this.loadSections()
     this.loadInstructors()
     this.loadAvailableStudents()
+  }
+
+  ngOnDestroy(): void {
+    if (this.tooltipSubscription) {
+      this.tooltipSubscription.unsubscribe();
+    }
   }
 
   loadSections() {
@@ -81,6 +100,7 @@ export class SectionManagementComponent implements OnInit {
   openCreateModal() {
     this.newSection = { instructorUserId: "" }
     this.showCreateModal = true
+    this.error = null
   }
 
   closeCreateModal() {

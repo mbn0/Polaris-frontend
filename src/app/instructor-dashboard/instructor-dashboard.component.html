@@ -21,7 +21,10 @@
               <select 
                 [(ngModel)]="selectedSection"
                 (ngModelChange)="selectSection($event)"
-                class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                [matTooltip]="showTooltips ? 'Select which section to manage - switch between your assigned sections' : ''"
+                [matTooltipDisabled]="!showTooltips"
+                matTooltipPosition="below">
                 <option *ngFor="let section of sections" [ngValue]="section">
                   Section {{section.sectionId}} ({{section.students?.length || 0}} students)
                 </option>
@@ -32,10 +35,25 @@
                 </svg>
               </div>
             </div>
+
+            <!-- Toggle Tooltips Button -->
+            <button
+              (click)="toggleTooltips()"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-200"
+              [matTooltip]="showTooltips ? 'Hide helpful tooltips' : 'Show helpful tooltips for navigation'"
+              matTooltipPosition="below">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {{ showTooltips ? 'Hide Tooltips' : 'Show Tooltips' }}
+            </button>
             
             <button
               (click)="logout()"
-              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              [matTooltip]="showTooltips ? 'Sign out of your instructor account' : ''"
+              [matTooltipDisabled]="!showTooltips"
+              matTooltipPosition="below">
               Logout
             </button>
           </div>
@@ -53,7 +71,10 @@
               'bg-white text-gray-900 shadow-lg font-semibold' :
               'text-white hover:text-gray-100 hover:bg-white/10'"
             class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
-            (click)="setActiveTab('sections')">
+            (click)="setActiveTab('sections')"
+            [matTooltip]="showTooltips ? 'View and manage all your assigned sections' : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="below">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
             </svg>
@@ -65,7 +86,10 @@
               'text-white hover:text-gray-100 hover:bg-white/10'"
             class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
             (click)="setActiveTab('assessments')"
-            [disabled]="!selectedSection">
+            [disabled]="!selectedSection"
+            [matTooltip]="showTooltips ? 'Control which assessments are visible to students in the selected section' : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="below">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
             </svg>
@@ -77,7 +101,10 @@
               'text-white hover:text-gray-100 hover:bg-white/10'"
             class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
             (click)="setActiveTab('results')"
-            [disabled]="!selectedSection">
+            [disabled]="!selectedSection"
+            [matTooltip]="showTooltips ? 'View detailed student assessment results and performance analytics' : ''"
+            [matTooltipDisabled]="!showTooltips"
+            matTooltipPosition="below">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
             </svg>
@@ -119,7 +146,11 @@
               class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-6 border border-purple-100 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
               [class.ring-2]="selectedSection?.sectionId === section.sectionId"
               [class.ring-purple-500]="selectedSection?.sectionId === section.sectionId"
-              (click)="selectSection(section)">
+              (click)="selectSection(section)"
+              [matTooltip]="showTooltips ? 'Click to select this section and manage its assessments and view student results' : ''"
+              [matTooltipDisabled]="!showTooltips"
+              matTooltipPosition="above"
+              matTooltipShowDelay="500">
               
               <div class="flex items-start justify-between mb-4">
                 <div>
@@ -189,13 +220,19 @@
             <div *ngIf="hasPendingChanges()" class="flex space-x-2">
               <button
                 (click)="cancelAssessmentChanges()"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200">
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                [matTooltip]="showTooltips ? 'Discard all pending visibility changes' : ''"
+                [matTooltipDisabled]="!showTooltips"
+                matTooltipPosition="below">
                 Cancel
               </button>
               <button
                 (click)="saveAssessmentChanges()"
                 [disabled]="loadingAssessments"
-                class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md transition-colors duration-200 disabled:opacity-50">
+                class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md transition-colors duration-200 disabled:opacity-50"
+                [matTooltip]="showTooltips ? 'Apply all visibility changes to make assessments available to students' : ''"
+                [matTooltipDisabled]="!showTooltips"
+                matTooltipPosition="below">
                 {{loadingAssessments ? 'Saving...' : 'Save Changes'}}
               </button>
             </div>
@@ -220,7 +257,7 @@
           <!-- Assessment List -->
           <div *ngIf="!loadingAssessments || hasPendingChanges()" class="space-y-4">
             <div
-              *ngFor="let visibility of assessmentVisibilities"
+              *ngFor="let visibility of assessmentVisibilities; trackBy: trackByAssessmentId"
               class="bg-gray-50 rounded-lg p-4 border border-gray-200">
               
               <div class="flex items-center justify-between">
@@ -232,30 +269,44 @@
                     {{visibility.assessment.description}}
                   </p>
                   <div class="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>Max Score: {{visibility.assessment.maxScore}}</span>
-                    <span>Due: {{visibility.assessment.dueDate | date:'short'}}</span>
+                    <span>Max Score: {{visibility.assessment.MaxScore}}</span>
+                    <span>Due: {{visibility.assessment.DueDate | date:'short'}}</span>
                   </div>
                 </div>
                 
                 <div class="flex items-center space-x-4">
                   <div class="flex items-center space-x-2">
                     <span class="text-sm font-medium text-gray-700">Visible to Students:</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center cursor-pointer"
+                           [matTooltip]="showTooltips ? (getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible) ? 'Click to hide this assessment from students' : 'Click to make this assessment visible to students') : ''"
+                           [matTooltipDisabled]="!showTooltips"
+                           matTooltipPosition="above">
                       <input
                         type="checkbox"
                         [checked]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
                         (change)="toggleAssessmentVisibility(visibility.assessmentId, visibility.isVisible)"
-                        class="sr-only peer">
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                        [id]="'assessment-toggle-' + visibility.assessmentId"
+                        class="sr-only">
+                      <div 
+                        class="relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out cursor-pointer"
+                        [class.bg-purple-600]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                        [class.bg-gray-300]="!getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)">
+                        <div 
+                          class="absolute top-[2px] left-[2px] bg-white w-5 h-5 rounded-full shadow transition-transform duration-200 ease-in-out"
+                          [class.translate-x-5]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                          [class.translate-x-0]="!getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)">
+                        </div>
+                      </div>
                     </label>
                   </div>
                   
                   <div class="flex items-center">
                     <span
-                      [class]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible) 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'"
-                      class="px-2 py-1 text-xs font-medium rounded-full">
+                      class="px-2 py-1 text-xs font-medium rounded-full transition-colors duration-200"
+                      [class.bg-green-100]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                      [class.text-green-800]="getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                      [class.bg-red-100]="!getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)"
+                      [class.text-red-800]="!getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible)">
                       {{getAssessmentVisibilityStatus(visibility.assessmentId, visibility.isVisible) ? 'Visible' : 'Hidden'}}
                     </span>
                   </div>
@@ -295,7 +346,10 @@
                   type="text"
                   [(ngModel)]="searchTerm"
                   placeholder="Search students..."
-                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  [matTooltip]="showTooltips ? 'Search students by name or matric number' : ''"
+                  [matTooltipDisabled]="!showTooltips"
+                  matTooltipPosition="below">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -307,7 +361,10 @@
               <button
                 (click)="exportResults()"
                 [disabled]="studentResults.length === 0"
-                class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                [matTooltip]="showTooltips ? 'Download all student results as a CSV file for analysis' : ''"
+                [matTooltipDisabled]="!showTooltips"
+                matTooltipPosition="below">
                 Export CSV
               </button>
             </div>
@@ -336,17 +393,26 @@
                 <tr>
                   <th
                     (click)="setSortBy('name')"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    [matTooltip]="showTooltips ? 'Click to sort students by name' : ''"
+                    [matTooltipDisabled]="!showTooltips"
+                    matTooltipPosition="below">
                     Student Name {{getSortIcon('name')}}
                   </th>
                   <th
                     (click)="setSortBy('matricNo')"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    [matTooltip]="showTooltips ? 'Click to sort students by matric number' : ''"
+                    [matTooltipDisabled]="!showTooltips"
+                    matTooltipPosition="below">
                     Matric No {{getSortIcon('matricNo')}}
                   </th>
                   <th
                     (click)="setSortBy('score')"
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                    [matTooltip]="showTooltips ? 'Click to sort students by average assessment score' : ''"
+                    [matTooltipDisabled]="!showTooltips"
+                    matTooltipPosition="below">
                     Average Score {{getSortIcon('score')}}
                   </th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -367,7 +433,7 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">
-                      {{getAverageScore(student.results) | number:'1.1-1'}}%
+                      {{ (getAverageScore(student.results) || 0) | number:'1.1-1' }}%
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -376,7 +442,10 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
                       class="text-purple-600 hover:text-purple-900 mr-3"
-                      (click)="toggleStudentDetails(student)">
+                      (click)="toggleStudentDetails(student)"
+                      [matTooltip]="showTooltips ? (student.showDetails ? 'Hide detailed assessment results' : 'Show detailed assessment results') : ''"
+                      [matTooltipDisabled]="!showTooltips"
+                      matTooltipPosition="above">
                       {{student.showDetails ? 'Hide' : 'View'}} Details
                     </button>
                   </td>
@@ -396,13 +465,13 @@
                            class="bg-white rounded-lg p-3 border border-gray-200">
                         <div class="flex items-center justify-between">
                           <div>
-                            <div class="text-sm font-medium text-gray-900">{{result.AssessmentTitle}}</div>
-                            <div class="text-xs text-gray-500">Completed: {{result.DateTaken | date:'short'}}</div>
+                            <div class="text-sm font-medium text-gray-900">{{getResultTitle(result)}}</div>
+                            <div class="text-xs text-gray-500">Completed: {{getResultDateTaken(result) | date:'short'}}</div>
                           </div>
                           <div class="text-right">
                             <div class="text-sm font-medium"
-                                 [class]="result.Score >= 70 ? 'text-green-600' : result.Score >= 50 ? 'text-yellow-600' : 'text-red-600'">
-                              {{result.Score}}%
+                                 [class]="getResultScore(result) >= 70 ? 'text-green-600' : getResultScore(result) >= 50 ? 'text-yellow-600' : 'text-red-600'">
+                              {{getResultScore(result)}}%
                             </div>
                           </div>
                         </div>
@@ -427,5 +496,36 @@
         </div>
       </div>
     </main>
+
+    <!-- First-time user notification -->
+    <div *ngIf="showWelcomeMessage" class="fixed bottom-4 right-4 z-50 animate-fade-in">
+      <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+        <div class="flex items-start space-x-3">
+          <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-medium text-gray-900 mb-1">👋 Welcome, Instructor!</h4>
+            <p class="text-xs text-gray-600 mb-3">This is your first time here. Hover over elements to see helpful tooltips for managing your sections!</p>
+            <div class="flex space-x-2">
+              <button 
+                (click)="dismissWelcomeMessage()"
+                class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-md transition-colors">
+                Got it!
+              </button>
+            </div>
+          </div>
+          <button 
+            (click)="dismissWelcomeMessage()" 
+            class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
   

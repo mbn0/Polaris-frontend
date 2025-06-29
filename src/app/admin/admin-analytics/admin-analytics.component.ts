@@ -1,74 +1,101 @@
-import { Component, OnInit } from "@angular/core"
+import { Component, OnInit, OnDestroy } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { AdminService } from "../../core/services/admin/admin.service"
+import { MatTooltipModule } from '@angular/material/tooltip'
+import { AdminService, AnalyticsData } from "../../core/services/admin/admin.service"
+import { TooltipService } from "../../services/tooltip.service"
+import { Subscription } from 'rxjs'
 
-interface AnalyticsData {
-  userGrowth: Array<{ month: string; users: number }>
-  roleDistribution: Array<{ role: string; count: number; percentage: number }>
-  sectionStats: Array<{ sectionId: number; studentCount: number; instructor: string }>
-  recentActivity: Array<{ action: string; count: number; trend: "up" | "down" | "stable" }>
+interface DashboardStats {
+  totalUsers: number
+  totalStudents: number
+  totalInstructors: number
+  totalSections: number
 }
 
 @Component({
   selector: "app-admin-analytics",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   templateUrl: "./admin-analytics.component.html",
   styleUrls: ["./admin-analytics.component.css"],
 })
-export class AdminAnalyticsComponent implements OnInit {
+export class AdminAnalyticsComponent implements OnInit, OnDestroy {
   analytics: AnalyticsData = {
     userGrowth: [],
     roleDistribution: [],
     sectionStats: [],
     recentActivity: [],
   }
+  stats: DashboardStats = {
+    totalUsers: 0,
+    totalStudents: 0,
+    totalInstructors: 0,
+    totalSections: 0,
+  }
   loading = true
   error: string | null = null
 
-  constructor(private adminService: AdminService) {}
+  // Tooltip management
+  showTooltips: boolean = false
+  private tooltipSubscription?: Subscription
+
+  constructor(
+    private adminService: AdminService,
+    private tooltipService: TooltipService
+  ) {}
 
   ngOnInit() {
     this.loadAnalytics()
+    this.tooltipSubscription = this.tooltipService.tooltipState$.subscribe(state => {
+      this.showTooltips = state
+    })
+  }
+
+  ngOnDestroy() {
+    if (this.tooltipSubscription) {
+      this.tooltipSubscription.unsubscribe()
+    }
   }
 
   loadAnalytics() {
     this.loading = true
     this.error = null
 
-    // In a real application, you would make API calls to get this data
-    // For now, we'll simulate loading with a timeout
-    setTimeout(() => {
-      this.analytics = {
-        userGrowth: [
-          { month: "Jan", users: 45 },
-          { month: "Feb", users: 52 },
-          { month: "Mar", users: 61 },
-          { month: "Apr", users: 73 },
-          { month: "May", users: 89 },
-          { month: "Jun", users: 102 },
-        ],
-        roleDistribution: [
-          { role: "Students", count: 120, percentage: 77 },
-          { role: "Instructors", count: 15, percentage: 10 },
-          { role: "Admins", count: 3, percentage: 2 },
-        ],
-        sectionStats: [
-          { sectionId: 1, studentCount: 25, instructor: "Dr. Smith" },
-          { sectionId: 2, studentCount: 22, instructor: "Prof. Johnson" },
-          { sectionId: 3, studentCount: 28, instructor: "Dr. Williams" },
-          { sectionId: 4, studentCount: 20, instructor: "Prof. Brown" },
-        ],
-        recentActivity: [
-          { action: "User Registration", count: 12, trend: "up" },
-          { action: "Section Creation", count: 3, trend: "up" },
-          { action: "Student Assignments", count: 8, trend: "down" },
-          { action: "Role Changes", count: 2, trend: "stable" },
-        ],
-      }
-      this.loading = false
-    }, 1000)
+    // Load both analytics data and stats data from the backend
+    Promise.all([
+      this.adminService.getAnalytics().toPromise(),
+      this.adminService.getUsers().toPromise(),
+      this.adminService.getSections().toPromise(),
+    ])
+      .then(([analytics, users, sections]) => {
+        if (!analytics || !users || !sections) {
+          throw new Error("Failed to load analytics data")
+        }
+
+        this.analytics = analytics
+        
+        // Calculate stats
+        const students = users.filter((user) => user.roles.includes("Student"))
+        const instructors = users.filter((user) => user.roles.includes("Instructor"))
+
+        this.stats = {
+          totalUsers: users.length,
+          totalStudents: students.length,
+          totalInstructors: instructors.length,
+          totalSections: sections.length,
+        }
+
+        this.loading = false
+        console.log('Analytics data loaded:', analytics)
+      })
+      .catch((error) => {
+        this.error = error.message || 'Failed to load analytics data'
+        this.loading = false
+        console.error('Error loading analytics:', error)
+      })
   }
+
+
 
   getMaxUserCount(): number {
     return Math.max(...this.analytics.userGrowth.map((item) => item.users))
@@ -76,7 +103,8 @@ export class AdminAnalyticsComponent implements OnInit {
 
   getBarHeight(count: number): string {
     const maxCount = this.getMaxUserCount()
-    return `${(count / maxCount) * 100}%`
+    const percentage = (count / maxCount) * 100
+    return `${Math.max(percentage, 10)}%` // Minimum 10% height for visibility
   }
 
   getTrendIcon(trend: "up" | "down" | "stable"): string {

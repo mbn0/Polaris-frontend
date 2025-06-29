@@ -1,16 +1,23 @@
-import { Component, OnInit } from "@angular/core"
+import { Component, OnInit, OnDestroy } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { FormsModule } from "@angular/forms"
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from "@angular/forms"
+import { MatTooltipModule } from '@angular/material/tooltip'
 import { AdminService, type User, type CreateUserDto, type UpdateUserDto } from "../../core/services/admin/admin.service"
+import { TooltipService } from "../../services/tooltip.service"
+import { Subscription } from 'rxjs'
 
 @Component({
   selector: "app-user-management",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatTooltipModule],
   templateUrl: "./user-management.component.html",
   styleUrls: ["./user-management.component.css"],
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, OnDestroy {
+  // Tooltip management
+  showTooltips: boolean = false;
+  private tooltipSubscription?: Subscription;
+
   users: User[] = []
   filteredUsers: User[] = []
   searchTerm = ""
@@ -21,6 +28,10 @@ export class UserManagementComponent implements OnInit {
   loading = true
   error: string | null = null
   availableRoles = ["Student", "Instructor", "Admin"]
+
+  // Reactive forms
+  createUserForm: FormGroup
+  submitted = false
 
   newUser: CreateUserDto = {
     email: "",
@@ -33,11 +44,50 @@ export class UserManagementComponent implements OnInit {
   selectedNewRole = "" // For create modal
   selectedEditRole = "" // For edit modal
 
-  constructor(private adminService: AdminService) { }
+  constructor(
+    private adminService: AdminService,
+    private tooltipService: TooltipService,
+    private fb: FormBuilder
+  ) {
+    this.createUserForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).+$/)
+        ]
+      ],
+      confirmPassword: ['', [Validators.required]],
+      role: ['', [Validators.required]],
+      matricNo: ['']
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { passwordMismatch: true };
+    }
+    return null;
+  }
 
   ngOnInit() {
     console.log("UserManagementComponent initialized")
+    this.tooltipSubscription = this.tooltipService.tooltipState$.subscribe(state => {
+      this.showTooltips = state
+    })
     this.loadUsers()
+  }
+
+  ngOnDestroy(): void {
+    if (this.tooltipSubscription) {
+      this.tooltipSubscription.unsubscribe();
+    }
   }
 
   loadUsers() {
@@ -79,25 +129,28 @@ export class UserManagementComponent implements OnInit {
   }
 
   openCreateModal() {
-    this.newUser = {
-      email: "",
-      fullName: "",
-      password: "",
-      roles: [],
-      matricNo: "",
-    }
-    this.selectedNewRole = ""
-    this.showCreateModal = true
+    this.createUserForm.reset();
+    this.submitted = false;
+    this.selectedNewRole = "";
+    this.error = null; // Clear any existing errors
+    this.showCreateModal = true;
+    
+    // Reset matricNo validation
+    this.createUserForm.get('matricNo')?.clearValidators();
+    this.createUserForm.get('matricNo')?.updateValueAndValidity();
   }
 
   closeCreateModal() {
-    this.showCreateModal = false
-    this.selectedNewRole = ""
+    this.showCreateModal = false;
+    this.selectedNewRole = "";
+    this.submitted = false;
+    this.createUserForm.reset();
   }
 
   openEditModal(user: User) {
     this.selectedUser = { ...user }
     this.selectedEditRole = user.roles[0] || "" // Take the first role as the selected one
+    this.error = null // Clear any existing errors
     this.showEditModal = true
   }
 
@@ -116,11 +169,21 @@ export class UserManagementComponent implements OnInit {
 
   setRole(role: string, isNewUser = false) {
     if (isNewUser) {
-      this.selectedNewRole = role
-      this.newUser.roles = [role]
+      this.selectedNewRole = role;
+      this.createUserForm.get('role')?.setValue(role);
+      
+      // Handle matricNo validation based on role
+      const matricNoControl = this.createUserForm.get('matricNo');
+      if (role === 'Student') {
+        matricNoControl?.setValidators([Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]);
+      } else {
+        matricNoControl?.clearValidators();
+        matricNoControl?.setValue(''); // Clear value when not student
+      }
+      matricNoControl?.updateValueAndValidity();
     } else if (this.selectedUser) {
-      this.selectedEditRole = role
-      this.selectedUser.roles = [role]
+      this.selectedEditRole = role;
+      this.selectedUser.roles = [role];
     }
   }
 
@@ -138,25 +201,43 @@ export class UserManagementComponent implements OnInit {
   }
 
   createUser() {
-    if (this.newUser.email && this.newUser.fullName && this.newUser.password && this.selectedNewRole) {
-      this.loading = true
-      this.error = null
+    this.submitted = true;
+    this.error = null;
 
-      // Ensure roles array contains only the selected role
-      this.newUser.roles = [this.selectedNewRole]
+    if (this.createUserForm.valid) {
+      this.loading = true;
 
-      this.adminService.createUser(this.newUser).subscribe({
+      const formValues = this.createUserForm.value;
+      const newUser: CreateUserDto = {
+        email: formValues.email,
+        fullName: formValues.fullName,
+        password: formValues.password,
+        roles: [this.selectedNewRole],
+        matricNo: formValues.matricNo || ""
+      };
+
+      this.adminService.createUser(newUser).subscribe({
         next: () => {
-          this.loadUsers()
-          this.closeCreateModal()
+          this.loadUsers();
+          this.closeCreateModal();
         },
         error: (error: Error) => {
-          this.error = error.message || "Failed to create user"
-          this.loading = false
-          console.error("Error creating user:", error)
+          this.error = error.message || "Failed to create user";
+          this.loading = false;
+          console.error("Error creating user:", error);
         }
-      })
+      });
+    } else {
+      console.log('Form is invalid');
+      this.markFormGroupTouched();
     }
+  }
+
+  private markFormGroupTouched() {
+    Object.keys(this.createUserForm.controls).forEach(key => {
+      const control = this.createUserForm.get(key);
+      control?.markAsTouched();
+    });
   }
 
   updateUser() {
@@ -185,7 +266,19 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(id: string) {
-    if (!confirm("Are you sure you want to delete this user?")) {
+    // Find the user to get their role for better confirmation message
+    const user = this.users.find(u => u.id === id);
+    const userRole = user?.roles?.[0] || 'user';
+    
+    let confirmMessage = `Are you sure you want to delete this ${userRole.toLowerCase()}?`;
+    if (userRole === 'Instructor') {
+      confirmMessage += "\n\nNote: Instructors with assigned sections cannot be deleted. Please reassign sections first.";
+    }
+    if (userRole === 'Student') {
+      confirmMessage += "\n\nThis will also delete all of their assessment results.";
+    }
+
+    if (!confirm(confirmMessage)) {
       return
     }
 
@@ -195,6 +288,8 @@ export class UserManagementComponent implements OnInit {
     this.adminService.deleteUser(id).subscribe({
       next: () => {
         this.loadUsers()
+        // Clear any previous error messages on successful deletion
+        this.error = null
       },
       error: (error: Error) => {
         this.error = error.message || "Failed to delete user"

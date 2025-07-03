@@ -1,11 +1,10 @@
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <!-- Header Card -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
-          <div class="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
+<div class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+  <!-- Header Section -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
             </svg>
@@ -15,8 +14,9 @@
             <p class="text-sm text-gray-600">Welcome, {{ user?.fullName || 'Admin' }}</p>
           </div>
         </div>
+        
+        <!-- Controls -->
         <div class="flex items-center space-x-4">
-          <!-- Toggle Tooltips Button -->
           <button
             (click)="toggleTooltips()"
             class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
@@ -30,7 +30,7 @@
 
           <button
             (click)="logout()"
-            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105 w-full sm:w-auto justify-center"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg transform hover:scale-105"
             [matTooltip]="showTooltips ? 'Sign out of your admin account' : ''"
             [matTooltipDisabled]="!showTooltips"
             matTooltipPosition="below">
@@ -42,51 +42,42 @@
         </div>
       </div>
     </div>
+  </header>
 
-    <!-- Navigation Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div
-        *ngFor="let tab of [
-          { id: 'analytics', label: 'Analytics', icon: 'chart-pie', description: 'View detailed analytics and trends', color: 'from-cyan-500 to-blue-600' },
-          { id: 'users', label: 'User Management', icon: 'users', description: 'Manage students, instructors, and admins', color: 'from-green-500 to-emerald-600' },
-          { id: 'sections', label: 'Section Management', icon: 'book-open', description: 'Create and manage course sections', color: 'from-purple-500 to-pink-600' }
-        ]"
-        (click)="setActiveTab(tab.id)"
-        [class]="'bg-white rounded-xl shadow-sm border-2 cursor-pointer transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1 ' +
-          (activeTab === tab.id
-            ? 'border-indigo-500 ring-2 ring-indigo-200'
-            : 'border-gray-200 hover:border-gray-300')"
-        [matTooltip]="showTooltips ? 'Click to switch to ' + tab.label + ' - ' + tab.description : ''"
-        [matTooltipDisabled]="!showTooltips"
-        matTooltipPosition="above"
-        matTooltipShowDelay="500"
-      >
-        <div class="p-6">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-r"
-                 [ngClass]="tab.color">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path *ngIf="tab.icon === 'chart-bar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                <path *ngIf="tab.icon === 'chart-pie'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512a9.025 9.025 0 015.488 5.488z"></path>
-                <path *ngIf="tab.icon === 'users'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                <path *ngIf="tab.icon === 'book-open'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-              </svg>
-            </div>
-            <div *ngIf="activeTab === tab.id" class="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ tab.label }}</h3>
-          <p class="text-sm text-gray-600">{{ tab.description }}</p>
-        </div>
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Tab Navigation -->
+    <div class="mb-8">
+      <div class="flex flex-wrap space-x-1 bg-white/30 p-1 rounded-lg w-fit border border-white/30">
+        <button
+          *ngFor="let tab of [
+            { id: 'analytics', label: 'Analytics', icon: 'chart-pie', description: 'View detailed analytics and trends' },
+            { id: 'users', label: 'User Management', icon: 'users', description: 'Manage students, instructors, and admins' },
+            { id: 'sections', label: 'Section Management', icon: 'book-open', description: 'Create and manage course sections' }
+          ]"
+          [class]="activeTab === tab.id ?
+            'bg-white text-gray-900 shadow-lg font-semibold' :
+            'text-white hover:text-gray-800 hover:bg-white/10'"
+          class="px-6 py-3 text-sm font-medium rounded-md transition-all duration-200 flex items-center space-x-2"
+          (click)="setActiveTab(tab.id)"
+          [matTooltip]="showTooltips ? 'Click to switch to ' + tab.label + ' - ' + tab.description : ''"
+          [matTooltipDisabled]="!showTooltips"
+          matTooltipPosition="below">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path *ngIf="tab.icon === 'chart-pie'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M20.488 9H15V3.512a9.025 9.025 0 015.488 5.488z"></path>
+            <path *ngIf="tab.icon === 'users'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+            <path *ngIf="tab.icon === 'book-open'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          <span>{{ tab.label }}</span>
+        </button>
       </div>
     </div>
 
     <!-- Analytics Tab -->
     <div *ngIf="activeTab === 'analytics'" class="space-y-6">
-      <app-admin-analytics></app-admin-analytics>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <app-admin-analytics></app-admin-analytics>
+      </div>
     </div>
 
     <!-- User Management Tab -->
@@ -106,7 +97,7 @@
 
   <!-- First-time user notification -->
   <div *ngIf="showWelcomeMessage" class="fixed bottom-4 right-4 z-50 animate-fade-in">
-    <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+    <div class="bg-white/95 backdrop-filter backdrop-blur-12 rounded-lg shadow-lg border border-white/20 p-4 max-w-sm">
       <div class="flex items-start space-x-3">
         <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
           <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

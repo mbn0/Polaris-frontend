@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { RegisterComponent } from './register/register.component';
 import { StudentDashboardComponent } from './student-dashboard/student-dashboard.component';
 import { LoginComponent } from './login/login.component';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { Chapter1Component } from './chapters/chapter1/chapter1.component';
 import { Chapter3Component } from './chapters/chapter3/chapter3.component';
 import { Chapter5Component } from './chapters/chapter5/chapter5.component';
@@ -26,6 +28,18 @@ export const routes: Routes = [
     component: LoginComponent,
     canActivate: [noAuthGuard],
     title: 'Login - Sign In'
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    canActivate: [noAuthGuard],
+    title: 'Forgot Password'
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    canActivate: [noAuthGuard],
+    title: 'Reset Password'
   },
   {
     path: 'dashboard',

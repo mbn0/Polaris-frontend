@@ -712,12 +712,12 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr *ngFor="let result of studentResults" class="hover:bg-gray-50">
+                <tr *ngFor="let result of studentResults" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm font-medium text-gray-900">{{result.assessmentTitle}}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium px-3 py-1 rounded-full {{getScoreClass(result.score)}}">
+                    <div class="text-sm font-medium px-3 py-1 rounded-full score-badge {{getScoreClass(result.score)}}">
                       {{result.score}}%
                     </div>
                   </td>

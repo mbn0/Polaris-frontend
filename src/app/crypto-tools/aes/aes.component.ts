@@ -718,17 +718,27 @@ export class AESComponent {
 
   goToStep(index: number): void {
     this.currentStep = index
+    this.scrollToTop()
   }
 
   nextStep(): void {
     if (this.currentStep < this.steps.length - 1) {
       this.currentStep++
+      this.scrollToTop()
     }
   }
 
   prevStep(): void {
     if (this.currentStep > 0) {
       this.currentStep--
+      this.scrollToTop()
+    }
+  }
+
+  private scrollToTop(): void {
+    const el = document.getElementById('aes-steps-top');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
   }
 

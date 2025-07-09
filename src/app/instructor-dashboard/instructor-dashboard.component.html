@@ -47,15 +47,6 @@
               </svg>
               {{ showTooltips ? 'Hide Tooltips' : 'Show Tooltips' }}
             </button>
-            
-            <button
-              (click)="logout()"
-              class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              [matTooltip]="showTooltips ? 'Sign out of your instructor account' : ''"
-              [matTooltipDisabled]="!showTooltips"
-              matTooltipPosition="below">
-              Logout
-            </button>
           </div>
         </div>
       </div>

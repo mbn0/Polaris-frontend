@@ -364,18 +364,18 @@
             <div *ngIf="showFeistelAnimation" class="mt-4 bg-white p-4 rounded border">
               <div class="text-center">
                 <div class="flex justify-center">
-                  <div class="w-16 h-16 bg-blue-200 m-1 flex items-center justify-center">L₀</div>
-                  <div class="w-16 h-16 bg-green-200 m-1 flex items-center justify-center">R₀</div>
+                  <div class="w-32 h-16 bg-blue-200 m-1 flex items-center justify-center text-xs leading-tight p-1">L₀</div>
+                  <div class="w-32 h-16 bg-green-200 m-1 flex items-center justify-center text-xs leading-tight p-1">R₀</div>
                 </div>
                 <div class="my-2">↓ Round 1</div>
                 <div class="flex justify-center">
-                  <div class="w-16 h-16 bg-green-200 m-1 flex items-center justify-center">R₀</div>
-                  <div class="w-16 h-16 bg-blue-300 m-1 flex items-center justify-center">L₀⊕F(R₀,K₁)</div>
+                  <div class="w-32 h-16 bg-green-200 m-1 flex items-center justify-center text-xs leading-tight p-1">R₀</div>
+                  <div class="w-32 h-16 bg-blue-300 m-1 flex items-center justify-center text-xs leading-tight p-1">L₀⊕F(R₀,K₁)</div>
                 </div>
                 <div class="my-2">↓ Round 2</div>
                 <div class="flex justify-center">
-                  <div class="w-16 h-16 bg-blue-300 m-1 flex items-center justify-center">L₀⊕F(R₀,K₁)</div>
-                  <div class="w-16 h-16 bg-green-300 m-1 flex items-center justify-center">R₀⊕F(L₁,K₂)</div>
+                  <div class="w-32 h-16 bg-blue-300 m-1 flex items-center justify-center text-xs leading-tight p-1">L₀⊕F(R₀,K₁)</div>
+                  <div class="w-32 h-16 bg-green-300 m-1 flex items-center justify-center text-xs leading-tight p-1">R₀⊕F(L₁,K₂)</div>
                 </div>
               </div>
             </div>
@@ -803,7 +803,7 @@ def feistel_decrypt(ciphertext, subkeys):
       </div>
 
       <!-- Navigation -->
-      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+      <div class="bg-gray-50 px-4 py-4 flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0">
         <button
           (click)="previousSection()"
           [disabled]="currentSection === 1"
@@ -815,7 +815,7 @@ def feistel_decrypt(ciphertext, subkeys):
           Previous
         </button>
 
-        <div class="flex space-x-2">
+        <div class="flex flex-wrap justify-center space-x-2 overflow-x-auto max-w-full">
           <button
             *ngFor="let section of [].constructor(totalSections); let i = index"
             (click)="goToSection(i + 1)"

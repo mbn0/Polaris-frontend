@@ -85,16 +85,16 @@ export class StudentDashboardComponent implements OnInit {
     },
     {
       id: 2,
-      title: "Symmetric-Key Cryptography",
-      description: "Algorithms for encryption and decryption using a single key",
-      topics: ["AES", "DES", "Triple DES", "Block Cipher Modes"],
+      title: "Mathematics of Cryptography",
+      description: "Explore the essential mathematical foundations of cryptography, including modular arithmetic, Euler's totient function, modular inverses, and the Chinese Remainder Theorem. These concepts are crucial for understanding how modern cryptographic algorithms work.",
+      topics: ["Modular Arithmetic", "Euler's Totient Function", "Modular Inverses", "Chinese Remainder Theorem"],
       difficulty: "Intermediate",
       estimatedTime: "2-3 hours",
       completed: false,
     },
     {
       id: 3,
-      title: "Asymmetric-Key Cryptography",
+      title: "Symmetric-Key Cryptography",
       description: "Algorithms for encryption and decryption using key pairs",
       topics: ["RSA", "Diffie-Hellman", "ECC"],
       difficulty: "Intermediate",
@@ -152,13 +152,9 @@ export class StudentDashboardComponent implements OnInit {
     },
     {
       id: 10,
-      title: "Random Number Generation",
-      description: "Importance of randomness in cryptography and methods for generating secure random numbers",
-      topics: [
-        "True Random Number Generators (TRNGs)",
-        "Pseudo-Random Number Generators (PRNGs)",
-        "Cryptographically Secure PRNGs (CSPRNGs)",
-      ],
+      title: "Asymmetric-Key Cryptography",
+      description: "Algorithms for encryption and decryption using key pairs",
+      topics: ["RSA", "Diffie-Hellman", "ECC"],
       difficulty: "Intermediate",
       estimatedTime: "2-3 hours",
       completed: false,
@@ -571,11 +567,11 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   getScoreClass(score: number): string {
-    if (score >= 90) return 'text-green-600 bg-green-50'
-    if (score >= 80) return 'text-blue-600 bg-blue-50'
-    if (score >= 70) return 'text-yellow-600 bg-yellow-50'
-    if (score >= 60) return 'text-orange-600 bg-orange-50'
-    return 'text-red-600 bg-red-50'
+    if (score >= 90) return 'text-green-700 bg-green-100'
+    if (score >= 80) return 'text-blue-700 bg-blue-100'
+    if (score >= 70) return 'text-yellow-700 bg-yellow-100'
+    if (score >= 60) return 'text-orange-700 bg-orange-100'
+    return 'text-red-700 bg-red-100'
   }
 
   getGradeLetter(score: number): string {

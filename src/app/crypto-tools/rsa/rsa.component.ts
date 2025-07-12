@@ -29,7 +29,7 @@ export class RSAComponent {
   // Input values (using strings to handle large numbers)
   inputP = "61"
   inputQ = "53"
-  inputE = "65537" // Common value for e
+  inputE = "17"
   inputMessage = "123"
 
   // State
@@ -153,7 +153,10 @@ export class RSAComponent {
   private pad(message: bigint, keySize: number): bigint {
     const messageBytes = this.bigintToBytes(message)
     const keySizeBytes = Math.ceil(keySize / 8)
-    
+    // For learning/testing: if key is too small for padding, skip padding
+    if (keySizeBytes < 12) {
+      return message
+    }
     // Check if message is too long
     const maxMessageLength = keySizeBytes - 11 // Minimum padding is 11 bytes
     if (messageBytes.length > maxMessageLength) {
@@ -181,9 +184,12 @@ export class RSAComponent {
   }
 
   private unpad(paddedMessage: bigint, keySize: number): bigint {
-    const paddedBytes = this.bigintToBytes(paddedMessage)
     const keySizeBytes = Math.ceil(keySize / 8)
-    
+    // For learning/testing: if key is too small for padding, skip unpadding
+    if (keySizeBytes < 12) {
+      return paddedMessage
+    }
+    const paddedBytes = this.bigintToBytes(paddedMessage)
     // Pad to key size if necessary
     while (paddedBytes.length < keySizeBytes) {
       paddedBytes.unshift(0)
@@ -319,18 +325,40 @@ export class RSAComponent {
 
       const gcdResult = this.gcd(e, phi)
       if (gcdResult !== 1n) {
-        this.showError(`e must be coprime with φ(n). gcd(e, φ(n)) = ${gcdResult}`)
+        // Find a valid e value that is coprime with phi
+        let suggestedE = 3n
+        while (suggestedE < phi && this.gcd(suggestedE, phi) !== 1n) {
+          suggestedE += 2n // Try odd numbers
+        }
+        
+        if (suggestedE >= phi) {
+          // If we can't find a small coprime, try some common values
+          const commonEValues = [3n, 5n, 7n, 11n, 13n, 17n, 19n, 23n, 29n, 31n]
+          suggestedE = 0n
+          for (const testE of commonEValues) {
+            if (testE < phi && this.gcd(testE, phi) === 1n) {
+              suggestedE = testE
+              break
+            }
+          }
+        }
+        
+        const suggestion = suggestedE > 0n ? `\n\nSuggestion: Try e = ${suggestedE} (gcd(${suggestedE}, ${phi}) = 1)` : ""
+        this.showError(`e must be coprime with φ(n). gcd(e, φ(n)) = ${gcdResult}${suggestion}`)
         return
       }
 
       // Validate message size
       const keyBits = n.toString(2).length
-      const maxMessageBits = keyBits - 88 // Account for PKCS#1 v1.5 padding (11 bytes = 88 bits)
-      const messageBits = m === 0n ? 1 : m.toString(2).length
-      
-      if (messageBits > maxMessageBits) {
-        this.showError(`Message too large. Maximum ${Math.floor(maxMessageBits / 8)} bytes allowed for this key size.`)
-        return
+      const keySizeBytes = Math.ceil(keyBits / 8)
+      // For learning/testing: skip message size check for small keys
+      if (keySizeBytes >= 12) {
+        const maxMessageBits = keyBits - 88 // Account for PKCS#1 v1.5 padding (11 bytes = 88 bits)
+        const messageBits = m === 0n ? 1 : m.toString(2).length
+        if (messageBits > maxMessageBits) {
+          this.showError(`Message too large. Maximum ${Math.floor(maxMessageBits / 8)} bytes allowed for this key size.`)
+          return
+        }
       }
 
       if (m >= n) {
@@ -419,15 +447,28 @@ export class RSAComponent {
 
     // Step 7: Padding
     const paddedMessage = this.pad(m, keyBits)
-    this.steps.push({
-      stepNumber: 7,
-      title: "Message Padding (PKCS#1 v1.5)",
-      description: "Apply PKCS#1 v1.5 padding for security",
-      details: `PKCS#1 v1.5 padding format: 0x00 || 0x02 || PS || 0x00 || M\n✓ Added random padding for security\n✓ Prevents certain cryptographic attacks\n✓ Padded message length: ${this.bigintToBytes(paddedMessage).length} bytes`,
-      input: `Original message: ${m}`,
-      output: `Padded message: ${paddedMessage}`,
-      data: { originalMessage: m.toString(), paddedMessage: paddedMessage.toString() },
-    })
+    const keySizeBytes = Math.ceil(keyBits / 8)
+    if (keySizeBytes < 12) {
+      this.steps.push({
+        stepNumber: 7,
+        title: "Message Padding (Skipped for Small Key)",
+        description: "Padding skipped for small key size - using raw message",
+        details: `Key size (${keyBits} bits) is too small for PKCS#1 v1.5 padding\n✓ Using raw message for learning purposes\n✓ Note: This is not secure for production use`,
+        input: `Original message: ${m}`,
+        output: `Raw message: ${paddedMessage}`,
+        data: { originalMessage: m.toString(), paddedMessage: paddedMessage.toString() },
+      })
+    } else {
+      this.steps.push({
+        stepNumber: 7,
+        title: "Message Padding (PKCS#1 v1.5)",
+        description: "Apply PKCS#1 v1.5 padding for security",
+        details: `PKCS#1 v1.5 padding format: 0x00 || 0x02 || PS || 0x00 || M\n✓ Added random padding for security\n✓ Prevents certain cryptographic attacks\n✓ Padded message length: ${this.bigintToBytes(paddedMessage).length} bytes`,
+        input: `Original message: ${m}`,
+        output: `Padded message: ${paddedMessage}`,
+        data: { originalMessage: m.toString(), paddedMessage: paddedMessage.toString() },
+      })
+    }
 
     // Step 8: Encryption
     const ciphertext = this.modPow(paddedMessage, e, n)
@@ -444,15 +485,27 @@ export class RSAComponent {
     // Step 9: Decryption
     const decryptedPadded = this.modPow(ciphertext, d, n)
     const decrypted = this.unpad(decryptedPadded, keyBits)
-    this.steps.push({
-      stepNumber: 9,
-      title: "Decryption & Unpadding",
-      description: "Decrypt using private key and remove padding",
-      details: `Step 1: Decrypt using private key: ${ciphertext}^${d} mod ${n} = ${decryptedPadded}\nStep 2: Remove PKCS#1 v1.5 padding\n✓ Original message recovered: ${decrypted}\n✓ Encryption/decryption cycle successful`,
-      input: `Ciphertext: ${ciphertext}\nPrivate exponent: ${d}`,
-      output: `Decrypted message: ${decrypted}`,
-      data: { ciphertext: ciphertext.toString(), decryptedPadded: decryptedPadded.toString(), decrypted: decrypted.toString() },
-    })
+    if (keySizeBytes < 12) {
+      this.steps.push({
+        stepNumber: 9,
+        title: "Decryption (No Unpadding for Small Key)",
+        description: "Decrypt using private key - no unpadding needed",
+        details: `Step 1: Decrypt using private key: ${ciphertext}^${d} mod ${n} = ${decryptedPadded}\nStep 2: No unpadding needed for small key\n✓ Original message recovered: ${decrypted}\n✓ Encryption/decryption cycle successful`,
+        input: `Ciphertext: ${ciphertext}\nPrivate exponent: ${d}`,
+        output: `Decrypted message: ${decrypted}`,
+        data: { ciphertext: ciphertext.toString(), decryptedPadded: decryptedPadded.toString(), decrypted: decrypted.toString() },
+      })
+    } else {
+      this.steps.push({
+        stepNumber: 9,
+        title: "Decryption & Unpadding",
+        description: "Decrypt using private key and remove padding",
+        details: `Step 1: Decrypt using private key: ${ciphertext}^${d} mod ${n} = ${decryptedPadded}\nStep 2: Remove PKCS#1 v1.5 padding\n✓ Original message recovered: ${decrypted}\n✓ Encryption/decryption cycle successful`,
+        input: `Ciphertext: ${ciphertext}\nPrivate exponent: ${d}`,
+        output: `Decrypted message: ${decrypted}`,
+        data: { ciphertext: ciphertext.toString(), decryptedPadded: decryptedPadded.toString(), decrypted: decrypted.toString() },
+      })
+    }
 
     // Verify the result
     if (decrypted !== m) {
@@ -466,7 +519,7 @@ export class RSAComponent {
     this.keyPair = null
     this.inputP = "61"
     this.inputQ = "53"
-    this.inputE = "65537"
+    this.inputE = "17"
     this.inputMessage = "123"
   }
 

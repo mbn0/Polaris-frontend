@@ -28,6 +28,26 @@ export interface RegisterResponse {
   sectionId?: number
 }
 
+export interface RequestPasswordResetRequest {
+  email: string
+}
+
+export interface VerifyOtpRequest {
+  email: string
+  otp: string
+}
+
+export interface ResetPasswordRequest {
+  email: string
+  otp: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface AuthResponse {
+  message: string
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -103,6 +123,49 @@ export class AuthService {
           return throwError(() => new Error('A user with this email already exists'));
         }
         return throwError(() => new Error('Registration failed. Please try again later.'));
+      })
+    )
+  }
+
+  // Password Reset Methods
+  requestPasswordReset(email: string): Observable<AuthResponse> {
+    console.log('Requesting password reset for email:', email)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/request-password-reset`, { email }).pipe(
+      map((response) => {
+        console.log('Password reset request response:', response)
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Password reset request error:', error);
+        return throwError(() => new Error(error.error?.message || 'Failed to send password reset OTP'));
+      })
+    )
+  }
+
+  verifyOtp(request: VerifyOtpRequest): Observable<AuthResponse> {
+    console.log('Verifying OTP for email:', request.email)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/verify-otp`, request).pipe(
+      map((response) => {
+        console.log('OTP verification response:', response)
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('OTP verification error:', error);
+        return throwError(() => new Error(error.error?.message || 'Invalid or expired OTP'));
+      })
+    )
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<AuthResponse> {
+    console.log('Resetting password for email:', request.email)
+    return this.http.post<AuthResponse>(`${this.apiUrl}/reset-password`, request).pipe(
+      map((response) => {
+        console.log('Password reset response:', response)
+        return response
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Password reset error:', error);
+        return throwError(() => new Error(error.error?.message || 'Failed to reset password'));
       })
     )
   }

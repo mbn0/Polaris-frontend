@@ -84,8 +84,6 @@ export class LoginComponent {
 
   // Method to handle forgot password
   onForgotPassword() {
-    console.log('Forgot password clicked');
-    // You can navigate to forgot password page or show modal
-    alert('Forgot password functionality would be implemented here');
+    this.router.navigate(['/forgot-password']);
   }
 }

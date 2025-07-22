@@ -100,20 +100,27 @@ export class Chapter14Component implements OnInit {
   }
 
   // Navigation Methods
-  nextSection() {
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  nextSection(): void {
     if (this.currentSection < this.totalSections) {
-      this.currentSection++
+      this.currentSection++;
+      this.scrollToTop();
     }
   }
 
-  prevSection() {
+  prevSection(): void {
     if (this.currentSection > 1) {
-      this.currentSection--
+      this.currentSection--;
+      this.scrollToTop();
     }
   }
 
-  goToSection(section: number) {
-    this.currentSection = section
+  goToSection(i: number): void {
+    this.currentSection = i;
+    this.scrollToTop();
   }
 
   // Password Hashing Demo

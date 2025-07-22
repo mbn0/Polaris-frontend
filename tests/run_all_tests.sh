@@ -54,12 +54,12 @@ failed_tests=0
 for i in "${!tests[@]}"; do
     test_file="${tests[$i]}"
     chapter_name="${chapter_names[$i]}"
-    
+
     echo "======================================================================="
     echo "RUNNING: $chapter_name"
     echo "FILE: $test_file"
     echo "======================================================================="
-    
+
     # Check if test file exists
     if [ ! -f "$test_file" ]; then
         echo "❌ ERROR: Test file $test_file not found!"
@@ -68,7 +68,7 @@ for i in "${!tests[@]}"; do
         ((total_tests++))
         continue
     fi
-    
+
     # Run the test and capture output
     if node "$test_file"; then
         echo ""
@@ -79,7 +79,7 @@ for i in "${!tests[@]}"; do
         echo "❌ $chapter_name: FAILED"
         ((failed_tests++))
     fi
-    
+
     ((total_tests++))
     echo ""
     echo "Press Enter to continue to next test..."
@@ -121,4 +121,4 @@ fi
 echo ""
 echo "======================================================================="
 echo "Test suite completed. Thank you for using the verification system!"
-echo "=======================================================================" 
+echo "======================================================================="

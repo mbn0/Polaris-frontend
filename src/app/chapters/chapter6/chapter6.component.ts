@@ -204,21 +204,28 @@ export class Chapter6Component implements OnInit {
   }
 
   // Navigation methods
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   nextSection() {
     if (this.currentSection < this.totalSections) {
       this.currentSection++;
+      this.scrollToTop();
     }
   }
 
   previousSection() {
     if (this.currentSection > 1) {
       this.currentSection--;
+      this.scrollToTop();
     }
   }
 
   goToSection(section: number) {
     if (section >= 1 && section <= this.totalSections) {
       this.currentSection = section;
+      this.scrollToTop();
     }
   }
 

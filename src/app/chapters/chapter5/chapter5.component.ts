@@ -171,20 +171,27 @@ export class Chapter5Component implements OnInit {
     this.showSBoxAnimation = !this.showSBoxAnimation;
   }
 
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   nextSection() {
     if (this.currentSection < this.totalSections) {
       this.currentSection++;
+      this.scrollToTop();
     }
   }
 
   previousSection() {
     if (this.currentSection > 1) {
       this.currentSection--;
+      this.scrollToTop();
     }
   }
 
   goToSection(section: number) {
     this.currentSection = section;
+    this.scrollToTop();
   }
 
   backToDashboard() {

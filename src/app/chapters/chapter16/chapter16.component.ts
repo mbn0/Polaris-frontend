@@ -253,21 +253,28 @@ export class Chapter16Component implements OnInit {
     this.runElGamalDemo()
   }
 
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   // Navigation methods
   nextSection() {
     if (this.currentSection < this.totalSections) {
-      this.currentSection++
+      this.currentSection++;
+      this.scrollToTop();
     }
   }
 
   prevSection() {
     if (this.currentSection > 1) {
-      this.currentSection--
+      this.currentSection--;
+      this.scrollToTop();
     }
   }
 
   goToSection(section: number) {
-    this.currentSection = section
+    this.currentSection = section;
+    this.scrollToTop();
   }
 
   // Paillier homomorphic encryption demo

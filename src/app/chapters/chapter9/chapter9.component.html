@@ -972,7 +972,7 @@
       </div>
 
       <!-- Navigation -->
-      <div class="bg-gray-50 px-8 py-6 flex justify-between items-center">
+      <div class="bg-gray-50 px-4 py-4 flex flex-col sm:flex-row sm:justify-between items-center space-y-4 sm:space-y-0">
         <button
           (click)="previousSection()"
           [disabled]="currentSection === 1"
@@ -984,7 +984,7 @@
           Previous
         </button>
 
-        <div class="flex space-x-2">
+        <div class="flex flex-wrap justify-center space-x-2 overflow-x-auto max-w-full">
           <button
             *ngFor="let section of [].constructor(totalSections); let i = index"
             (click)="goToSection(i + 1)"

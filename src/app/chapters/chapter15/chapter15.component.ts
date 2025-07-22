@@ -221,23 +221,30 @@ export class Chapter15Component implements OnInit {
     this.sectionProgress = (this.currentSection / this.totalSections) * 100
   }
 
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   nextSection() {
     if (this.currentSection < this.totalSections) {
-      this.currentSection++
-      this.updateProgress()
+      this.currentSection++;
+      this.updateProgress();
+      this.scrollToTop();
     }
   }
 
   prevSection() {
     if (this.currentSection > 1) {
-      this.currentSection--
-      this.updateProgress()
+      this.currentSection--;
+      this.updateProgress();
+      this.scrollToTop();
     }
   }
 
-  goToSection(section: number) {
-    this.currentSection = section
-    this.updateProgress()
+  goToSection(idx: number) {
+    this.currentSection = idx;
+    this.updateProgress();
+    this.scrollToTop();
   }
 
   // KDC Protocol Implementation

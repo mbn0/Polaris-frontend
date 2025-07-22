@@ -225,20 +225,27 @@ export class Chapter13Component {
   }
 
   // Navigation methods
-  nextSection() {
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  nextSection(): void {
     if (this.currentSection < this.totalSections) {
       this.currentSection++;
+      this.scrollToTop();
     }
   }
 
-  previousSection() {
+  previousSection(): void {
     if (this.currentSection > 1) {
       this.currentSection--;
+      this.scrollToTop();
     }
   }
 
-  goToSection(section: number) {
+  goToSection(section: number): void {
     this.currentSection = section;
+    this.scrollToTop();
   }
 
   // Section 3: Signature Process

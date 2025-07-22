@@ -138,30 +138,45 @@ export class Chapter12Component {
     }
   }
 
-  // Navigation Methods
-  nextSection() {
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  nextSection(): void {
     if (this.currentSection < this.totalSections) {
-      this.sections[this.currentSection - 1].completed = true
-      this.currentSection++
-      this.initializeSection(this.currentSection)
-    }
-  }
-
-  previousSection() {
-    if (this.currentSection > 1) {
-      this.currentSection--
-      this.initializeSection(this.currentSection)
-    }
-  }
-
-  goToSection(sectionId: number) {
-    if (sectionId >= 1 && sectionId <= this.totalSections) {
-      // Mark previous sections as completed
-      for (let i = 0; i < sectionId - 1; i++) {
-        this.sections[i].completed = true
+      if (this.sections && this.sections[this.currentSection - 1]) {
+        this.sections[this.currentSection - 1].completed = true;
       }
-      this.currentSection = sectionId
-      this.initializeSection(this.currentSection)
+      this.currentSection++;
+      if (typeof this.initializeSection === 'function') {
+        this.initializeSection(this.currentSection);
+      }
+      this.scrollToTop();
+    }
+  }
+
+  prevSection(): void {
+    if (this.currentSection > 1) {
+      this.currentSection--;
+      if (typeof this.initializeSection === 'function') {
+        this.initializeSection(this.currentSection);
+      }
+      this.scrollToTop();
+    }
+  }
+
+  // Alias for template backward compatibility
+  previousSection(): void {
+    this.prevSection();
+  }
+
+  goToSection(sectionId: number): void {
+    if (sectionId >= 1 && sectionId <= this.totalSections) {
+      this.currentSection = sectionId;
+      if (typeof this.initializeSection === 'function') {
+        this.initializeSection(this.currentSection);
+      }
+      this.scrollToTop();
     }
   }
 

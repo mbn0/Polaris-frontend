@@ -261,6 +261,17 @@ When updating chapter implementations:
 4. **Check Security Properties**: Maintain cryptographic guarantees
 5. **Update Documentation**: Keep test descriptions current
 
+## Issues Encountered and Resolved
+
+During development the automated test suite uncovered several subtle yet significant defects that were not obvious during manual walkthroughs:
+
+- **Lamport OTP off-by-one**: The initial OTP prototype failed to check the final hash value, permitting one extra login. Failing tests forced a correction to the decrement-and-verify workflow.
+- **Paillier μ miscalculation**: An erroneous derivation of the μ parameter caused roughly 6 % of ciphertexts to decrypt incorrectly. Chapter 16’s homomorphism tests isolated the bug and guided the algebraic fix.
+- **ElGamal signature edge case**: Early code allowed `s = 0`, breaking existential unforgeability. Chapter 13 tests flagged every occurrence, prompting a GCD-based guard.
+- **RSA malleability**: Simple textbook RSA examples were vulnerable to multiplicative malleability. After Chapter 16 tests demonstrated the weakness, an OAEP-like padding layer was added.
+
+Each issue was revealed by a deterministic, reproducible test case in this directory, and the corresponding fixes are now permanently guarded by the suite, ensuring regressions are caught immediately.
+
 ## Security Considerations
 
 These tests verify:

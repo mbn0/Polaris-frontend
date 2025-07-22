@@ -223,20 +223,27 @@ export class Chapter1Component {
 
   constructor(private router: Router) {}
 
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   goToSection(sectionId: number): void {
     this.currentSection = sectionId;
     this.sections[sectionId - 1].completed = true;
+    this.scrollToTop();
   }
 
   nextSection(): void {
     if (this.currentSection < this.totalSections) {
       this.goToSection(this.currentSection + 1);
+      this.scrollToTop();
     }
   }
 
   prevSection(): void {
     if (this.currentSection > 1) {
       this.goToSection(this.currentSection - 1);
+      this.scrollToTop();
     }
   }
 

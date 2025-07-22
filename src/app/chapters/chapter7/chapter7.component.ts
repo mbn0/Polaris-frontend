@@ -391,16 +391,27 @@ export class Chapter7Component implements OnInit {
   }
 
   // Navigation
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   nextSection(): void {
-    if (this.currentSection < this.totalSections) this.currentSection++;
+    if (this.currentSection < this.totalSections) {
+      this.currentSection++;
+      this.scrollToTop();
+    }
   }
 
   previousSection(): void {
-    if (this.currentSection > 1) this.currentSection--;
+    if (this.currentSection > 1) {
+      this.currentSection--;
+      this.scrollToTop();
+    }
   }
 
   goToSection(section: number): void {
     this.currentSection = section;
+    this.scrollToTop();
   }
 
   backToDashboard(): void {

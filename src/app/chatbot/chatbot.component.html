@@ -1,0 +1,13 @@
+<div class="chat-container">
+  <div class="messages">
+    <div *ngFor="let m of messages()" class="msg" [class.user]="m.role==='user'" [class.assistant]="m.role==='assistant'">
+      <div class="bubble">{{ m.text }}</div>
+    </div>
+  </div>
+  <form (ngSubmit)="send()" class="input-row">
+    <input [(ngModel)]="input" name="input" placeholder="Ask a cryptography question..." [disabled]="loading" />
+    <button type="submit" [disabled]="loading || !input.trim()">{{ loading ? 'Sending...' : 'Send' }}</button>
+  </form>
+  <p class="hint">I only answer cryptography-related questions. Non-crypto topics will be declined.</p>
+  
+</div>

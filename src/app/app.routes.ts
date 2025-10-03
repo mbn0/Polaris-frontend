@@ -161,6 +161,11 @@ export const routes: Routes = [
     title: 'Assessment'
   },
   {
+    path: 'chat',
+    loadComponent: () => import('./chatbot/chatbot.component').then(m => m.ChatbotComponent),
+    title: 'Cryptography Chatbot'
+  },
+  {
     path: '**',
     component: NotFoundComponent,
     title: '404 - Page Not Found'

@@ -5,6 +5,7 @@ import { CommonModule, DecimalPipe } from "@angular/common"
 import { AuthService, type RegisterResponse } from "../core/services/auth/auth.service"
 import { StudentService, type StudentProfile, type StudentResult } from "../core/services/student/student.service"
 import { MatTooltipModule } from '@angular/material/tooltip'
+import { ChatWidgetComponent } from '../chatbot/chat-widget.component'
 
 // Import interfaces from student service
 interface StudentAssessment {
@@ -42,7 +43,7 @@ interface StudentSection {
   templateUrl: "./student-dashboard.component.html",
   styleUrls: ["./student-dashboard.component.css"],
   providers: [DecimalPipe],
-  imports: [CommonModule, MatTooltipModule],
+  imports: [CommonModule, MatTooltipModule, ChatWidgetComponent],
   standalone: true,
 })
 export class StudentDashboardComponent implements OnInit {

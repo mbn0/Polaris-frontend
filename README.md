@@ -98,6 +98,9 @@ ng serve
 
 The application will be available at `http://localhost:4200/` with automatic reload on file changes.
 
+Chatbot route:
+- Visit `/chat` for a simple cryptography-only chatbot UI. Ensure you are logged in so requests include your JWT.
+
 ### 5. Building for Production
 ```bash
 npm run build

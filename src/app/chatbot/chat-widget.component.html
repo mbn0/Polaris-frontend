@@ -1,0 +1,21 @@
+<div class="chat-fab" (click)="toggle()" [class.open]="open" matTooltip="Cryptography Chatbot">
+  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  </svg>
+</div>
+
+<div class="chat-panel" *ngIf="open">
+  <div class="chat-header">
+    <div class="title">Crypto Tutor</div>
+    <button class="min-btn" (click)="toggle()" aria-label="Minimize">—</button>
+  </div>
+  <div class="chat-messages">
+    <div *ngFor="let m of messages()" class="msg" [class.user]="m.role==='user'" [class.assistant]="m.role==='assistant'">
+      <div class="bubble">{{ m.text }}</div>
+    </div>
+  </div>
+  <form class="chat-input" (ngSubmit)="send()">
+    <input [(ngModel)]="input" name="input" placeholder="Ask a cryptography question..." [disabled]="loading" />
+    <button type="submit" [disabled]="loading || !input.trim()">{{ loading ? 'Sending...' : 'Send' }}</button>
+  </form>
+</div>

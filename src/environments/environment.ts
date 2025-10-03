@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://jibna.live' // Updated to new API URL
+  apiUrl: 'http://localhost:5240' // Updated to new API URL
 }; 

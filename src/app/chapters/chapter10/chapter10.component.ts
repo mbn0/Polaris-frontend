@@ -1,4 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
+import { firstValueFrom } from 'rxjs'
+import { RewriteService } from '../../core/services/rewrite/rewrite.service'
 import { FormsModule } from "@angular/forms"
 import { CommonModule } from '@angular/common'
 import { Router } from '@angular/router'
@@ -119,7 +121,7 @@ export class Chapter10Component implements OnInit {
     ecc: { keyGen: 0, encrypt: 0, decrypt: 0 },
   }
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private rewrite: RewriteService) {}
 
   ngOnInit() {
     this.generateRSAKeyPair()
@@ -128,6 +130,28 @@ export class Chapter10Component implements OnInit {
     this.calculateElGamalEncryption()
     this.simulateOAEP()
 
+  }
+
+  // ===== AI Rewrite (demo for Section 1 intro) =====
+  originalIntro: string =
+    "Asymmetric (public-key) cryptography complements symmetric-key methods by solving the key-distribution problem: you no longer need to share a secret key beforehand. Instead, each user has a public key (widely known) and a private key (kept secret). Messages encrypted with one key can only be decrypted with the other.";
+  rewrittenIntro: string | null = null;
+  rewriteLoading = false;
+  rewriteMode: 'simplify' | 'eli5' | 'deepen' | 'concise' | 'analogies' = 'simplify';
+
+  async rewriteIntro() {
+    if (this.rewriteLoading) return;
+    this.rewriteLoading = true;
+    try {
+      const res = await firstValueFrom(
+        this.rewrite.rewrite({ text: this.originalIntro, mode: this.rewriteMode, preserveStructure: true })
+      );
+      this.rewrittenIntro = (res?.rewritten || '').trim() || this.originalIntro;
+    } catch {
+      this.rewrittenIntro = this.originalIntro;
+    } finally {
+      this.rewriteLoading = false;
+    }
   }
 
   // RSA implementation

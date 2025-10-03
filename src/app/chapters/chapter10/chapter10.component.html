@@ -47,9 +47,32 @@
         <h2 class="text-3xl font-bold text-gray-900 mb-6">Why Asymmetric-Key Cryptography?</h2>
 
         <div class="bg-purple-50 rounded-lg p-6 mb-6">
-          <p class="text-gray-700 text-lg leading-relaxed">
-            Asymmetric (public-key) cryptography complements symmetric-key methods by solving the key-distribution problem: you no longer need to share a secret key beforehand. Instead, each user has a public key (widely known) and a private key (kept secret). Messages encrypted with one key can only be decrypted with the other.
-          </p>
+          <div class="flex items-start gap-4">
+            <div class="flex-1">
+              <p class="text-gray-700 text-lg leading-relaxed" *ngIf="!rewrittenIntro; else rewrittenBlock">
+                {{ originalIntro }}
+              </p>
+              <ng-template #rewrittenBlock>
+                <div class="prose max-w-none">
+                  <div class="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap">{{ rewrittenIntro }}</div>
+                </div>
+                <button class="mt-3 text-sm text-blue-700 hover:underline" (click)="rewrittenIntro = null">Show original</button>
+              </ng-template>
+            </div>
+            <div class="w-60 shrink-0">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Rewrite mode</label>
+              <select [(ngModel)]="rewriteMode" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <option value="simplify">Simplify</option>
+                <option value="eli5">Explain like I'm 5</option>
+                <option value="deepen">Deeper explanation</option>
+                <option value="concise">More concise</option>
+                <option value="analogies">Add analogies</option>
+              </select>
+              <button (click)="rewriteIntro()" [disabled]="rewriteLoading" class="mt-3 w-full inline-flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50">
+                {{ rewriteLoading ? 'Rewriting…' : 'Rewrite with AI' }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 mb-6">
